@@ -1,0 +1,36 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'https://www.jitpack.io' }
+}
+
+dependencies {
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    // Mindustry sources
+    compileOnly 'com.github.Anuken.Arc:arc-core:+'
+    compileOnly 'com.github.Anuken.Mindustry:core:+'
+
+    // Json library
+    implementation 'com.github.PersonTheCat:hjson-java:master'
+
+    // Database library
+    implementation 'com.h2database:h2:+'
+
+    // SQL Query builder library
+    //implementation 'com.darkredz.Zeko-SQL-Builder:+'
+}
+
+jar {
+    archiveFileName = "${project.archivesBaseName}.jar"
+    from{
+        configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
+    }
+}
+
+//[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
