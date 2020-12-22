@@ -1,3 +1,5 @@
+package command
+
 import arc.util.CommandHandler
 
 object ServerCommand {

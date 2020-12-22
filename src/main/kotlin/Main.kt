@@ -1,6 +1,8 @@
 import arc.Core
 import arc.files.Fi
 import arc.util.CommandHandler
+import command.ClientCommand
+import command.ServerCommand
 import mindustry.mod.Plugin
 
 class Main : Plugin() {

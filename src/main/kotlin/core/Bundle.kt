@@ -1,7 +1,7 @@
-import Main.Companion.pluginRoot
+package core
+
+import data.Config
 import external.UTF8Control
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.text.MessageFormat
 import java.util.*
 
