@@ -1,3 +1,5 @@
+import java.text.DecimalFormat
+
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.21'
 }
@@ -18,12 +20,6 @@ dependencies {
 
     // Json library
     implementation 'com.github.PersonTheCat:hjson-java:master'
-
-    // Database library
-    implementation 'com.h2database:h2:+'
-
-    // SQL Query builder library
-    //implementation 'com.darkredz.Zeko-SQL-Builder:+'
 }
 
 jar {
@@ -31,6 +27,29 @@ jar {
     from{
         configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
     }
+}
+
+tasks.create("checkFileSize"){
+    println("Result: "+size())
+}
+
+static def size() {
+    float size = new File("build/libs/KR-Plugin.jar").length()
+    DecimalFormat df = new DecimalFormat("0.00")
+
+    float kb = 1024.0f
+    float mb = (float) (kb * kb)
+    float gb = (float) (mb * kb)
+    float tb = (float) (gb * kb)
+
+    if(size < mb)
+        return df.format(size / kb)+ " KB"
+    else if(size < gb)
+        return df.format(size / mb) + " MB"
+    else if(size < tb)
+        return df.format(size / gb) + " GB"
+
+    return ""
 }
 
 //[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
