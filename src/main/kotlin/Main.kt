@@ -20,6 +20,9 @@ class Main : Plugin() {
         // Database 시작
         DB
 
+        // Database Table 생성
+        DB.createTable()
+
         Core.app.addListener(object : ApplicationListener {
             override fun dispose() {
                 DB.shutdownServer()

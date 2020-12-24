@@ -1,13 +1,12 @@
 package data
 
 import Main.Companion.pluginRoot
+import PlayerData
 import PluginVars
 import essentials.special.DriverLoader.Companion.h2
-import java.net.URLClassLoader
 import java.sql.Connection
 import java.sql.DriverManager
-import java.lang.Exception
-
+import kotlin.reflect.full.declaredMemberProperties
 
 object DB {
     var database: Connection
@@ -71,7 +70,27 @@ object DB {
         disconnect()
     }
 
-    fun createTable(){
+    fun createTable() : Boolean{
+        val sql = """
+            CREATE TABLE IF NOT EXISTS players(
+            id INT PRIMARY KEY,
+            ${split()}
+            )
+        """.trimIndent()
+        return database.prepareStatement(sql).execute()
+    }
 
+    fun split() : String{
+        val sql = StringBuilder()
+
+        val fields = PlayerData::class.declaredMemberProperties
+        for (a in fields){
+            when (a.returnType.toString()){
+                "kotlin.Long", "kotlin.Int" -> sql.append("\"${a.name}\" BIGINT,")
+                "kotlin.String" -> sql.append("\"${a.name}\" VARCHAR(255),")
+                "kotlin.Boolean" -> sql.append("\"${a.name}\" BOOLEAN,")
+            }
+        }
+        return sql.toString().dropLast(1)
     }
 }
