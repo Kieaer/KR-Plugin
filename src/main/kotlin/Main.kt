@@ -1,8 +1,11 @@
+import arc.ApplicationListener
 import arc.Core
 import arc.files.Fi
 import arc.util.CommandHandler
 import command.ClientCommand
 import command.ServerCommand
+import data.DB
+import essentials.special.DriverLoader
 import mindustry.mod.Plugin
 
 class Main : Plugin() {
@@ -11,7 +14,17 @@ class Main : Plugin() {
     }
 
     init {
-        PlayerData.admin = true
+        // DB 드라이버 다운로드
+        DriverLoader()
+
+        // Database 시작
+        DB
+
+        Core.app.addListener(object : ApplicationListener {
+            override fun dispose() {
+                DB.shutdownServer()
+            }
+        })
     }
 
     override fun registerServerCommands(handler: CommandHandler) {
