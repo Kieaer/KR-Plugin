@@ -63,4 +63,7 @@ object PlayerData {
 
     /** 플레이어 언어 */
     var country: String = Locale.getDefault().toLanguageTag()
+
+    /** 플레이어에 대한 신뢰 수치 */
+    var rank: Long = 0L
 }
