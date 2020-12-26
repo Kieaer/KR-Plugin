@@ -1,23 +1,21 @@
 package core
 
 object Log {
-    fun info(){
+    val tag = "[KR-Plugin] "
 
+    fun info(message: String){
+        arc.util.Log.infoTag(tag, message)
     }
 
-    fun err(){
-
+    fun err(message: String){
+        arc.util.Log.errTag(tag, message)
     }
 
-    fun warn(){
-
+    fun warn(message: String, vararg parameter: Any){
+        arc.util.Log.warn("$tag$message", parameter)
     }
 
-    fun debug(){
-
-    }
-
-    enum class LogType{
-        server, client
+    fun debug(message: String, vararg parameter: Any){
+        arc.util.Log.debug("$tag$message", parameter)
     }
 }
