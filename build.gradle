@@ -34,6 +34,12 @@ tasks.create("checkFileSize"){
     println("Result: "+size())
 }
 
+wrapper {
+    gradleVersion = '6.7.1'
+}
+
+
+
 static def size() {
     float size = new File("build/libs/KR-Plugin.jar").length()
     DecimalFormat df = new DecimalFormat("0.00")
