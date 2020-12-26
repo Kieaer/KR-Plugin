@@ -2,7 +2,7 @@ package data
 
 import PlayerData
 import PluginVars
-import PluginVars.playerData
+import PluginVars.Companion.playerData
 import mindustry.gen.Playerc
 
 object PlayerCore {
@@ -73,7 +73,7 @@ object PlayerCore {
                 rs.getLong("exp"),
                 rs.getLong("joinDate"),
                 rs.getLong("lastDate"),
-                rs.getLong("playtime"),
+                rs.getLong("playTime"),
                 rs.getLong("attackWinner"),
                 rs.getLong("pvpWinner"),
                 rs.getLong("pvpLoser"),
@@ -99,5 +99,36 @@ object PlayerCore {
         data.lastDate = System.currentTimeMillis()
 
         playerData.add(data)
+    }
+
+    fun save(uuid: String): Boolean{
+        val data = playerData.find { d -> uuid == d.uuid }
+
+        val sql = DB.database.prepareStatement("UPDATE tabel_name SET" +
+                "name=?, uuid=?, admin=?, placeCount=?, breakCount=?, kickCount=?, joinCount=?, level=?," +
+                "exp=?, lastDate=?, playTime=?, attackWinner=?, pvpWinner=?, pvpLoser=?, rainbowName=?," +
+                "isMute=?, isLogged=?, afkTime=?, country=?, rank=? WHERE uuid=?")
+        sql.setString(0, data.name)
+        sql.setString(1, data.uuid)
+        sql.setBoolean(2, data.admin)
+        sql.setLong(3, data.placeCount)
+        sql.setLong(4, data.breakCount)
+        sql.setLong(5, data.kickCount)
+        sql.setLong(6, data.joinCount)
+        sql.setLong(7, data.level)
+        sql.setLong(8, data.exp)
+        sql.setLong(9, data.lastDate)
+        sql.setLong(10, data.playTime)
+        sql.setLong(11, data.attackWinner)
+        sql.setLong(12, data.pvpWinner)
+        sql.setLong(13, data.pvpLoser)
+        sql.setBoolean(14, data.rainbowName)
+        sql.setBoolean(15, data.isMute)
+        sql.setBoolean(16, data.isLogged)
+        sql.setLong(17, data.afkTime)
+        sql.setString(18, data.country)
+        sql.setLong(19, data.rank)
+        sql.setString(20, data.uuid)
+        return sql.execute()
     }
 }

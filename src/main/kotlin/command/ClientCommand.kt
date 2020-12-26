@@ -1,6 +1,7 @@
 package command
 
 import arc.util.CommandHandler
+import data.PlayerCore
 import external.RegularExpression
 import mindustry.gen.Playerc
 
@@ -11,16 +12,26 @@ object ClientCommand {
     }
 
     private fun login(arg: Array<String>, player: Playerc){
-
+        // 계정 존재 유무확인
+        val isCorrect = PlayerCore.login(arg[0], arg[1])
+        if(isCorrect){
+            player.sendMessage("로그인 성공!")
+        } else {
+            PlayerCore.load(player)
+        }
     }
 
     private fun register(arg: Array<String>, player: Playerc){
         val id = arg[0]
         val pw = arg[1]
         val pw2 = arg[2]
+
+        // 비밀번호 패턴 확인
         val result = RegularExpression.check(pw, pw2, id, true)
+
         if(result){
             player.sendMessage("계정 등록 성공!")
+            PlayerCore.load(player)
         }
     }
 }

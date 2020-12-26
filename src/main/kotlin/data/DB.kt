@@ -3,7 +3,6 @@ package data
 import Main.Companion.pluginRoot
 import PlayerData
 import PluginVars
-import arc.struct.Seq
 import essentials.special.DriverLoader.Companion.h2
 import java.sql.Connection
 import java.sql.DriverManager
@@ -93,9 +92,5 @@ object DB {
             }
         }
         return sql.toString().dropLast(1)
-    }
-
-    fun createData(arg: Seq<Any>){
-
     }
 }
