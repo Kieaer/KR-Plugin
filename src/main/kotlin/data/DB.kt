@@ -3,6 +3,7 @@ package data
 import Main.Companion.pluginRoot
 import PlayerData
 import PluginVars
+import arc.struct.Seq
 import essentials.special.DriverLoader.Companion.h2
 import java.sql.Connection
 import java.sql.DriverManager
@@ -74,13 +75,13 @@ object DB {
         val sql = """
             CREATE TABLE IF NOT EXISTS players(
             id INT PRIMARY KEY,
-            ${split()}
+            ${router()}
             )
         """.trimIndent()
         return database.prepareStatement(sql).execute()
     }
 
-    fun split() : String{
+    private fun router() : String{
         val sql = StringBuilder()
 
         val fields = PlayerData::class.declaredMemberProperties
@@ -92,5 +93,9 @@ object DB {
             }
         }
         return sql.toString().dropLast(1)
+    }
+
+    fun createData(arg: Seq<Any>){
+
     }
 }

@@ -1,6 +1,6 @@
 import java.util.*
 
-object PlayerData {
+class PlayerData {
     /** 플레이어의 이름 */
     var name: String = ""
 
@@ -20,7 +20,7 @@ object PlayerData {
     var kickCount: Long = 0L
 
     /** 서버 입장횟수 */
-    var join: Long = 0L
+    var joinCount: Long = 0L
 
     /** 플레이어 레벨 */
     var level: Long = 0L
@@ -35,7 +35,7 @@ object PlayerData {
     var lastDate: Long = 0L
 
     /** 플레이 시간 */
-    var time: Long = 0L
+    var playTime: Long = 0L
 
     /** 공격 맵 클리어 횟수 */
     var attackWinner: Long = 0L
@@ -48,9 +48,6 @@ object PlayerData {
 
     /** 무지개 닉네임 활성화 여부 */
     var rainbowName: Boolean = false
-
-    /** 서버 접속여부 */
-    var isConnected: Boolean = false
 
     /** 채팅 금지 여부 */
     var isMute: Boolean = false
@@ -66,4 +63,32 @@ object PlayerData {
 
     /** 플레이어에 대한 신뢰 수치 */
     var rank: Long = 0L
+
+    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Long, exp: Long, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long){
+        this.name = name
+        this.uuid = uuid
+        this.admin = admin
+        this.placeCount = placeCount
+        this.breakCount = breakCount
+        this.kickCount = kickCount
+        this.joinCount = joinCount
+        this.level = level
+        this.exp = exp
+        this.joinDate = joinDate
+        this.lastDate = lastDate
+        this.playTime = playTime
+        this.attackWinner = attackWinner
+        this.pvpWinner = pvpWinner
+        this.pvpLoser = pvpLoser
+        this.rainbowName = rainbowName
+        this.isMute = isMute
+        this.isLogged = isLogged
+        this.afkTime = afkTime
+        this.country = country
+        this.rank = rank
+    }
+
+    constructor(){
+
+    }
 }
