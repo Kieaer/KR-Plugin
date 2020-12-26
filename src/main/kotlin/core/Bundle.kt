@@ -6,14 +6,18 @@ import java.text.MessageFormat
 import java.util.*
 
 class Bundle {
-    var resource: ResourceBundle = ResourceBundle.getBundle("bundle.bundle", Config.locale, UTF8Control())
+    var resource: ResourceBundle
 
     constructor(locale: Locale) {
         resource = try {
             ResourceBundle.getBundle("bundle.bundle", locale, UTF8Control())
         } catch (e: Exception) {
-            ResourceBundle.getBundle("bundle.bundle", Locale.US, UTF8Control())
+            ResourceBundle.getBundle("bundle.bundle", Locale.KOREAN, UTF8Control())
         }
+    }
+
+    constructor(){
+        resource = ResourceBundle.getBundle("bundle.bundle", Locale.KOREAN, UTF8Control())
     }
 
     operator fun get(key: String, vararg params: Any?): String {
