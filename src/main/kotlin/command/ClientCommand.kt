@@ -17,8 +17,9 @@ object ClientCommand {
         val isCorrect = PlayerCore.login(arg[0], arg[1])
         if(isCorrect){
             player.sendMessage("로그인 성공!")
-        } else {
             PlayerCore.load(player)
+        } else {
+            player.sendMessage("로그인 실패!")
         }
     }
 

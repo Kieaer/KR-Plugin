@@ -7,6 +7,7 @@ import command.ServerCommand
 import core.Log
 import data.DB
 import essentials.special.DriverLoader
+import event.Event
 import mindustry.core.Version
 import mindustry.mod.Plugin
 
@@ -27,9 +28,13 @@ class Main : Plugin() {
         // Database Table 생성
         DB.createTable()
 
+        // 이벤트 등록
+        Event.register()
+
         Core.app.addListener(object : ApplicationListener {
             override fun dispose() {
                 DB.shutdownServer()
+                Event.service.shutdown()
             }
         })
     }

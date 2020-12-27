@@ -48,10 +48,10 @@ object Config {
     val networkMode = networkModes.Server
 
     enum class authTypes{
-        none, password, discord, kakaotalk
+        none, password, discord, kakaotalk;
     }
 
     enum class networkModes{
-        Server, Client
+        Server, Client;
     }
 }
