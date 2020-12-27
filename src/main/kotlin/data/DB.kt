@@ -3,7 +3,9 @@ package data
 import Main.Companion.pluginRoot
 import PlayerData
 import PluginVars
+import core.Log
 import essentials.special.DriverLoader.Companion.h2
+import java.net.URI
 import java.sql.Connection
 import java.sql.DriverManager
 import kotlin.reflect.full.declaredMemberProperties
@@ -19,7 +21,7 @@ object DB {
                 clazz = Class.forName("org.h2.tools.Server", true, h2)
                 databaseServer = clazz.getDeclaredConstructor().newInstance()
 
-                val arr = arrayOf("-tcpPort", "${PluginVars.dataPort}", "-tcpAllowOthers", "-tcpDaemon", "-ifNotExists", "-baseDir", "./" + pluginRoot.child("data").path())
+                val arr = arrayOf("-tcpPort", "${if(!Config.debug) PluginVars.dataPort else 8979}", "-tcpAllowOthers", "-tcpDaemon", "-ifNotExists", "-baseDir", "./" + pluginRoot.child("data").path())
                 for (m in clazz.methods) {
                     if (m.name == "createTcpServer") {
                         val any = m.invoke(databaseServer, arr)
@@ -32,10 +34,29 @@ object DB {
                         break
                     }
                 }
+
+                // 디버그를 위해 웹 서버 열기
+                if(Config.debug){
+                    val ar = arrayOf("-webAllowOthers", "-webDaemon", "-baseDir", "jdbc:h2:tcp://localhost:${if(!Config.debug) PluginVars.dataPort else 8979}/player")
+                    for (m in clazz.methods) {
+                        if (m.name == "createWebServer") {
+                            val any = m.invoke(databaseServer, ar)
+                            for (o in clazz.methods) {
+                                if (o.name == "start") {
+                                    o.invoke(any)
+                                    break
+                                }
+                            }
+                            break
+                        }
+                    }
+                    Log.info("DB 주소: jdbc:h2:tcp://localhost:${if(!Config.debug) PluginVars.dataPort else 8979}")
+                    java.awt.Desktop.getDesktop().browse(URI("http://localhost:8082"))
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            database = DriverManager.getConnection("jdbc:h2:tcp://localhost:${PluginVars.dataPort}/player", "", "")
+            database = DriverManager.getConnection("jdbc:h2:tcp://localhost:${if(!Config.debug) PluginVars.dataPort else 8979}/player", "", "")
         } else {
             database = DriverManager.getConnection("jdbc:h2:file:./config/mods/KR-Plugin/data/player", "", "")
         }
@@ -43,7 +64,7 @@ object DB {
 
     fun connect(){
         database = if (Config.networkMode == Config.networkModes.Server) {
-            DriverManager.getConnection("jdbc:h2:tcp://localhost:${PluginVars.dataPort}/player", "", "")
+            DriverManager.getConnection("jdbc:h2:tcp://localhost:${if(!Config.debug) PluginVars.dataPort else 8979}/player", "", "")
         } else {
             DriverManager.getConnection("jdbc:h2:file:./config/mods/KR-Plugin/data/player", "", "")
         }
@@ -73,7 +94,6 @@ object DB {
     fun createTable() : Boolean{
         val sql = """
             CREATE TABLE IF NOT EXISTS players(
-            id INT PRIMARY KEY,
             ${router()}
             )
         """.trimIndent()

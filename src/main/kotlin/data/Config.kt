@@ -16,7 +16,7 @@ object Config {
     val update = true
 
     /** 사소한 오류 발생시 오류 메세지 출력 */
-    val debug = false
+    val debug = true
 
     /** 맵 자동 저장시간. 단위는 1초 */
     val autoSaveTime = 0L

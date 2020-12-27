@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object Log {
-    val tag = "[KR-Plugin] "
+    private const val tag = "KR-Plugin"
 
     fun info(message: String){
         arc.util.Log.infoTag(tag, message)

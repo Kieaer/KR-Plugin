@@ -14,32 +14,35 @@ object PlayerCore {
         joinDate: Long,
         lastDate: Long,
         country: String,
-        rank: Long
+        rank: Long,
+        id: String,
+        pw: String
     ) : Boolean{
         val sql = DB.database.prepareStatement(("INSERT INTO players (" +
-                "name,uuid,admin,placeCount,breakCount,kickCount,joinCount,level,exp,joinDate,lastDate,time,attackWinner,pvpWinner,pvpLoser,rainbowName,isConnected,isMute,isLogged,country,rank" +
+                "\"name\",\"uuid\",\"admin\",\"placeCount\",\"breakCount\",\"kickCount\",\"joinCount\",\"level\",\"exp\",\"joinDate\",\"lastDate\",\"playTime\",\"attackWinner\",\"pvpWinner\",\"pvpLoser\",\"rainbowName\",\"isMute\",\"isLogged\",\"country\",\"rank\", \"id\", \"pw\"" +
                 ") VALUES (${"?,".repeat(PluginVars.playerDataFieldSize)}").dropLast(1)+")")
-        sql.setString(0, name)
-        sql.setString(1, uuid)
-        sql.setBoolean(2, false) // admin
-        sql.setLong(3, 0L) // placeCount
-        sql.setLong(4, 0L) // breakCount
-        sql.setLong(5, kickCount)
-        sql.setLong(6, joinCount)
-        sql.setLong(7, 1L) // Level
-        sql.setLong(8, 0L) // Exp
-        sql.setLong(9, joinDate)
-        sql.setLong(10, lastDate)
-        sql.setLong(11, 0L) // time
-        sql.setLong(12, 0L) // attackWinner
-        sql.setLong(13, 0L) // pvpWinner
-        sql.setLong(14, 0L) // pvpPloser
-        sql.setBoolean(15, false) // rainbowName
-        sql.setBoolean(16, false) // isConnected
+        sql.setString(1, name)
+        sql.setString(2, uuid)
+        sql.setBoolean(3, false) // admin
+        sql.setLong(4, 0L) // placeCount
+        sql.setLong(5, 0L) // breakCount
+        sql.setLong(6, kickCount)
+        sql.setLong(7, joinCount)
+        sql.setLong(8, 1L) // Level
+        sql.setLong(9, 0L) // Exp
+        sql.setLong(10, joinDate)
+        sql.setLong(11, lastDate)
+        sql.setLong(12, 0L) // time
+        sql.setLong(13, 0L) // attackWinner
+        sql.setLong(14, 0L) // pvpWinner
+        sql.setLong(15, 0L) // pvpPloser
+        sql.setBoolean(16, false) // rainbowName
         sql.setBoolean(17, false) // isMute
         sql.setBoolean(18, false) // isLogged
         sql.setString(19, country)
         sql.setLong(20, rank)
+        sql.setString(21, id)
+        sql.setString(22, pw)
         return sql.execute()
     }
 
@@ -48,17 +51,17 @@ object PlayerCore {
     }
 
     fun login(id: String, pw: String) : Boolean{
-        val sql = DB.database.prepareStatement("SELECT uuid FROM players WHERE id=? and pw=?")
-        sql.setString(0, id)
-        sql.setString(1, pw)
+        val sql = DB.database.prepareStatement("SELECT \"uuid\" FROM players WHERE \"id\"=? and \"pw\"=?")
+        sql.setString(1, id)
+        sql.setString(2, pw)
         return sql.executeQuery().next()
     }
 
     fun getData(player: Playerc) : PlayerData{
         var data = PlayerData()
 
-        val sql = DB.database.prepareStatement("SELECT * FROM players WHERE uuid=?")
-        sql.setString(0, player.uuid())
+        val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
+        sql.setString(1, player.uuid())
         val rs = sql.executeQuery()
         if(rs.next()){
             data = PlayerData(
@@ -82,7 +85,9 @@ object PlayerCore {
                 rs.getBoolean("isLogged"),
                 rs.getLong("afkTime"),
                 rs.getString("country"),
-                rs.getLong("rank")
+                rs.getLong("rank"),
+                rs.getString("id"),
+                rs.getString("pw")
             )
         }
 
@@ -105,30 +110,30 @@ object PlayerCore {
         val data = playerData.find { d -> uuid == d.uuid }
 
         val sql = DB.database.prepareStatement("UPDATE tabel_name SET" +
-                "name=?, uuid=?, admin=?, placeCount=?, breakCount=?, kickCount=?, joinCount=?, level=?," +
-                "exp=?, lastDate=?, playTime=?, attackWinner=?, pvpWinner=?, pvpLoser=?, rainbowName=?," +
-                "isMute=?, isLogged=?, afkTime=?, country=?, rank=? WHERE uuid=?")
-        sql.setString(0, data.name)
-        sql.setString(1, data.uuid)
-        sql.setBoolean(2, data.admin)
-        sql.setLong(3, data.placeCount)
-        sql.setLong(4, data.breakCount)
-        sql.setLong(5, data.kickCount)
-        sql.setLong(6, data.joinCount)
-        sql.setLong(7, data.level)
-        sql.setLong(8, data.exp)
-        sql.setLong(9, data.lastDate)
-        sql.setLong(10, data.playTime)
-        sql.setLong(11, data.attackWinner)
-        sql.setLong(12, data.pvpWinner)
-        sql.setLong(13, data.pvpLoser)
-        sql.setBoolean(14, data.rainbowName)
-        sql.setBoolean(15, data.isMute)
-        sql.setBoolean(16, data.isLogged)
-        sql.setLong(17, data.afkTime)
-        sql.setString(18, data.country)
-        sql.setLong(19, data.rank)
-        sql.setString(20, data.uuid)
+                "\"name\"=?, \"uuid\"=?, \"admin\"=?, \"placeCount\"=?, \"breakCount\"=?, \"kickCount\"=?, \"joinCount\"=?, \"level\"=?," +
+                "\"exp\"=?, \"lastDate\"=?, \"playTime\"=?, \"attackWinner\"=?, \"pvpWinner\"=?, \"pvpLoser\"=?, \"rainbowName\"=?," +
+                "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=? WHERE \"uuid\"=?")
+        sql.setString(1, data.name)
+        sql.setString(2, data.uuid)
+        sql.setBoolean(3, data.admin)
+        sql.setLong(4, data.placeCount)
+        sql.setLong(5, data.breakCount)
+        sql.setLong(6, data.kickCount)
+        sql.setLong(7, data.joinCount)
+        sql.setLong(8, data.level)
+        sql.setLong(9, data.exp)
+        sql.setLong(10, data.lastDate)
+        sql.setLong(11, data.playTime)
+        sql.setLong(12, data.attackWinner)
+        sql.setLong(13, data.pvpWinner)
+        sql.setLong(14, data.pvpLoser)
+        sql.setBoolean(15, data.rainbowName)
+        sql.setBoolean(16, data.isMute)
+        sql.setBoolean(17, data.isLogged)
+        sql.setLong(18, data.afkTime)
+        sql.setString(19, data.country)
+        sql.setLong(20, data.rank)
+        sql.setString(21, data.uuid)
         return sql.execute()
     }
 }

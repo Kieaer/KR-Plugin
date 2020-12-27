@@ -64,7 +64,13 @@ class PlayerData {
     /** 플레이어에 대한 신뢰 수치 */
     var rank: Long = 0L
 
-    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Long, exp: Long, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long){
+    /** 계정 ID */
+    var id: String = ""
+
+    /** 계정 비밀번호 */
+    var pw: String = ""
+
+    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Long, exp: Long, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long, id: String, pw: String){
         this.name = name
         this.uuid = uuid
         this.admin = admin
@@ -86,6 +92,8 @@ class PlayerData {
         this.afkTime = afkTime
         this.country = country
         this.rank = rank
+        this.id = id
+        this.pw = pw
     }
 
     constructor(){

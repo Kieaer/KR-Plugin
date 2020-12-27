@@ -3,6 +3,7 @@ package command
 import arc.util.CommandHandler
 import data.PlayerCore
 import external.RegularExpression
+import mindustry.Vars
 import mindustry.gen.Playerc
 
 object ClientCommand {
@@ -30,6 +31,9 @@ object ClientCommand {
         val result = RegularExpression.check(pw, pw2, id, true)
 
         if(result){
+            val data = Vars.netServer.admins.findByName(player.uuid()).first()
+            // TODO country 만들기
+            PlayerCore.register(player.name(), player.uuid(), data.timesKicked.toLong(), data.timesJoined.toLong(), System.currentTimeMillis(), System.currentTimeMillis(), "none", 0L, id, pw)
             player.sendMessage("계정 등록 성공!")
             PlayerCore.load(player)
         }
