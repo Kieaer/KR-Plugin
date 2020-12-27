@@ -2,113 +2,85 @@ package event
 
 import PluginVars.Companion.playerData
 import core.Log
-import data.Config
 import data.PlayerCore
+import mindustry.core.NetClient
 import mindustry.game.EventType.*
+import mindustry.gen.Call
 
 class EventThread(private val type: EventTypes, private val event: Any) : Thread() {
     override fun run() {
-        when (type) {
-            EventTypes.Config -> {
-                val e = event as ConfigEvent
+        try {
+            when (type) {
+                EventTypes.Config -> {
+                    val e = event as ConfigEvent
+                }
+                EventTypes.Tap -> {
+                    val e = event as TapEvent
+                }
+                EventTypes.Withdraw -> {
+                    val e = event as WithdrawEvent
+                }
+                EventTypes.Gameover -> {
+                    val e = event as GameOverEvent
+                }
+                EventTypes.WorldLoad -> {
+                    val e = event as WorldLoadEvent
+                }
+                EventTypes.PlayerConnect -> {
+                    val e = event as PlayerConnect
+                }
+                EventTypes.Deposit -> {
+                    val e = event as DepositEvent
+                }
+                EventTypes.PlayerJoin -> {
+                    val e = event as PlayerJoin
 
-                if(Config.debug) Log.info("Config Event!")
+                    // 계정 인증 전까지 관리자 상태 해제
+                    e.player.admin(false)
+                }
+                EventTypes.PlayerLeave -> {
+                    val e = event as PlayerLeave
+
+                    val data = playerData.find { d -> e.player.uuid() == d.uuid }
+                    data.isLogged = false
+                    PlayerCore.save(e.player.uuid())
+                }
+                EventTypes.PlayerChat -> {
+                    val e = event as PlayerChatEvent
+
+                    // 채팅 내용 출력
+                    Call.sendMessage("${NetClient.colorizeName(e.player.id, e.player.name)} [orange]>[white] ${e.message}")
+
+                    // 채팅 내용을 기록에 저장
+                    Log.write(Log.LogType.chat, "${e.player.name}: ${e.message}")
+                }
+                EventTypes.BlockBuildEnd -> {
+                    val e = event as BlockBuildEndEvent
+                }
+                EventTypes.BuildSelect -> {
+                    val e = event as BuildSelectEvent
+                }
+                EventTypes.UnitDestroy -> {
+                    val e = event as UnitDestroyEvent
+                }
+                EventTypes.PlayerBan -> {
+                    val e = event as PlayerBanEvent
+                }
+                EventTypes.PlayerIpBan -> {
+                    val e = event as PlayerIpBanEvent
+                }
+                EventTypes.PlayerUnban -> {
+                    val e = event as PlayerUnbanEvent
+                }
+                EventTypes.PlayerIpUnban -> {
+                    val e = event as PlayerIpUnbanEvent
+                }
+                EventTypes.ServerLoaded -> {
+                    val e = event as ServerLoadEvent
+                }
             }
-            EventTypes.Tap -> {
-                val e = event as TapEvent
-
-                if(Config.debug) Log.info("Tap Event!")
-            }
-            EventTypes.Withdraw -> {
-                val e = event as WithdrawEvent
-
-                if(Config.debug) Log.info("Withdraw Event!")
-            }
-            EventTypes.Gameover -> {
-                val e = event as GameOverEvent
-
-                if(Config.debug) Log.info("Withdraw Event!")
-            }
-            EventTypes.WorldLoad -> {
-                val e = event as WorldLoadEvent
-
-                if(Config.debug) Log.info("WorldLoad Event!")
-            }
-            EventTypes.PlayerConnect -> {
-                val e = event as PlayerConnect
-
-                if(Config.debug) Log.info("PlayerConnect Event!")
-            }
-            EventTypes.Deposit -> {
-                val e = event as DepositEvent
-
-                if(Config.debug) Log.info("Deposit Event!")
-            }
-            EventTypes.PlayerJoin -> {
-                val e = event as PlayerJoin
-
-                if(Config.debug) Log.info("PlayerJoin Event!")
-
-                // 계정 인증 전까지 관리자 상태 해제
-                e.player.admin(false)
-            }
-            EventTypes.PlayerLeave -> {
-                val e = event as PlayerLeave
-
-                if(Config.debug) Log.info("PlayerLeave Event!")
-
-                val data = playerData.find { d -> e.player.uuid() == d.uuid }
-                data.isLogged = false
-                PlayerCore.save(e.player.uuid())
-            }
-            EventTypes.PlayerChat -> {
-                val e = event as PlayerChatEvent
-
-                if(Config.debug) Log.info("PlayerChat Event!")
-
-                // 채팅 내용을 기록에 저장
-                Log.write(Log.LogType.chat, "${e.player.name}: ${e.message}")
-            }
-            EventTypes.BlockBuildEnd -> {
-                val e = event as BlockBuildEndEvent
-
-                if(Config.debug) Log.info("BlockBuild Event!")
-            }
-            EventTypes.BuildSelect -> {
-                val e = event as BuildSelectEvent
-
-                if(Config.debug) Log.info("BuildSelect Event!")
-            }
-            EventTypes.UnitDestroy -> {
-                val e = event as UnitDestroyEvent
-
-                if(Config.debug) Log.info("UnitDestroy Event!")
-            }
-            EventTypes.PlayerBan -> {
-                val e = event as PlayerBanEvent
-
-                if(Config.debug) Log.info("PlayerBan Event!")
-            }
-            EventTypes.PlayerIpBan -> {
-                val e = event as PlayerIpBanEvent
-
-                if(Config.debug) Log.info("PlayerIpBan Event!")
-            }
-            EventTypes.PlayerUnban -> {
-                val e = event as PlayerUnbanEvent
-
-                if(Config.debug) Log.info("PlayerUnban Event!")
-            }
-            EventTypes.PlayerIpUnban -> {
-                val e = event as PlayerIpUnbanEvent
-
-                if(Config.debug) Log.info("PlayerIpUnban Event!")
-            }
-            EventTypes.ServerLoaded -> {
-                val e = event as ServerLoadEvent
-
-                if(Config.debug) Log.info("ServerLoaded Event!")
-            }
+        } catch (e: Exception){
+            e.printStackTrace()
         }
     }
 

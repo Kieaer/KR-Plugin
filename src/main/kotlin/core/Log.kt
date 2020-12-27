@@ -29,10 +29,21 @@ object Log {
 
     fun write(type: LogType, value: String, vararg params: String?) {
         val date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH_mm_ss").format(LocalDateTime.now())
+
+        if (!pluginRoot.child("log").exists()){
+            pluginRoot.child("log/old").mkdirs()
+            for (day in LogType.values()) {
+                if(!pluginRoot.child("log/$type.log").exists()) {
+                    pluginRoot.child("log/$type.log").writeString("")
+                }
+            }
+        }
+
         val new = Paths.get(pluginRoot.child("log/$type.log").path())
         val old = Paths.get(pluginRoot.child("log/old/$type/$date.log").path())
         var log = pluginRoot.child("log/$type.log")
         val path = pluginRoot.child("log")
+
         if (log != null && log.length() > 1024 * 256) {
             log.writeString(Bundle()["log.file-end", date], true)
             try {
@@ -46,7 +57,8 @@ object Log {
             log = null
         }
         if (log == null) log = path.child("$type.log")
-        log!!.writeString("[${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))}] ${Bundle().get(value, *params)}\n", true)
+
+        log!!.writeString("[${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))}] ${value}\n", true)
     }
 
     enum class LogType {

@@ -1,0 +1,5 @@
+package command
+
+class ServerCommandThread {
+
+}

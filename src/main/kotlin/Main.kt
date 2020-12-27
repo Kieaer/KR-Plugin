@@ -1,3 +1,5 @@
+
+import PluginVars.Companion.playerData
 import arc.ApplicationListener
 import arc.Core
 import arc.files.Fi
@@ -8,7 +10,7 @@ import core.Log
 import data.DB
 import essentials.special.DriverLoader
 import event.Event
-import mindustry.core.Version
+import mindustry.Vars
 import mindustry.mod.Plugin
 
 class Main : Plugin() {
@@ -17,29 +19,40 @@ class Main : Plugin() {
     }
 
     init {
-        Log.info("플러그인 설정 시작. 서버 버전: ${Version.build}")
+        Log.info("플러그인 초기화... 잠시 기다려 주세요")
 
         // DB 드라이버 다운로드
+        Log.info("DB 드라이버 설정")
         DriverLoader()
 
-        // Database 시작
-        DB
-
-        // Database Table 생성
+        // Database 서비스 시작 & Table 생성
+        Log.info("DB 테이블 생성")
         DB.createTable()
 
         // 이벤트 등록
+        Log.info("이벤트 트리거 설정")
         Event.register()
 
         Core.app.addListener(object : ApplicationListener {
             override fun dispose() {
                 DB.shutdownServer()
                 Event.service.shutdown()
+                ClientCommand.service.shutdown()
+                ServerCommand.service.shutdown()
             }
         })
     }
 
     override fun init() {
+        // 채팅 포맷 변경
+        Vars.netServer.admins.addChatFilter { _, _ -> null }
+
+        // 비 로그인 유저 통제
+        Vars.netServer.admins.addActionFilter { e ->
+            if (e.player == null) return@addActionFilter true
+            return@addActionFilter playerData.find { d -> e.player.uuid() == d.uuid } != null
+        }
+
         Log.info("플러그인 로드 완료!")
     }
 
