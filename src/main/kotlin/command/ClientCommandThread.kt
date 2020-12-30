@@ -1,5 +1,6 @@
 package command
 
+import command.ClientCommand.Command.*
 import data.PlayerCore
 import external.RegularExpression
 import mindustry.Vars
@@ -8,10 +9,10 @@ import mindustry.gen.Playerc
 import mindustry.type.UnitType
 import mindustry.world.Block
 
-class ClientCommandThread(private val type: ClientCommand.command, private val arg: Array<String>, private val player: Playerc) : Thread(){
+class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc) : Thread(){
     override fun run() {
         when(type){
-            ClientCommand.command.login -> {
+            Login -> {
                 // 계정 존재 유무확인
                 val isCorrect = PlayerCore.login(arg[0], arg[1])
                 if(isCorrect){
@@ -21,7 +22,7 @@ class ClientCommandThread(private val type: ClientCommand.command, private val a
                     player.sendMessage("로그인 실패!")
                 }
             }
-            ClientCommand.command.register -> {
+            Register -> {
                 val id = arg[0]
                 val pw = arg[1]
                 val pw2 = arg[2]
@@ -37,7 +38,7 @@ class ClientCommandThread(private val type: ClientCommand.command, private val a
                     PlayerCore.load(player)
                 }
             }
-            ClientCommand.command.spawn -> {
+            Spawn -> {
                 val type = arg[0]
                 val name = arg[1]
                 val parameter = arg[2].toInt()
@@ -60,6 +61,45 @@ class ClientCommandThread(private val type: ClientCommand.command, private val a
                         return
                     }
                 }
+            }
+            Vote -> {
+                TODO()
+            }
+            Rainbow -> {
+                TODO()
+            }
+            Kill -> {
+                TODO()
+            }
+            Info -> {
+                TODO()
+            }
+            Maps -> {
+                TODO()
+            }
+            Motd -> {
+                TODO()
+            }
+            Players -> {
+                TODO()
+            }
+            Router -> {
+                TODO()
+            }
+            Status -> {
+                TODO()
+            }
+            Team -> {
+                TODO()
+            }
+            Ban -> {
+                TODO()
+            }
+            Tp -> {
+                TODO()
+            }
+            Mute -> {
+                TODO()
             }
         }
     }

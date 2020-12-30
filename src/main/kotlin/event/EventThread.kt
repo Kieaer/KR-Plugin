@@ -52,7 +52,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     Call.sendMessage("${NetClient.colorizeName(e.player.id, e.player.name)} [orange]>[white] ${e.message}")
 
                     // 채팅 내용을 기록에 저장
-                    Log.write(Log.LogType.chat, "${e.player.name}: ${e.message}")
+                    Log.write(Log.LogType.Chat, "${e.player.name}: ${e.message}")
                 }
                 EventTypes.BlockBuildEnd -> {
                     val e = event as BlockBuildEndEvent

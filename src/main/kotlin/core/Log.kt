@@ -62,6 +62,6 @@ object Log {
     }
 
     enum class LogType {
-        player_join, player_leave, activity, chat;
+        PlayerJoin, PlayerLeave, Activity, Chat;
     }
 }
