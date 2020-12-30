@@ -1,18 +1,87 @@
+# KR-Plugin
+Essentials. However, it's optimized for my server.<br>
+But source code is free!<br>
+I hope that my source code will be released to help other plugin developers.
+
 ## What's this plugin?
 It's a plugin to be used in ``mindustry.kr`` server.<br>
 The Essentials plugin is designed to be used on multiple servers, so it can't add special features to the server.
 
 So I made it. For my server.<br>
-Creating this plugin doesn't stop developing Essentials plugin.
+Creating this plugin doesn't stop developing Essentials plugin.<br>
+Some sources may apply to Essentials.
 
 ## What's plan?
-- Account management
-- Anti-VPN
-- Auto-translate chatting
-- Powerful lobby system
-- Better performance than Essentials plugin
-- Donate (It will be used to maintain translate language services.)
-- Ranking system (include Anti-grief and personality evaluation)
-- Prefix and Suffix
-- Server management tool based on Discord Bot
-- Server Load Balancing
+- [ ] Account management
+  - [ ] Reset password
+  - [ ] Authentication
+    - [ ] E-mail
+    - [ ] Discord
+    - [ ] Kakaotalk
+- [ ] Anti-VPN
+  - [ ] Auto update IP database
+- [ ] Auto-translate chatting
+- [ ] Powerful lobby system
+  - [ ] Move the server methods
+    - [ ] Player mech position
+    - [ ] Click/Touch
+- [ ] Better performance than Essentials plugin
+  - [ ] Multi-threading
+    - [ ] Events
+    - [ ] Command triggers
+    - [ ] Time triggers
+- [ ] Donate (It will be used to maintain translate language services.)
+  - [ ] Make donate page (Web)
+- [ ] Ranking system (include Anti-grief and personality evaluation)
+  - [ ] Trust stat
+- [ ] Prefix and Suffix
+  - [ ] Console
+  - [ ] In-game
+    - [ ] Player chat
+- [ ] Server management tool based on Discord Bot
+  - [ ] Server control authority setting for each user
+    - [ ] Direct access console screen
+- [ ] Server Load Balancing
+  - [ ] PvP
+  - [ ] Sandbox
+- [ ] Add commands
+  - [ ] Vote
+    - [ ] kick
+    - [ ] map
+    - [ ] gameover
+    - [ ] skip wave
+    - [ ] and some buff/debuff game modes...
+  - [ ] rainbow (Animated rainbow name)
+  - [ ] kill (self kill)
+    - [ ] all (include all units)
+  - [ ] info
+    - [ ] Check other players
+  - [ ] maps (Show world list)
+  - [ ] motd (Show server motd)
+    - [ ] Internal
+    - [ ] External (Read file)
+  - [ ] players (Show all players id and names)
+  - [ ] router (BasedUser's meme)
+  - [ ] status
+    - [ ] TPS
+    - [ ] Total status
+      - [ ] Joined
+      - [ ] Kicked
+      - [ ] Banned
+      - [ ] Connected players
+      - [ ] Uptime
+    - [ ] Server online time
+    - [ ] World play time
+  - [ ] team (Switching Team)
+    - [ ] other players
+  - [ ] ban
+    - [ ] For a certain amount of time
+    - [ ] Permanently
+  - [ ] tp (Teleportation)
+    - [ ] player to player
+    - [ ] Tile position
+    - [ ] other player to other player
+    - [ ] Keep following player
+    - [ ] Following with mouse pointer (other players)
+  - [ ] mute
+    - [ ] other players
