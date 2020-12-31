@@ -1,5 +1,6 @@
 package command
 
+import PluginData
 import command.ClientCommand.Command.*
 import data.PlayerCore
 import external.RegularExpression
@@ -11,6 +12,8 @@ import mindustry.world.Block
 
 class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc) : Thread(){
     override fun run() {
+        val uuid = player.uuid()
+
         when(type){
             Login -> {
                 // 계정 존재 유무확인
@@ -31,9 +34,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 val result = RegularExpression.check(pw, pw2, id, true)
 
                 if(result){
-                    val data = Vars.netServer.admins.findByName(player.uuid()).first()
+                    val data = Vars.netServer.admins.findByName(uuid).first()
                     // TODO country 만들기
-                    PlayerCore.register(player.name(), player.uuid(), data.timesKicked.toLong(), data.timesJoined.toLong(), System.currentTimeMillis(), System.currentTimeMillis(), "none", 0L, id, pw)
+                    PlayerCore.register(player.name(), uuid, data.timesKicked.toLong(), data.timesJoined.toLong(), System.currentTimeMillis(), System.currentTimeMillis(), "none", 0L, id, pw)
                     player.sendMessage("계정 등록 성공!")
                     PlayerCore.load(player)
                 }
@@ -69,10 +72,13 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 TODO()
             }
             Kill -> {
-                TODO()
+                player.unit().kill()
             }
             Info -> {
-                TODO()
+                val data = PluginData[uuid]
+                val mesasge = """
+                    이름: 
+                """.trimIndent()
             }
             Maps -> {
                 TODO()
