@@ -1,8 +1,8 @@
 package data
 
 import PlayerData
-import PluginVars
-import PluginVars.Companion.playerData
+import PluginData
+import PluginData.Companion.playerData
 import mindustry.gen.Playerc
 
 object PlayerCore {
@@ -20,7 +20,7 @@ object PlayerCore {
     ) : Boolean{
         val sql = DB.database.prepareStatement(("INSERT INTO players (" +
                 "\"name\",\"uuid\",\"admin\",\"placeCount\",\"breakCount\",\"kickCount\",\"joinCount\",\"level\",\"exp\",\"joinDate\",\"lastDate\",\"playTime\",\"attackWinner\",\"pvpWinner\",\"pvpLoser\",\"rainbowName\",\"isMute\",\"isLogged\",\"country\",\"rank\", \"id\", \"pw\"" +
-                ") VALUES (${"?,".repeat(PluginVars.playerDataFieldSize)}").dropLast(1)+")")
+                ") VALUES (${"?,".repeat(PluginData.playerDataFieldSize)}").dropLast(1)+")")
         sql.setString(1, name)
         sql.setString(2, uuid)
         sql.setBoolean(3, false) // admin
@@ -54,6 +54,12 @@ object PlayerCore {
         val sql = DB.database.prepareStatement("SELECT \"uuid\" FROM players WHERE \"id\"=? and \"pw\"=?")
         sql.setString(1, id)
         sql.setString(2, pw)
+        return sql.executeQuery().next()
+    }
+
+    fun check(uuid: String) : Boolean{
+        val sql = DB.database.prepareStatement("SELECT \"*\" FROM players WHERE \"uuid\"=?")
+        sql.setString(1, uuid)
         return sql.executeQuery().next()
     }
 

@@ -1,5 +1,5 @@
 
-import PluginVars.Companion.playerData
+import PluginData.Companion.playerData
 import arc.ApplicationListener
 import arc.Core
 import arc.files.Fi
