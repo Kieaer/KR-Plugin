@@ -6,6 +6,7 @@ import arc.files.Fi
 import arc.util.CommandHandler
 import command.ClientCommand
 import command.ServerCommand
+import core.DatabaseUpdater
 import core.DriverLoader
 import core.Log
 import core.PluginUpdater
@@ -24,6 +25,9 @@ class Main : Plugin() {
 
         // 플러그인 업데이트 확인
         PluginUpdater()
+
+        // IP 목록 업데이트
+        DatabaseUpdater()
 
         // DB 드라이버 다운로드
         Log.info("DB 드라이버 설정")
