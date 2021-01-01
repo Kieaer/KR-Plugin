@@ -61,7 +61,7 @@ Some sources may apply to Essentials.
     - [ ] Internal
     - [ ] External (Read file)
   - [ ] players (Show all players id and names)
-  - [ ] router (BasedUser's meme)
+  - [x] router (BasedUser's meme)
   - [ ] status
     - [ ] TPS
     - [ ] Total status
