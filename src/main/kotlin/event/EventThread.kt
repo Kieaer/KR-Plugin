@@ -1,10 +1,12 @@
 package event
 
+import Main.Companion.pluginRoot
 import PluginData
 import core.Log
 import data.Config
 import data.Config.authTypes.*
 import data.PlayerCore
+import external.IpAddressMatcher
 import mindustry.core.NetClient
 import mindustry.game.EventType.*
 import mindustry.gen.Call
@@ -30,6 +32,18 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
+                    val ip = e.player.con.address
+
+                    val br = pluginRoot.child("data/ipv4.txt").reader(1024)
+                    br.use {
+                        var line: String
+                        while (br.readLine().also { line = it } != null) {
+                            val match = IpAddressMatcher(line)
+                            if (match.matches(ip)) {
+                                Call.kick(e.player.con, "VPN 사용 ㄴㄴ")
+                            }
+                        }
+                    }
                 }
                 EventTypes.Deposit -> {
                     val e = event as DepositEvent
