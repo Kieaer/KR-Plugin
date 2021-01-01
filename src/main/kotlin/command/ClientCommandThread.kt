@@ -16,6 +16,8 @@ import mindustry.gen.Groups
 import mindustry.gen.Playerc
 import mindustry.type.UnitType
 import mindustry.world.Block
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc) : Thread(){
     override fun run() {
@@ -115,8 +117,8 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         블럭 파괴개수: ${data.breakCount}
                         레벨: ${data.level}
                         경험치: ${data.exp}
-                        최초 접속일: ${data.joinDate}
-                        플레이 시간: ${data.playTime}
+                        최초 접속일: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date(data.joinDate))}
+                        플레이 시간: ${LongToTime()[data.playTime]}
                         공격 맵 클리어: ${data.attackWinner}
                         PvP 승리: ${data.pvpWinner}
                         PvP 패배: ${data.pvpLoser}

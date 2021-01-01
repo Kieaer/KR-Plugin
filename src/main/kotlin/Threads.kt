@@ -1,3 +1,5 @@
+import PluginData.Companion.playerData
+import arc.Core
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -14,7 +16,7 @@ object Threads {
 
     class Seconds : Thread(){
         override fun run() {
-            while(!currentThread().isInterrupted){
+            while(Core.assets != null){
                 sleep(1000)
             }
         }
@@ -22,13 +24,16 @@ object Threads {
 
     class Task : TimerTask(){
         override fun run() {
-            PluginData.worldTime+1000L
+            PluginData.worldTime = PluginData.worldTime+1000L
+            for(a in playerData){
+                a.playTime = a.playTime+1000L
+            }
         }
     }
 
     class Tick : TimerTask(){
         override fun run() {
-            PluginData.totalUptime+(1000/16)
+            PluginData.totalUptime = PluginData.totalUptime+(1000/16)
         }
     }
 }

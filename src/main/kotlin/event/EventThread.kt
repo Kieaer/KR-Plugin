@@ -58,34 +58,35 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     // 자동 로그인
                     if(PlayerCore.check(uuid)){
                         PlayerCore.load(e.player)
-                    }
-
-                    val message: String
-                    when (Config.authType){
-                        none -> {
-                            message = ""
-                        }
-                        password -> {
-                            message = """
+                        e.player.sendMessage("자동 로그인이 되었습니다!")
+                    } else {
+                        val message: String
+                        when (Config.authType) {
+                            none -> {
+                                message = ""
+                            }
+                            password -> {
+                                message = """
                                 계정에 로그인 할려면 채팅창을 열고 [green]/login <ID> <비밀번호>[] 를 입력하세요.
                                 계정이 없다면 [green]/register <새 ID> <새 비밀번호> <비밀번호 재입력>[] 을 입력하세요.
                             """.trimIndent()
-                        }
-                        discord -> {
-                            message = """
+                            }
+                            discord -> {
+                                message = """
                                 이 서버는 Discord 서버 인증을 필요로 합니다!
                                 https://discord.gg/Uhn5NRGsya 에서 계정 인증을 진행 해 주세요!
                             """.trimIndent()
-                            // TODO (PIN 번호 인증 만들기)
-                        }
-                        kakaotalk -> {
-                            message = """
+                                // TODO (PIN 번호 인증 만들기)
+                            }
+                            kakaotalk -> {
+                                message = """
                                 이 서버는 카카오톡 인증을 필요로 합니다!
                                 https://open.kakao.com/o/gogTcpyb 에서 서버 봇에게 계정 생성을 요청하세요!
                             """.trimIndent()
+                            }
                         }
+                        e.player.sendMessage(message)
                     }
-                    e.player.sendMessage(message)
                 }
                 EventTypes.PlayerLeave -> {
                     val e = event as PlayerLeave
@@ -101,11 +102,15 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 EventTypes.PlayerChat -> {
                     val e = event as PlayerChatEvent
 
-                    // 채팅 내용 출력
-                    Call.sendMessage("${NetClient.colorizeName(e.player.id, e.player.name)} [orange]>[white] ${e.message}")
+                    if (!e.message.startsWith("/")) {
+                        // 채팅 내용 출력
+                        Call.sendMessage("${NetClient.colorizeName(e.player.id, e.player.name)} [orange]>[white] ${e.message}")
 
-                    // 채팅 내용을 기록에 저장
-                    Log.write(Log.LogType.Chat, "${e.player.name}: ${e.message}")
+                        // 채팅 내용을 기록에 저장
+                        Log.write(Log.LogType.Chat, "${e.player.name}: ${e.message}")
+                    } else {
+                        Log.write(Log.LogType.Command, "${e.player.name}: ${e.message}")
+                    }
                 }
                 EventTypes.BlockBuildEnd -> {
                     val e = event as BlockBuildEndEvent

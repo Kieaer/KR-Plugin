@@ -3,9 +3,8 @@ package data
 import Main.Companion.pluginRoot
 import PlayerData
 import PluginData
+import core.DriverLoader.Companion.h2
 import core.Log
-import essentials.special.DriverLoader.Companion.h2
-import java.net.URI
 import java.sql.Connection
 import java.sql.DriverManager
 import kotlin.reflect.full.declaredMemberProperties
@@ -51,7 +50,6 @@ object DB {
                         }
                     }
                     Log.info("DB 주소: jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}")
-                    java.awt.Desktop.getDesktop().browse(URI("http://localhost:8082"))
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -80,6 +78,7 @@ object DB {
     }
 
     fun shutdownServer(){
+        disconnect()
         if(::databaseServer.isInitialized) {
             for (m in clazz.methods) {
                 if (m.name == "stop") {
@@ -88,7 +87,6 @@ object DB {
                 }
             }
         }
-        disconnect()
     }
 
     fun createTable() : Boolean{

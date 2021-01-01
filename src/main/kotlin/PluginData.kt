@@ -11,8 +11,8 @@ class PluginData {
         var version: Int = 0
         val totalConnected: Int = 0 // TODO 아래 2개 카운트 만들기
         val totalKicked: Int = 0
-        val totalUptime: Long = 0L
-        val worldTime: Long = 0L
+        var totalUptime: Long = 0L
+        var worldTime: Long = 0L
 
         operator fun get(uuid: String): PlayerData? {
             return playerData.find { d -> uuid == d.uuid }

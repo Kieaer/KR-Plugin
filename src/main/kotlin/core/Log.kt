@@ -20,7 +20,7 @@ object Log {
     }
 
     fun warn(message: String, vararg parameter: Any){
-        arc.util.Log.warn("$tag$message", parameter)
+        arc.util.Log.warn("[$tag] $message", parameter)
     }
 
     fun debug(message: String, vararg parameter: Any){
@@ -62,6 +62,6 @@ object Log {
     }
 
     enum class LogType {
-        PlayerJoin, PlayerLeave, Activity, Chat;
+        PlayerJoin, PlayerLeave, Activity, Chat, Command;
     }
 }

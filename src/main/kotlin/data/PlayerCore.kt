@@ -58,7 +58,7 @@ object PlayerCore {
     }
 
     fun check(uuid: String) : Boolean{
-        val sql = DB.database.prepareStatement("SELECT \"*\" FROM players WHERE \"uuid\"=?")
+        val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
         sql.setString(1, uuid)
         return sql.executeQuery().next()
     }
@@ -115,7 +115,7 @@ object PlayerCore {
     fun save(uuid: String): Boolean{
         val data = playerData.find { d -> uuid == d.uuid }
 
-        val sql = DB.database.prepareStatement("UPDATE tabel_name SET" +
+        val sql = DB.database.prepareStatement("UPDATE players SET" +
                 "\"name\"=?, \"uuid\"=?, \"admin\"=?, \"placeCount\"=?, \"breakCount\"=?, \"kickCount\"=?, \"joinCount\"=?, \"level\"=?," +
                 "\"exp\"=?, \"lastDate\"=?, \"playTime\"=?, \"attackWinner\"=?, \"pvpWinner\"=?, \"pvpLoser\"=?, \"rainbowName\"=?," +
                 "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=? WHERE \"uuid\"=?")
