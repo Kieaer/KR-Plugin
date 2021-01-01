@@ -50,6 +50,8 @@ class Main : Plugin() {
                 Event.service.shutdown()
                 ClientCommand.service.shutdown()
                 ServerCommand.service.shutdown()
+                Threads.worker.shutdown()
+                Threads.timer.cancel()
             }
         })
     }

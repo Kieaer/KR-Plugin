@@ -12,21 +12,22 @@ import kotlin.reflect.full.declaredMemberProperties
 object DB {
     var database: Connection
     private lateinit var databaseServer: Any
+    private lateinit var consoleServer: Any
     private lateinit var clazz: Class<*>
 
     init{
         if (Config.networkMode == Config.networkModes.Server) {
             try {
                 clazz = Class.forName("org.h2.tools.Server", true, h2)
-                databaseServer = clazz.getDeclaredConstructor().newInstance()
+                val obj = clazz.getDeclaredConstructor().newInstance()
 
                 val arr = arrayOf("-tcpPort", "${if(!Config.debug) PluginData.dataPort else 8979}", "-tcpAllowOthers", "-tcpDaemon", "-ifNotExists", "-baseDir", "./" + pluginRoot.child("data").path())
                 for (m in clazz.methods) {
                     if (m.name == "createTcpServer") {
-                        val any = m.invoke(databaseServer, arr)
+                        val any = m.invoke(obj, arr)
                         for (o in clazz.methods) {
                             if (o.name == "start") {
-                                o.invoke(any)
+                                databaseServer = o.invoke(any)
                                 break
                             }
                         }
@@ -39,10 +40,10 @@ object DB {
                     val ar = arrayOf("-webAllowOthers", "-webDaemon", "-baseDir", "jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}/player")
                     for (m in clazz.methods) {
                         if (m.name == "createWebServer") {
-                            val any = m.invoke(databaseServer, ar)
+                            val any = m.invoke(obj, ar)
                             for (o in clazz.methods) {
                                 if (o.name == "start") {
-                                    o.invoke(any)
+                                    consoleServer = o.invoke(any)
                                     break
                                 }
                             }
@@ -83,6 +84,12 @@ object DB {
             for (m in clazz.methods) {
                 if (m.name == "stop") {
                     m.invoke(databaseServer)
+                    Log.info("DB 서버 종료됨!")
+                    if(::consoleServer.isInitialized) {
+                        m.invoke(consoleServer)
+                        Log.info("웹 서버 종료됨!")
+                    }
+
                     break
                 }
             }
