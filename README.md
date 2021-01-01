@@ -52,8 +52,8 @@ Some sources may apply to Essentials.
     - [ ] skip wave
     - [ ] and some buff/debuff game modes...
   - [ ] rainbow (Animated rainbow name)
-  - [ ] kill (self kill)
-    - [ ] all (include all units)
+  - [x] kill (self kill)
+    - [x] all (include all units)
   - [ ] info
     - [ ] Check other players
   - [ ] maps (Show world list)

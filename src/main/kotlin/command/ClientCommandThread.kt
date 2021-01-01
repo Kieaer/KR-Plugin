@@ -1,11 +1,13 @@
 package command
 
+import PlayerData
 import PluginData
 import command.ClientCommand.Command.*
 import data.PlayerCore
 import external.RegularExpression
 import mindustry.Vars
 import mindustry.gen.Call
+import mindustry.gen.Groups
 import mindustry.gen.Playerc
 import mindustry.type.UnitType
 import mindustry.world.Block
@@ -72,7 +74,16 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 TODO()
             }
             Kill -> {
-                player.unit().kill()
+                if (arg.isEmpty()){
+                    player.unit().kill()
+                } else {
+                    val target = Groups.player.find { d -> d.name == arg[0] }
+                    if(target != null) {
+                        target.unit().kill()
+                    } else {
+                        player.sendMessage("목표를 찾을 수 없습니다!")
+                    }
+                }
             }
             Info -> {
                 val data = PluginData[uuid]
