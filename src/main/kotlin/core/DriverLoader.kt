@@ -1,22 +1,18 @@
-package essentials.special
+package core
 
 import Main.Companion.pluginRoot
 import arc.Core
-import java.lang.Exception
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.net.URL
 import java.net.URLClassLoader
+import java.net.URLConnection
 import java.sql.*
 import java.util.*
-import java.util.logging.Logger
-import java.io.InputStream
-
-import java.io.FileOutputStream
-
-import java.io.BufferedOutputStream
-
-import java.io.File
-import java.net.URLConnection
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.pow
@@ -24,8 +20,7 @@ import kotlin.math.pow
 
 class DriverLoader : Driver {
     private var tried = false
-    private var driver: Driver? = null
-    private var url = URL("https://repo1.maven.org/maven2/com/h2database/h2/1.4.200/h2-1.4.200.jar")
+    private lateinit var driver: Driver
 
     companion object{
         lateinit var h2: URLClassLoader
@@ -36,11 +31,9 @@ class DriverLoader : Driver {
         this.driver = driver
     }
 
-    constructor() {
-        run()
-    }
+    constructor()
 
-    private fun run() {
+    fun init() {
         try {
             val cla = URLClassLoader(arrayOf(pluginRoot.child("Driver/h2.jar").file().toURI().toURL()), this.javaClass.classLoader)
             val driver = Class.forName("org.h2.Driver", true, cla).getDeclaredConstructor().newInstance() as Driver
@@ -60,8 +53,8 @@ class DriverLoader : Driver {
     private fun download() {
         try {
             pluginRoot.child("Driver/h2.jar").writeString("")
-            download(pluginRoot.child("Driver/h2.jar").file())
-            run()
+            download(pluginRoot.child("Driver/h2.jar").file(), URL("https://repo1.maven.org/maven2/com/h2database/h2/1.4.200/h2-1.4.200.jar"))
+            init()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -69,37 +62,37 @@ class DriverLoader : Driver {
 
     @Throws(SQLException::class)
     override fun connect(url: String, info: Properties): Connection {
-        return driver!!.connect(url, info)
+        return driver.connect(url, info)
     }
 
     @Throws(SQLException::class)
     override fun acceptsURL(url: String): Boolean {
-        return driver!!.acceptsURL(url)
+        return driver.acceptsURL(url)
     }
 
     @Throws(SQLException::class)
     override fun getPropertyInfo(url: String, info: Properties): Array<DriverPropertyInfo> {
-        return driver!!.getPropertyInfo(url, info)
+        return driver.getPropertyInfo(url, info)
     }
 
     override fun getMajorVersion(): Int {
-        return driver!!.majorVersion
+        return driver.majorVersion
     }
 
     override fun getMinorVersion(): Int {
-        return driver!!.minorVersion
+        return driver.minorVersion
     }
 
     override fun jdbcCompliant(): Boolean {
-        return driver!!.jdbcCompliant()
+        return driver.jdbcCompliant()
     }
 
     @Throws(SQLFeatureNotSupportedException::class)
     override fun getParentLogger(): Logger {
-        return driver!!.parentLogger
+        return driver.parentLogger
     }
 
-    private fun download(path: File){
+    fun download(path: File, url: URL){
         try {
             val outputStream = BufferedOutputStream(FileOutputStream(path))
             val urlConnection: URLConnection = url.openConnection()

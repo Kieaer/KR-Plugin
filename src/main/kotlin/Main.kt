@@ -6,9 +6,10 @@ import arc.files.Fi
 import arc.util.CommandHandler
 import command.ClientCommand
 import command.ServerCommand
+import core.DriverLoader
 import core.Log
+import core.PluginUpdater
 import data.DB
-import essentials.special.DriverLoader
 import event.Event
 import mindustry.Vars
 import mindustry.mod.Plugin
@@ -21,9 +22,12 @@ class Main : Plugin() {
     init {
         Log.info("플러그인 초기화... 잠시 기다려 주세요")
 
+        // 플러그인 업데이트 확인
+        PluginUpdater()
+
         // DB 드라이버 다운로드
         Log.info("DB 드라이버 설정")
-        DriverLoader()
+        DriverLoader().init()
 
         // Database 서비스 시작 & Table 생성
         Log.info("DB 테이블 생성")
