@@ -60,7 +60,7 @@ Some sources may apply to Essentials.
   - [ ] motd (Show server motd)
     - [ ] Internal
     - [ ] External (Read file)
-  - [ ] players (Show all players id and names)
+  - [x] players (Show all players id and names)
   - [x] router (BasedUser's meme)
   - [x] status
     - [x] TPS

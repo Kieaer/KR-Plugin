@@ -3,6 +3,8 @@ package command
 import PlayerData
 import PluginData
 import arc.Core
+import arc.math.Mathf
+import arc.struct.Seq
 import command.ClientCommand.Command.*
 import data.PlayerCore
 import external.LongToTime
@@ -39,7 +41,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 val result = RegularExpression.check(pw, pw2, id, true)
 
                 if(result){
-                    val data = Vars.netServer.admins.findByName(uuid).first()
+                    val data = netServer.admins.findByName(uuid).first()
                     // TODO country 만들기
                     PlayerCore.register(player.name(), uuid, data.timesKicked.toLong(), data.timesJoined.toLong(), System.currentTimeMillis(), System.currentTimeMillis(), "none", 0L, id, pw)
                     player.sendMessage("계정 등록 성공!")
@@ -129,7 +131,28 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 TODO()
             }
             Players -> {
-                TODO()
+                val message = StringBuilder()
+                val page = if(arg.isEmpty()) arg[0].toInt() else 1
+
+                val buffer = Mathf.ceil(Groups.player.size().toFloat() / 6)
+                val pages = if (buffer < 1.0) buffer else 1
+
+                if (pages < page) {
+                    player.sendMessage("[scarlet]페이지 쪽수는 [orange]1[]~[orange]$pages[] 안이어야 합니다!")
+                } else {
+                    message.append("[green]==[white] 현재 서버 플레이어 목록 페이지 [orange]$page[]/[orange]$pages\n")
+
+                    val players: Seq<Playerc> = Seq<Playerc>()
+                    Groups.player.each { e: Playerc ->
+                        players.add(e)
+                    }
+
+                    for (a in 6 * page until (6 * (page)).coerceAtMost(Groups.player.size())) {
+                        message.append("[gray]${players.get(a).id()}[white] ${players.get(a).name()}")
+                    }
+
+                    player.sendMessage(message.toString())
+                }
             }
             Router -> {
                 val zero = arrayOf("""
