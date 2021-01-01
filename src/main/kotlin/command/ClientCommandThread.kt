@@ -2,10 +2,13 @@ package command
 
 import PlayerData
 import PluginData
+import arc.Core
 import command.ClientCommand.Command.*
 import data.PlayerCore
+import external.LongToTime
 import external.RegularExpression
 import mindustry.Vars
+import mindustry.Vars.netServer
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.gen.Playerc
@@ -86,10 +89,38 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 }
             }
             Info -> {
-                val data = PluginData[uuid]
-                val mesasge = """
-                    이름: 
-                """.trimIndent()
+                var data: PlayerData? = null
+
+                if (arg.isEmpty()) {
+                    val buffer = PluginData[uuid]
+                    if (buffer != null) {
+                        data = buffer
+                    }
+                } else {
+                    val target = Groups.player.find { d -> d.name == arg[0] }
+                    if(target != null) {
+                        val buffer = PluginData[uuid]
+                        if (buffer != null) {
+                            data = buffer
+                        }
+                    }
+                }
+
+                if (data != null) {
+                    val message = """
+                        이름: ${data.name}
+                        블럭 설치개수: ${data.placeCount}
+                        블럭 파괴개수: ${data.breakCount}
+                        레벨: ${data.level}
+                        경험치: ${data.exp}
+                        최초 접속일: ${data.joinDate}
+                        플레이 시간: ${data.playTime}
+                        공격 맵 클리어: ${data.attackWinner}
+                        PvP 승리: ${data.pvpWinner}
+                        PvP 패배: ${data.pvpLoser}
+                    """.trimIndent()
+                    Call.infoMessage(player.con(), message)
+                }
             }
             Maps -> {
                 TODO()
@@ -238,7 +269,17 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 }
             }
             Status -> {
-                TODO()
+                val message = """
+                    [#2B60DE]== 서버 통계 =========================[]
+                    TPS: ${Core.graphics.framesPerSecond}/60
+                    메모리: ${Core.app.javaHeap / 1024 / 1024}
+                    밴당한 인원: ${netServer.admins.banned.size + netServer.admins.bannedIPs.size}
+                    총 접속인원: ${PluginData.totalConnected}
+                    총 강퇴인원: ${PluginData.totalKicked}
+                    서버 총 온라인 시간: ${LongToTime()[PluginData.totalUptime]}
+                    맵 플레이 시간: ${LongToTime()[PluginData.worldTime]}
+                """.trimIndent()
+                player.sendMessage(message)
             }
             Team -> {
                 TODO()

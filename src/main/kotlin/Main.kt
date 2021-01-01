@@ -41,6 +41,9 @@ class Main : Plugin() {
         Log.info("이벤트 트리거 설정")
         Event.register()
 
+        // 스레드 시작
+        Threads
+
         Core.app.addListener(object : ApplicationListener {
             override fun dispose() {
                 DB.shutdownServer()

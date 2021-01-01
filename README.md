@@ -62,16 +62,16 @@ Some sources may apply to Essentials.
     - [ ] External (Read file)
   - [ ] players (Show all players id and names)
   - [x] router (BasedUser's meme)
-  - [ ] status
-    - [ ] TPS
-    - [ ] Total status
-      - [ ] Joined
-      - [ ] Kicked
-      - [ ] Banned
-      - [ ] Connected players
-      - [ ] Uptime
-    - [ ] Server online time
-    - [ ] World play time
+  - [x] status
+    - [x] TPS
+    - [x] Total status
+      - [x] Joined
+      - [x] Kicked
+      - [x] Banned
+      - [x] Connected players
+      - [x] Uptime
+    - [x] Server online time
+    - [x] World play time
   - [ ] team (Switching Team)
     - [ ] other players
   - [ ] ban
