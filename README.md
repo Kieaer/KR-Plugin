@@ -18,8 +18,8 @@ Some sources may apply to Essentials.
     - [ ] E-mail
     - [ ] Discord
     - [ ] Kakaotalk
-- [ ] Anti-VPN
-  - [ ] Auto update IP database
+- [x] Anti-VPN
+  - [x] Auto update IP database
 - [ ] Auto-translate chatting
 - [ ] Powerful lobby system
   - [ ] Move the server methods
@@ -54,8 +54,8 @@ Some sources may apply to Essentials.
   - [ ] rainbow (Animated rainbow name)
   - [x] kill (self kill)
     - [x] all (include all units)
-  - [ ] info
-    - [ ] Check other players
+  - [x] info
+    - [x] Check other players
   - [ ] maps (Show world list)
   - [ ] motd (Show server motd)
     - [ ] Internal
