@@ -56,7 +56,7 @@ Some sources may apply to Essentials.
     - [x] all (include all units)
   - [x] info
     - [x] Check other players
-  - [ ] maps (Show world list)
+  - [x] maps (Show world list)
   - [x] motd (Show server motd)
     - [x] Internal
     - [x] External (Read file)

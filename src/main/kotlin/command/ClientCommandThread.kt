@@ -16,6 +16,7 @@ import mindustry.Vars.netServer
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.gen.Playerc
+import mindustry.maps.Map
 import mindustry.net.Administration
 import mindustry.type.UnitType
 import mindustry.world.Block
@@ -155,7 +156,26 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     }
                 }
                 Maps -> {
-                    TODO()
+                    val message = StringBuilder()
+                    val page = if (arg.isNotEmpty()) arg[0].toInt() else 0
+
+                    val buffer = Mathf.ceil(Groups.player.size().toFloat() / 6)
+                    val pages = if (buffer > 1.0) buffer-1 else 0
+
+                    if (pages < page) {
+                        player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")
+                    } else {
+                        message.append("[green]==[white] 서버 맵 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
+
+                        val maps = Seq<Map>()
+                        for (map in Vars.maps.all()) maps.add(map)
+                        for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Groups.player.size())) {
+                            message.append(
+                                "[gray]$a[white] ${maps.get(a).name()} v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}"
+                            )
+                        }
+                        player.sendMessage(message.toString())
+                    }
                 }
                 Motd -> {
                     if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
