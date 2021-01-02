@@ -52,6 +52,9 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val e = event as PlayerJoin
                     val uuid = e.player.uuid()
 
+                    // 접속 인원 카운트
+                    PluginData.totalConnected = PluginData.totalConnected++
+
                     // 계정 인증 전까지 관리자 상태 해제
                     e.player.admin(false)
 

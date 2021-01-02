@@ -18,6 +18,7 @@ object Threads {
     class Seconds : Thread(){
         override fun run() {
             while(Core.assets != null){
+                PluginData.save()
                 sleep(1000)
             }
         }

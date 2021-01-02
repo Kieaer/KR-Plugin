@@ -41,6 +41,9 @@ class Main : Plugin() {
         Log.info("이벤트 트리거 설정")
         Event.register()
 
+        // 플러그인 데이터 불러오기
+        PluginData.load()
+
         // 스레드 시작
         Threads
 
@@ -52,6 +55,7 @@ class Main : Plugin() {
                 ServerCommand.service.shutdown()
                 Threads.worker.shutdown()
                 Threads.timer.cancel()
+                PluginData.save()
             }
         })
     }

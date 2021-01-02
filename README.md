@@ -66,7 +66,6 @@ Some sources may apply to Essentials.
     - [x] TPS
     - [x] Total status
       - [x] Joined
-      - [x] Kicked
       - [x] Banned
       - [x] Connected players
       - [x] Uptime

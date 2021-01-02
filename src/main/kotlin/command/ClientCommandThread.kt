@@ -300,7 +300,6 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     메모리: ${Core.app.javaHeap / 1024 / 1024}
                     밴당한 인원: ${netServer.admins.banned.size + netServer.admins.bannedIPs.size}
                     총 접속인원: ${PluginData.totalConnected}
-                    총 강퇴인원: ${PluginData.totalKicked}
                     서버 총 온라인 시간: ${LongToTime()[PluginData.totalUptime]}
                     맵 플레이 시간: ${LongToTime()[PluginData.worldTime]}
                 """.trimIndent()
