@@ -1,5 +1,6 @@
 package external
 
+import mindustry.gen.Playerc
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -21,10 +22,10 @@ object RegularExpression {
      * @param pwd
      * @return
      */
-    fun check(newPwd: String, oldPwd: String, userId: String, isNew: Boolean): Boolean {
-        var chk = false
+    fun check(newPwd: String, oldPwd: String, userId: String, isNew: Boolean, player: Playerc): Boolean {
+        var chk = true
 
-        // 특수문자, 영문, 숫자 조합 (8~10 자리)
+        /*// 특수문자, 영문, 숫자 조합 (8~10 자리)
         match = Pattern.compile(pattern1).matcher(newPwd)
         if (match.find()) chk = true
 
@@ -38,20 +39,34 @@ object RegularExpression {
 
         // 특수문자, 숫자 (10~20 자리)
         match = Pattern.compile(pattern4).matcher(newPwd)
-        if (match.find()) chk = true
+        if (match.find()) chk = true*/
 
         if (chk) {
             // 연속문자 4자리
-            if (samePwd(newPwd)) return false
+            if (samePwd(newPwd)) {
+                player.sendMessage("비밀번호는 연속으로 4자리 이상 문자를 사용할 수 없습니다!")
+                return false
+            }
 
             // 같은문자 4자리
-            if (continuousPwd(newPwd)) return false
+            if (continuousPwd(newPwd)) {
+                player.sendMessage("비밀번호에 같은 문자가 4자리 이상 있을 수 없습니다!")
+                return false
+            }
 
             // 이전 아이디 4자리
-            if (!isNew && newPwd == oldPwd) return false
+            if (!isNew && newPwd == oldPwd) {
+                player.sendMessage("비밀번호에는 이전 이름과 비슷해서는 안됩니다!")
+                return false
+            }
 
             // 아이디와 동일 문자 4자리
-            if (sameId(newPwd, userId)) return false
+            if (sameId(newPwd, userId)) {
+                player.sendMessage("비밀번호는 아이디와 비슷해서는 안됩니다!")
+                return false
+            }
+        } else {
+            player.sendMessage("비밀번호는 반드시 영문과 숫자가 포함된 10~20 자리 이상이어야 합니다!")
         }
         return true
     }

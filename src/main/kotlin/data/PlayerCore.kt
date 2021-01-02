@@ -3,7 +3,9 @@ package data
 import PlayerData
 import PluginData
 import PluginData.Companion.playerData
+import command.Permissions
 import mindustry.gen.Playerc
+import java.sql.SQLException
 
 object PlayerCore {
     fun register(
@@ -15,11 +17,12 @@ object PlayerCore {
         lastDate: Long,
         country: String,
         rank: Long,
+        permission: String,
         id: String,
         pw: String
     ) : Boolean{
         val sql = DB.database.prepareStatement(("INSERT INTO players (" +
-                "\"name\",\"uuid\",\"admin\",\"placeCount\",\"breakCount\",\"kickCount\",\"joinCount\",\"level\",\"exp\",\"joinDate\",\"lastDate\",\"playTime\",\"attackWinner\",\"pvpWinner\",\"pvpLoser\",\"rainbowName\",\"isMute\",\"isLogged\",\"country\",\"rank\", \"id\", \"pw\"" +
+                "\"name\",\"uuid\",\"admin\",\"placeCount\",\"breakCount\",\"kickCount\",\"joinCount\",\"level\",\"exp\",\"joinDate\",\"lastDate\",\"playTime\",\"attackWinner\",\"pvpWinner\",\"pvpLoser\",\"rainbowName\",\"isMute\",\"isLogged\",\"country\",\"rank\", \"permission\", \"id\", \"pw\"" +
                 ") VALUES (${"?,".repeat(PluginData.playerDataFieldSize)}").dropLast(1)+")")
         sql.setString(1, name)
         sql.setString(2, uuid)
@@ -41,9 +44,16 @@ object PlayerCore {
         sql.setBoolean(18, false) // isLogged
         sql.setString(19, country)
         sql.setLong(20, rank)
-        sql.setString(21, id)
-        sql.setString(22, pw)
-        return sql.execute()
+        sql.setString(21, permission)
+        sql.setString(22, id)
+        sql.setString(23, pw)
+        return try{
+            sql.execute()
+        } catch (e: SQLException){
+            e.printStackTrace()
+            false
+        }
+
     }
 
     fun permission(){
@@ -110,6 +120,9 @@ object PlayerCore {
         data.lastDate = System.currentTimeMillis()
 
         playerData.add(data)
+
+        // 권한 파일 생성
+        Permissions.createNewData(data)
     }
 
     fun save(uuid: String): Boolean{

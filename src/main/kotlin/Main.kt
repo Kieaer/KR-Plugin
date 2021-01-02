@@ -5,6 +5,7 @@ import arc.Core
 import arc.files.Fi
 import arc.util.CommandHandler
 import command.ClientCommand
+import command.Permissions
 import command.ServerCommand
 import core.DatabaseUpdater
 import core.DriverLoader
@@ -43,6 +44,9 @@ class Main : Plugin() {
 
         // 플러그인 데이터 불러오기
         PluginData.load()
+
+        // 명령어 권한 데이터 불러오기
+        Permissions.load(true)
 
         // 스레드 시작
         Threads

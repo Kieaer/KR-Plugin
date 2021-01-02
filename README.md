@@ -33,11 +33,11 @@ Some sources may apply to Essentials.
 - [ ] Donate (It will be used to maintain translate language services.)
   - [ ] Make donate page (Web)
 - [ ] Ranking system (include Anti-grief and personality evaluation)
-  - [ ] Trust stat
-- [ ] Prefix and Suffix
-  - [ ] Console
-  - [ ] In-game
-    - [ ] Player chat
+  - [x] Trust stat
+- [x] Prefix and Suffix
+  - [x] Console
+  - [x] In-game
+    - [x] Player chat
 - [ ] Server management tool based on Discord Bot
   - [ ] Server control authority setting for each user
     - [ ] Direct access console screen

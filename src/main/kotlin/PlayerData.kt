@@ -1,3 +1,4 @@
+import command.Permissions
 import java.util.*
 
 class PlayerData {
@@ -63,6 +64,9 @@ class PlayerData {
 
     /** 플레이어에 대한 신뢰 수치 */
     var rank: Long = 0L
+
+    /** 플레이어 권한 그룹 */
+    var permission: String = Permissions.defaultGroup
 
     /** 계정 ID */
     var id: String = ""
