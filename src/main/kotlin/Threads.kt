@@ -1,5 +1,5 @@
 
-import PluginData.Companion.playerData
+import PluginData.playerData
 import arc.Core
 import java.util.*
 import java.util.concurrent.ExecutorService

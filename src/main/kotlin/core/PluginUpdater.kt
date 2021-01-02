@@ -1,6 +1,6 @@
 package core
 
-import PluginData.Companion.version
+import PluginData.version
 import arc.Core
 import arc.Net
 import arc.Net.HttpStatus

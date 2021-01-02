@@ -57,9 +57,9 @@ Some sources may apply to Essentials.
   - [x] info
     - [x] Check other players
   - [ ] maps (Show world list)
-  - [ ] motd (Show server motd)
-    - [ ] Internal
-    - [ ] External (Read file)
+  - [x] motd (Show server motd)
+    - [x] Internal
+    - [x] External (Read file)
   - [x] players (Show all players id and names)
   - [x] router (BasedUser's meme)
   - [x] status

@@ -1,5 +1,5 @@
 
-import PluginData.Companion.playerData
+import PluginData.playerData
 import arc.ApplicationListener
 import arc.Core
 import arc.files.Fi
@@ -41,6 +41,9 @@ class Main : Plugin() {
         // 이벤트 등록
         Log.info("이벤트 트리거 설정")
         Event.register()
+
+        // 플러그인 파일 생성
+        PluginData.createFile()
 
         // 플러그인 데이터 불러오기
         PluginData.load()

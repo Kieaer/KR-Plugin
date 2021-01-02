@@ -1,5 +1,6 @@
 package command
 
+import Main.Companion.pluginRoot
 import PlayerData
 import PluginData
 import arc.Core
@@ -15,6 +16,7 @@ import mindustry.Vars.netServer
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.gen.Playerc
+import mindustry.net.Administration
 import mindustry.type.UnitType
 import mindustry.world.Block
 import java.text.SimpleDateFormat
@@ -156,7 +158,11 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     TODO()
                 }
                 Motd -> {
-                    TODO()
+                    if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
+                        player.sendMessage(Administration.Config.motd.string())
+                    } else {
+                        player.sendMessage(pluginRoot.child("motd/motd.txt").readString("UTF-8"))
+                    }
                 }
                 Players -> {
                     val message = StringBuilder()

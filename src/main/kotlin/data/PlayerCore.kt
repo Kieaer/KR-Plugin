@@ -2,7 +2,7 @@ package data
 
 import PlayerData
 import PluginData
-import PluginData.Companion.playerData
+import PluginData.playerData
 import command.Permissions
 import mindustry.gen.Playerc
 import java.sql.SQLException
