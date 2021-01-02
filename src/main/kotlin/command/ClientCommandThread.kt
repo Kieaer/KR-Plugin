@@ -317,6 +317,33 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
             Mute -> {
                 TODO()
             }
+            Help -> {
+                val message = StringBuilder()
+                val page = if(arg.isNotEmpty()) arg[0].toInt() else 0
+
+                val buffer = Mathf.ceil(netServer.clientCommands.commandList.size.toFloat() / 6)
+                val pages = if (buffer < 1.0) buffer else 0
+
+                if (pages < page) {
+                    player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")
+                } else {
+                    message.append("[green]==[white] 사용 가능한 명령어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
+
+                    val commands = Seq<String>()
+                    for (a in 0 until netServer.clientCommands.commandList.size) {
+                        val command = netServer.clientCommands.commandList[a]
+                        //if (Permissions.check(player, command.text)) {
+                            commands.add("[orange] /${command.text} [white]${command.paramText} [lightgray]- ${command.description}\n")
+                        //}
+                    }
+
+                    for (a in 6 * page until (6 * (page+1)).coerceAtMost(Groups.player.size())) {
+                        message.append(commands.get(a))
+                    }
+
+                    player.sendMessage(message.toString())
+                }
+            }
         }
     }
 }

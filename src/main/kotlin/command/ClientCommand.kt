@@ -60,9 +60,12 @@ object ClientCommand {
         handler.register("mute", "<player_name>", "Prohibits the player from chatting.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Mute, arg, player))
         }
+        handler.register("help", "[page]", "Check the avaliable commands") { arg: Array<String>, player: Playerc ->
+            service.submit(ClientCommandThread(Command.Help, arg, player))
+        }
     }
 
     enum class Command{
-        Login, Register, Spawn, Vote, Rainbow, Kill, Info, Maps, Motd, Players, Router, Status, Team ,Ban, Tp, Mute
+        Login, Register, Spawn, Vote, Rainbow, Kill, Info, Maps, Motd, Players, Router, Status, Team ,Ban, Tp, Mute, Help
     }
 }
