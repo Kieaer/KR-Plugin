@@ -371,7 +371,18 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     TODO()
                 }
                 Mute -> {
-                    TODO()
+                    val name = arg[0]
+                    val target = Groups.player.find { e -> e.name() == name}
+                    if(target != null){
+                        val data = PluginData[target.uuid()]
+                        if(data!!.isMute){
+                            data.isMute = false
+                            target.sendMessage("축하드립니다. 묵언 상태가 해제되었습니다!")
+                        } else {
+                            data.isMute = true
+                            target.sendMessage("누군가에 의해 묵언 상태가 되었습니다.")
+                        }
+                    }
                 }
                 Help -> {
                     val message = StringBuilder()

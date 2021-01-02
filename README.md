@@ -23,7 +23,7 @@ Some sources may apply to Essentials.
 - [ ] Auto-translate chatting
 - [ ] Powerful lobby system
   - [ ] Move the server methods
-    - [ ] Player mech position
+    - [ ] Player unit position
     - [ ] Click/Touch
 - [ ] Better performance than Essentials plugin
   - [ ] Multi-threading
@@ -34,6 +34,7 @@ Some sources may apply to Essentials.
   - [ ] Make donate page (Web)
 - [ ] Ranking system (include Anti-grief and personality evaluation)
   - [x] Trust stat
+    - [ ] Changes stat due to player activity
 - [x] Prefix and Suffix
   - [x] Console
   - [x] In-game
@@ -82,5 +83,5 @@ Some sources may apply to Essentials.
     - [ ] other player to other player
     - [ ] Keep following player
     - [ ] Following with mouse pointer (other players)
-  - [ ] mute
-    - [ ] other players
+  - [x] mute
+    - [x] other players

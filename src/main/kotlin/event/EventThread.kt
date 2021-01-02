@@ -104,13 +104,19 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerChat -> {
                     val e = event as PlayerChatEvent
+                    val uuid = e.player.uuid()
 
                     if (!e.message.startsWith("/")) {
                         // 채팅 내용 출력
-                        Call.sendMessage("${NetClient.colorizeName(e.player.id, e.player.name)} [orange]>[white] ${e.message}")
+                        val data = PluginData[uuid]
+                        if(data!!.isMute){
+                            e.player.sendMessage("[scarlet]당신은 누군가에 의해 묵언 처리가 되었습니다.")
+                        } else {
+                            Call.sendMessage("${NetClient.colorizeName(e.player.id, e.player.name)} [orange]>[white] ${e.message}")
+                        }
 
                         // 채팅 내용을 기록에 저장
-                        Log.write(Log.LogType.Chat, "${e.player.name}: ${e.message}")
+                        Log.write(Log.LogType.Chat, "${if(data.isMute) "[묵언] " else ""}${e.player.name}: ${e.message}")
                     } else {
                         Log.write(Log.LogType.Command, "${e.player.name}: ${e.message}")
                     }
