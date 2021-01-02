@@ -134,22 +134,22 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
             }
             Players -> {
                 val message = StringBuilder()
-                val page = if(arg.isEmpty()) arg[0].toInt() else 1
+                val page = if(arg.isNotEmpty()) arg[0].toInt() else 0
 
                 val buffer = Mathf.ceil(Groups.player.size().toFloat() / 6)
-                val pages = if (buffer < 1.0) buffer else 1
+                val pages = if (buffer < 1.0) buffer else 0
 
                 if (pages < page) {
-                    player.sendMessage("[scarlet]페이지 쪽수는 [orange]1[]~[orange]$pages[] 안이어야 합니다!")
+                    player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")
                 } else {
-                    message.append("[green]==[white] 현재 서버 플레이어 목록 페이지 [orange]$page[]/[orange]$pages\n")
+                    message.append("[green]==[white] 현재 서버 플레이어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
 
                     val players: Seq<Playerc> = Seq<Playerc>()
                     Groups.player.each { e: Playerc ->
                         players.add(e)
                     }
 
-                    for (a in 6 * page until (6 * (page)).coerceAtMost(Groups.player.size())) {
+                    for (a in 6 * page until (6 * (page+1)).coerceAtMost(Groups.player.size())) {
                         message.append("[gray]${players.get(a).id()}[white] ${players.get(a).name()}")
                     }
 

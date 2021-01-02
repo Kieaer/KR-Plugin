@@ -11,7 +11,7 @@ class PluginData {
         val playerDataFieldSize = PlayerData::class.declaredMemberProperties.size-1
         val playerData = Seq<PlayerData>()
         var version: Int = 0
-        var totalConnected: Int = 0 // TODO 아래 2개 카운트 만들기
+        var totalConnected: Int = 0
         var totalUptime: Long = 0L
         var worldTime: Long = 0L
 
