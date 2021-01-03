@@ -7,9 +7,12 @@ import data.Config
 import data.Config.AuthType.*
 import data.PlayerCore
 import external.IpAddressMatcher
+import mindustry.Vars
 import mindustry.core.NetClient
 import mindustry.game.EventType.*
+import mindustry.game.Team
 import mindustry.gen.Call
+import mindustry.gen.Groups
 
 class EventThread(private val type: EventTypes, private val event: Any) : Thread() {
     override fun run() {
@@ -29,6 +32,34 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.Gameover -> {
                     val e = event as GameOverEvent
+
+                    if (Vars.state.rules.pvp) {
+                        var index = 5
+                        for (a in 0..4) {
+                            if (Vars.state.teams[Team.all[index]].cores.isEmpty) {
+                                index--
+                            }
+                        }
+                        if (index == 1) {
+                            for (player in Groups.player){
+                                val target = PluginData[player.uuid()]
+                                if (target!!.isLogged) {
+                                    if (player.team().name == e.winner.name) {
+                                        target.pvpWinner = target.pvpWinner + 1
+                                    } else if (player.team().name != e.winner.name) {
+                                        target.pvpLoser = target.pvpLoser + 1
+                                    }
+                                }
+                            }
+                        }
+                    } else if (Vars.state.rules.attackMode) {
+                        for (p in Groups.player) {
+                            val target = PluginData[p.uuid()]
+                            if (target!!.isLogged) {
+                                target.attackWinner = target.attackWinner + 1
+                            }
+                        }
+                    }
                 }
                 EventTypes.WorldLoad -> {
                     val e = event as WorldLoadEvent
