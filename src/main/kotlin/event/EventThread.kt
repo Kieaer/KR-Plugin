@@ -63,6 +63,8 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.WorldLoad -> {
                     val e = event as WorldLoadEvent
+
+                    PluginData.worldTime = 0L
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
