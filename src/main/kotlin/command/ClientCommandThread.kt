@@ -13,6 +13,7 @@ import external.LongToTime
 import external.RegularExpression
 import mindustry.Vars
 import mindustry.Vars.netServer
+import mindustry.Vars.world
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.gen.Playerc
@@ -368,7 +369,39 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     TODO()
                 }
                 Tp -> {
-                    TODO()
+                    val mode: String
+                    when (arg.size){
+                        1 -> {
+                            val target = Groups.player.find {e -> e.name() == arg[0]}
+                            if(target != null) {
+                                player.set(target.x, target.y)
+                                player.sendMessage("${target.name()} 에게로 이동했습니다.")
+                            } else {
+                                player.sendMessage("${arg[0]} 플레이어를 찾을 수 없습니다!")
+                            }
+                        }
+                        2 -> {
+                            val target = Groups.player.find {e -> e.name() == arg[0]}
+                            if(target != null) {
+                                val other = Groups.player.find {e -> e.name() == arg[1]}
+                                if (other != null){
+                                    target.set(other.x,other.y)
+                                    player.sendMessage("${target.name()} 님을 ${other.name()} 에게로 이동했습니다.")
+                                } else {
+                                    player.sendMessage("${arg[1]} 플레이어를 찾을 수 없습니다!")
+                                }
+                            } else {
+                                try {
+                                    val tileX = arg[0].toInt()
+                                    val tileY = arg[1].toInt()
+                                    player.set(world.tile(tileX, tileY))
+                                } catch (_: NumberFormatException) {
+                                    player.sendMessage("잘못된 명령어 입니다!")
+                                }
+                                player.sendMessage("${arg[0]} 플레이어를 찾을 수 없습니다!")
+                            }
+                        }
+                    }
                 }
                 Mute -> {
                     val name = arg[0]

@@ -78,9 +78,9 @@ Some sources may apply to Essentials.
     - [ ] For a certain amount of time
     - [ ] Permanently
   - [ ] tp (Teleportation)
-    - [ ] player to player
-    - [ ] Tile position
-    - [ ] other player to other player
+    - [x] player to player
+    - [x] Tile position
+    - [x] other player to other player
     - [ ] Keep following player
     - [ ] Following with mouse pointer (other players)
   - [x] mute

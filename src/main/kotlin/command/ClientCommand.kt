@@ -21,7 +21,7 @@ object ClientCommand {
         handler.register("spawn", "<unit/block> <name> [amount/rotation]", "Spawn any block/units") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Spawn, arg, player))
         }
-        handler.register("vote", "<kick,map,gameover,skipwave,op> [name/amount]", "Start various voting.") { arg: Array<String>, player: Playerc ->
+        handler.register("vote", "<kick/map/gameover/skipwave/op> [name/amount]", "Start various voting.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Vote, arg, player))
         }
         handler.register("rainbow", "Change your name to a animated rainbow color.") { arg: Array<String>, player: Playerc ->
@@ -54,7 +54,7 @@ object ClientCommand {
         handler.register("ban", "<player_name> [time]", "Block or permanently block the player for a certain amount of time.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Ban, arg, player))
         }
-        handler.register("tp", "<mode> <player_name/tileX> [target_name/tileY]", "Can follow a specific player or move to a tile location.") { arg: Array<String>, player: Playerc ->
+        handler.register("tp", "<player_name/tileX> [target_name/tileY]", "Can follow a specific player or move to a tile location.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Tp, arg, player))
         }
         handler.register("mute", "<player_name>", "Prohibits the player from chatting.") { arg: Array<String>, player: Playerc ->
