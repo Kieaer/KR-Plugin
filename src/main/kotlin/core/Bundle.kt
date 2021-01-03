@@ -6,7 +6,7 @@ import java.text.MessageFormat
 import java.util.*
 
 class Bundle {
-    var resource: ResourceBundle
+    private var resource: ResourceBundle
 
     constructor(locale: Locale) {
         resource = try {

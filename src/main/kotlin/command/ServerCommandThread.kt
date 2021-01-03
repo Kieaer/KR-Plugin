@@ -1,5 +1,3 @@
 package command
 
-class ServerCommandThread {
-
-}
+class ServerCommandThread

@@ -4,7 +4,7 @@ import java.util.*
 
 object Config {
     /** 플러그인에 표시되는 언어 */
-    val locale = Locale.KOREAN
+    val locale: Locale = Locale.KOREAN
 
     /** 서버 내에서 출력되는 메세지의 앞 태그 */
     val prefix = ""
@@ -25,7 +25,7 @@ object Config {
     val kickAFK = 0L
 
     /** 계정 관리방식. */
-    val authType = authTypes.password
+    val authType = AuthType.Password
 
     /** Discord 서버 토큰 */
     val discordServerToken = 0L
@@ -45,13 +45,13 @@ object Config {
     /** 플러그인의 네트워크 모드.
      * 서버로 설정할 경우, DB 서버가 되며,
      */
-    val networkMode = networkModes.Server
+    val networkMode = NetworkMode.Server
 
-    enum class authTypes{
-        none, password, discord, kakaotalk;
+    enum class AuthType{
+        None, Password, Discord, Kakaotalk;
     }
 
-    enum class networkModes{
+    enum class NetworkMode{
         Server, Client;
     }
 }

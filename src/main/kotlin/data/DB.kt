@@ -16,7 +16,7 @@ object DB {
     private lateinit var clazz: Class<*>
 
     init{
-        if (Config.networkMode == Config.networkModes.Server) {
+        if (Config.networkMode == Config.NetworkMode.Server) {
             try {
                 clazz = Class.forName("org.h2.tools.Server", true, h2)
                 val obj = clazz.getDeclaredConstructor().newInstance()
@@ -61,15 +61,15 @@ object DB {
         }
     }
 
-    fun connect(){
-        database = if (Config.networkMode == Config.networkModes.Server) {
+    private fun connect(){
+        database = if (Config.networkMode == Config.NetworkMode.Server) {
             DriverManager.getConnection("jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}/player", "", "")
         } else {
             DriverManager.getConnection("jdbc:h2:file:./config/mods/KR-Plugin/data/player", "", "")
         }
     }
 
-    fun disconnect(){
+    private fun disconnect(){
         database.close()
     }
 

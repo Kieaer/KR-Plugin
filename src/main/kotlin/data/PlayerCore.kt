@@ -56,10 +56,6 @@ object PlayerCore {
 
     }
 
-    fun permission(){
-
-    }
-
     fun login(id: String, pw: String) : Boolean{
         val sql = DB.database.prepareStatement("SELECT \"uuid\" FROM players WHERE \"id\"=? and \"pw\"=?")
         sql.setString(1, id)
@@ -73,7 +69,7 @@ object PlayerCore {
         return sql.executeQuery().next()
     }
 
-    fun getData(player: Playerc) : PlayerData{
+    private fun getData(player: Playerc) : PlayerData{
         var data = PlayerData()
 
         val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
@@ -122,7 +118,9 @@ object PlayerCore {
         playerData.add(data)
 
         // 권한 파일 생성
-        Permissions.createNewData(data)
+        if(Permissions.userData.find { e -> e.name == player.uuid() } == null) {
+            Permissions.createNewData(data)
+        }
     }
 
     fun save(uuid: String): Boolean{
@@ -131,7 +129,7 @@ object PlayerCore {
         val sql = DB.database.prepareStatement("UPDATE players SET" +
                 "\"name\"=?, \"uuid\"=?, \"admin\"=?, \"placeCount\"=?, \"breakCount\"=?, \"kickCount\"=?, \"joinCount\"=?, \"level\"=?," +
                 "\"exp\"=?, \"lastDate\"=?, \"playTime\"=?, \"attackWinner\"=?, \"pvpWinner\"=?, \"pvpLoser\"=?, \"rainbowName\"=?," +
-                "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=? WHERE \"uuid\"=?")
+                "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=? \"permission\"=? WHERE \"uuid\"=?")
         sql.setString(1, data.name)
         sql.setString(2, data.uuid)
         sql.setBoolean(3, data.admin)
@@ -152,7 +150,8 @@ object PlayerCore {
         sql.setLong(18, data.afkTime)
         sql.setString(19, data.country)
         sql.setLong(20, data.rank)
-        sql.setString(21, data.uuid)
+        sql.setString(21, data.permission)
+        sql.setString(22, data.uuid)
         return sql.execute()
     }
 }

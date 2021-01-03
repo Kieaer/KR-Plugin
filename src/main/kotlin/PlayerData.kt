@@ -100,7 +100,5 @@ class PlayerData {
         this.pw = pw
     }
 
-    constructor(){
-
-    }
+    constructor()
 }

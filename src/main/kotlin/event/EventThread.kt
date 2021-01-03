@@ -4,7 +4,7 @@ import Main.Companion.pluginRoot
 import PluginData
 import core.Log
 import data.Config
-import data.Config.authTypes.*
+import data.Config.AuthType.*
 import data.PlayerCore
 import external.IpAddressMatcher
 import mindustry.core.NetClient
@@ -17,12 +17,15 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
             when (type) {
                 EventTypes.Config -> {
                     val e = event as ConfigEvent
+                    Log.write(Log.LogType.Activity, "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함")
                 }
                 EventTypes.Tap -> {
                     val e = event as TapEvent
+                    Log.write(Log.LogType.Activity, "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})을 클릭함")
                 }
                 EventTypes.Withdraw -> {
                     val e = event as WithdrawEvent
+                    Log.write(Log.LogType.Activity, "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})에 있는 ${e.tile.block.name} 에 ${e.item.name} 을 ${e.amount} 개 넣었음")
                 }
                 EventTypes.Gameover -> {
                     val e = event as GameOverEvent
@@ -65,23 +68,23 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     } else {
                         val message: String
                         when (Config.authType) {
-                            none -> {
+                            None -> {
                                 message = ""
                             }
-                            password -> {
+                            Password -> {
                                 message = """
                                 계정에 로그인 할려면 채팅창을 열고 [green]/login <ID> <비밀번호>[] 를 입력하세요.
                                 계정이 없다면 [green]/register <새 ID> <새 비밀번호> <비밀번호 재입력>[] 을 입력하세요.
                             """.trimIndent()
                             }
-                            discord -> {
+                            Discord -> {
                                 message = """
                                 이 서버는 Discord 서버 인증을 필요로 합니다!
                                 https://discord.gg/Uhn5NRGsya 에서 계정 인증을 진행 해 주세요!
                             """.trimIndent()
                                 // TODO (PIN 번호 인증 만들기)
                             }
-                            kakaotalk -> {
+                            Kakaotalk -> {
                                 message = """
                                 이 서버는 카카오톡 인증을 필요로 합니다!
                                 https://open.kakao.com/o/gogTcpyb 에서 서버 봇에게 계정 생성을 요청하세요!

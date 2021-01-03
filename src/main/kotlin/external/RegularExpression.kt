@@ -19,27 +19,31 @@ object RegularExpression {
 
     /**
      * 비밀번호 정규식 체크
-     * @param pwd
+     * @param newPwd
      * @return
      */
     fun check(newPwd: String, oldPwd: String, userId: String, isNew: Boolean, player: Playerc): Boolean {
         var chk = true
 
-        /*// 특수문자, 영문, 숫자 조합 (8~10 자리)
+        /*
+        // 특수문자, 영문, 숫자 조합 (8~10 자리)
         match = Pattern.compile(pattern1).matcher(newPwd)
         if (match.find()) chk = true
+        */
 
         // 영문, 숫자 (10~20 자리)
         match = Pattern.compile(pattern2).matcher(newPwd)
         if (match.find()) chk = true
 
+        /*
         // 영문, 특수문자 (10~20 자리)
         match = Pattern.compile(pattern3).matcher(newPwd)
         if (match.find()) chk = true
 
         // 특수문자, 숫자 (10~20 자리)
         match = Pattern.compile(pattern4).matcher(newPwd)
-        if (match.find()) chk = true*/
+        if (match.find()) chk = true
+        */
 
         if (chk) {
             // 연속문자 4자리
