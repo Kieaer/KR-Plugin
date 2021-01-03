@@ -21,6 +21,9 @@ dependencies {
 
     // Json library
     implementation 'com.github.PersonTheCat:hjson-java:master'
+
+    // Discord
+    implementation 'com.mewna:catnip:master-SNAPSHOT'
 }
 
 jar {
@@ -30,33 +33,8 @@ jar {
     }
 }
 
-tasks.create("checkFileSize"){
-    println("Result: "+size())
-}
-
 wrapper {
     gradleVersion = '6.7.1'
-}
-
-
-
-static def size() {
-    float size = new File("build/libs/KR-Plugin.jar").length()
-    DecimalFormat df = new DecimalFormat("0.00")
-
-    float kb = 1024.0f
-    float mb = (float) (kb * kb)
-    float gb = (float) (mb * kb)
-    float tb = (float) (gb * kb)
-
-    if(size < mb)
-        return df.format(size / kb)+ " KB"
-    else if(size < gb)
-        return df.format(size / mb) + " MB"
-    else if(size < tb)
-        return df.format(size / gb) + " GB"
-
-    return ""
 }
 
 //[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
