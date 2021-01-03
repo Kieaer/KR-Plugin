@@ -72,8 +72,8 @@ Some sources may apply to Essentials.
       - [x] Uptime
     - [x] Server online time
     - [x] World play time
-  - [ ] team (Switching Team)
-    - [ ] other players
+  - [x] team (Switching Team)
+    - [x] other players
   - [ ] ban
     - [ ] For a certain amount of time
     - [ ] Permanently

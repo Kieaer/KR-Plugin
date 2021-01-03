@@ -363,7 +363,21 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     player.sendMessage(message)
                 }
                 Team -> {
-                    TODO()
+                    val team = mindustry.game.Team.all.find { e -> e.name == arg[0] }
+                    if (team != null){
+                        if (arg.size == 2) {
+                            val target = Groups.player.find { e -> e.name == arg[1] }
+                            if (target != null) {
+                                target.team(team)
+                            } else {
+                                player.sendMessage("${arg[1]} 플레이어를 찾을 수 없습니다!")
+                            }
+                        } else {
+                            player.team(team)
+                        }
+                    } else {
+                        player.sendMessage("${arg[0]} 팀을 찾을 수 없습니다!")
+                    }
                 }
                 Ban -> {
                     TODO()

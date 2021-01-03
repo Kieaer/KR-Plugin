@@ -48,7 +48,7 @@ object ClientCommand {
         handler.register("status", "View statistics for the current server.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Status, arg, player))
         }
-        handler.register("team", "<team> [player_name]", "Switch your or other player team") { arg: Array<String>, player: Playerc ->
+        handler.register("team", "<derelict/sharded/crux/green/purple/blue> [player_name]", "Switch your or other player team") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Team, arg, player))
         }
         handler.register("ban", "<player_name> [time]", "Block or permanently block the player for a certain amount of time.") { arg: Array<String>, player: Playerc ->
