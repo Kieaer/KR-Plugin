@@ -16,7 +16,7 @@ Some sources may apply to Essentials.
   - [ ] Reset password
   - [ ] Authentication
     - [ ] E-mail
-    - [ ] Discord
+    - [x] Discord
     - [ ] Kakaotalk
 - [x] Anti-VPN
   - [x] Auto update IP database

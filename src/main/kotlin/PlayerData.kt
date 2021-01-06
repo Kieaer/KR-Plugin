@@ -1,4 +1,6 @@
+
 import command.Permissions
+import org.hjson.JsonObject
 import java.util.*
 
 class PlayerData {
@@ -74,7 +76,10 @@ class PlayerData {
     /** 계정 비밀번호 */
     var pw: String = ""
 
-    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Long, exp: Long, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long, id: String, pw: String){
+    /** json 데이터 */
+    var json: JsonObject = JsonObject()
+
+    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Long, exp: Long, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long, json: JsonObject, id: String, pw: String){
         this.name = name
         this.uuid = uuid
         this.admin = admin
@@ -96,6 +101,7 @@ class PlayerData {
         this.afkTime = afkTime
         this.country = country
         this.rank = rank
+        this.json = json
         this.id = id
         this.pw = pw
     }

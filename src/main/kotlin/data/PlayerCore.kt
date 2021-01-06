@@ -5,6 +5,8 @@ import PluginData
 import PluginData.playerData
 import command.Permissions
 import mindustry.gen.Playerc
+import org.hjson.JsonObject
+import org.hjson.Stringify
 import java.sql.SQLException
 
 object PlayerCore {
@@ -18,11 +20,12 @@ object PlayerCore {
         country: String,
         rank: Long,
         permission: String,
+        json: JsonObject,
         id: String,
         pw: String
     ) : Boolean{
         val sql = DB.database.prepareStatement(("INSERT INTO players (" +
-                "\"name\",\"uuid\",\"admin\",\"placeCount\",\"breakCount\",\"kickCount\",\"joinCount\",\"level\",\"exp\",\"joinDate\",\"lastDate\",\"playTime\",\"attackWinner\",\"pvpWinner\",\"pvpLoser\",\"rainbowName\",\"isMute\",\"isLogged\",\"country\",\"rank\", \"permission\", \"id\", \"pw\"" +
+                "\"name\",\"uuid\",\"admin\",\"placeCount\",\"breakCount\",\"kickCount\",\"joinCount\",\"level\",\"exp\",\"joinDate\",\"lastDate\",\"playTime\",\"attackWinner\",\"pvpWinner\",\"pvpLoser\",\"rainbowName\",\"isMute\",\"isLogged\",\"country\",\"rank\", \"permission\", \"json\", \"id\", \"pw\"" +
                 ") VALUES (${"?,".repeat(PluginData.playerDataFieldSize)}").dropLast(1)+")")
         sql.setString(1, name)
         sql.setString(2, uuid)
@@ -45,8 +48,9 @@ object PlayerCore {
         sql.setString(19, country)
         sql.setLong(20, rank)
         sql.setString(21, permission)
-        sql.setString(22, id)
-        sql.setString(23, pw)
+        sql.setString(22, json.toString(Stringify.PLAIN))
+        sql.setString(23, id)
+        sql.setString(24, pw)
         return try{
             sql.execute()
         } catch (e: SQLException){
@@ -98,6 +102,7 @@ object PlayerCore {
                 rs.getLong("afkTime"),
                 rs.getString("country"),
                 rs.getLong("rank"),
+                JsonObject.readJSON(rs.getString("json")).asObject(),
                 rs.getString("id"),
                 rs.getString("pw")
             )
@@ -129,7 +134,7 @@ object PlayerCore {
         val sql = DB.database.prepareStatement("UPDATE players SET" +
                 "\"name\"=?, \"uuid\"=?, \"admin\"=?, \"placeCount\"=?, \"breakCount\"=?, \"kickCount\"=?, \"joinCount\"=?, \"level\"=?," +
                 "\"exp\"=?, \"lastDate\"=?, \"playTime\"=?, \"attackWinner\"=?, \"pvpWinner\"=?, \"pvpLoser\"=?, \"rainbowName\"=?," +
-                "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=? \"permission\"=? WHERE \"uuid\"=?")
+                "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=? \"permission\"=? \"json\"=? WHERE \"uuid\"=?")
         sql.setString(1, data.name)
         sql.setString(2, data.uuid)
         sql.setBoolean(3, data.admin)
@@ -151,7 +156,8 @@ object PlayerCore {
         sql.setString(19, data.country)
         sql.setLong(20, data.rank)
         sql.setString(21, data.permission)
-        sql.setString(22, data.uuid)
+        sql.setString(22, data.json.toString(Stringify.PLAIN))
+        sql.setString(23, data.uuid)
         return sql.execute()
     }
 }

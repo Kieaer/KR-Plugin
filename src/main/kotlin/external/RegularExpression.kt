@@ -22,7 +22,7 @@ object RegularExpression {
      * @param newPwd
      * @return
      */
-    fun check(newPwd: String, oldPwd: String, userId: String, isNew: Boolean, player: Playerc): Boolean {
+    fun check(newPwd: String, oldPwd: String, userId: String, isNew: Boolean, player: Playerc?): String {
         var chk = true
 
         /*
@@ -48,31 +48,36 @@ object RegularExpression {
         if (chk) {
             // 연속문자 4자리
             if (samePwd(newPwd)) {
-                player.sendMessage("비밀번호는 연속으로 4자리 이상 문자를 사용할 수 없습니다!")
-                return false
+                return result("비밀번호는 연속으로 4자리 이상 문자를 사용할 수 없습니다!", player)
             }
 
             // 같은문자 4자리
             if (continuousPwd(newPwd)) {
-                player.sendMessage("비밀번호에 같은 문자가 4자리 이상 있을 수 없습니다!")
-                return false
+                return result("비밀번호에 같은 문자가 4자리 이상 있을 수 없습니다!", player)
             }
 
             // 이전 아이디 4자리
             if (!isNew && newPwd == oldPwd) {
-                player.sendMessage("비밀번호에는 이전 이름과 비슷해서는 안됩니다!")
-                return false
+                return result("비밀번호에는 이전 이름과 비슷해서는 안됩니다!", player)
             }
 
             // 아이디와 동일 문자 4자리
             if (sameId(newPwd, userId)) {
-                player.sendMessage("비밀번호는 아이디와 비슷해서는 안됩니다!")
-                return false
+                return result("비밀번호는 아이디와 비슷해서는 안됩니다!", player)
             }
         } else {
-            player.sendMessage("비밀번호는 반드시 영문과 숫자가 포함된 10~20 자리 이상이어야 합니다!")
+            return result("비밀번호는 반드시 영문과 숫자가 포함된 10~20 자리 이상이어야 합니다!", player)
         }
-        return true
+        return "t"
+    }
+
+    private fun result(message: String, player: Playerc?): String{
+        return if(player != null){
+            player.sendMessage(message)
+            "f"
+        } else {
+            return message
+        }
     }
 
     /**

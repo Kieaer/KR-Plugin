@@ -12,6 +12,7 @@ import core.DriverLoader
 import core.Log
 import core.PluginUpdater
 import data.DB
+import data.auth.Discord
 import event.Event
 import mindustry.Vars
 import mindustry.mod.Plugin
@@ -65,6 +66,8 @@ class Main : Plugin() {
                 PluginData.save()
             }
         })
+
+        Discord.start()
     }
 
     override fun init() {

@@ -63,9 +63,12 @@ object ClientCommand {
         handler.register("help", "[page]", "Check the avaliable commands") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Help, arg, player))
         }
+        handler.register("discord", "Discord certification allows you to use more features.") { arg: Array<String>, player: Playerc ->
+            service.submit(ClientCommandThread(Command.Discord, arg, player))
+        }
     }
 
     enum class Command{
-        Login, Register, Spawn, Vote, Rainbow, Kill, Info, Maps, Motd, Players, Router, Status, Team ,Ban, Tp, Mute, Help
+        Login, Register, Spawn, Vote, Rainbow, Kill, Info, Maps, Motd, Players, Router, Status, Team ,Ban, Tp, Mute, Help, Discord
     }
 }

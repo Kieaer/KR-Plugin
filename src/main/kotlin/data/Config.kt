@@ -34,7 +34,7 @@ object Config {
     val discordChannelToken = 0L
 
     /** Discord 봇 토큰 */
-    val discordBotToken = 0L
+    val discordBotToken = ""
 
     /** 무지개 닉네임 표시 갱신 시간. 단위는 1초 */
     val colorNameUpdateInterval = 0L

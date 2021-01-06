@@ -21,8 +21,11 @@ import mindustry.maps.Map
 import mindustry.net.Administration
 import mindustry.type.UnitType
 import mindustry.world.Block
+import org.hjson.JsonObject
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
+import kotlin.random.Random
 
 class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc) : Thread(){
     override fun run() {
@@ -51,7 +54,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     } else {
                         val result = RegularExpression.check(pw, "", id, true, player)
 
-                        if (result) {
+                        if (result == "t") {
                             val data = netServer.admins.findByName(uuid).first()
                             // TODO country 만들기
                             PlayerCore.register(
@@ -64,6 +67,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 "none",
                                 0L,
                                 Permissions.defaultGroup,
+                                JsonObject(),
                                 id,
                                 pw
                             )
@@ -457,6 +461,12 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                         player.sendMessage(message.toString())
                     }
+                }
+                Discord -> {
+                    val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
+                    data.auth.Discord.pin.put(pin, player.uuid())
+                    player.sendMessage("Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요!")
+                    player.sendMessage("PIN 번호: $pin")
                 }
             }
         } catch (e: ClientCommandError){

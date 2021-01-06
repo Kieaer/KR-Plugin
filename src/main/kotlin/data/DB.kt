@@ -116,6 +116,7 @@ object DB {
                 "kotlin.Boolean" -> sql.append("\"${a.name}\" BOOLEAN,")
             }
         }
-        return sql.toString().dropLast(1)
+        sql.append("\"json\" CLOB")
+        return sql.toString()
     }
 }
