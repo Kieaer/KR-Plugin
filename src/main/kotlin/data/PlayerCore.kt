@@ -131,10 +131,10 @@ object PlayerCore {
     fun save(uuid: String): Boolean{
         val data = playerData.find { d -> uuid == d.uuid }
 
-        val sql = DB.database.prepareStatement("UPDATE players SET" +
-                "\"name\"=?, \"uuid\"=?, \"admin\"=?, \"placeCount\"=?, \"breakCount\"=?, \"kickCount\"=?, \"joinCount\"=?, \"level\"=?," +
-                "\"exp\"=?, \"lastDate\"=?, \"playTime\"=?, \"attackWinner\"=?, \"pvpWinner\"=?, \"pvpLoser\"=?, \"rainbowName\"=?," +
-                "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=? \"permission\"=? \"json\"=? WHERE \"uuid\"=?")
+        val sql = DB.database.prepareStatement("UPDATE players SET " +
+                "\"name\"=?, \"uuid\"=?, \"admin\"=?, \"placeCount\"=?, \"breakCount\"=?, \"kickCount\"=?, \"joinCount\"=?, \"level\"=?, " +
+                "\"exp\"=?, \"lastDate\"=?, \"playTime\"=?, \"attackWinner\"=?, \"pvpWinner\"=?, \"pvpLoser\"=?, \"rainbowName\"=?, " +
+                "\"isMute\"=?, \"isLogged\"=?, \"afkTime\"=?, \"country\"=?, \"rank\"=?, \"permission\"=?, \"json\"=? WHERE \"uuid\"=?")
         sql.setString(1, data.name)
         sql.setString(2, data.uuid)
         sql.setBoolean(3, data.admin)
@@ -158,6 +158,6 @@ object PlayerCore {
         sql.setString(21, data.permission)
         sql.setString(22, data.json.toString(Stringify.PLAIN))
         sql.setString(23, data.uuid)
-        return sql.execute()
+        return sql.executeUpdate() != 0
     }
 }
