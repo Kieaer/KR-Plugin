@@ -21,7 +21,7 @@ object ClientCommand {
         handler.register("spawn", "<unit/block> <name> [amount/rotation]", "Spawn any block/units") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Spawn, arg, player))
         }
-        handler.register("vote", "<kick/map/gameover/skipwave/op> [name/amount]", "Start various voting.") { arg: Array<String>, player: Playerc ->
+        handler.register("vote", "<kick/map/gameover/skipwave/rollback/op> [name/amount]", "Start various voting.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Vote, arg, player))
         }
         handler.register("rainbow", "Change your name to a animated rainbow color.") { arg: Array<String>, player: Playerc ->

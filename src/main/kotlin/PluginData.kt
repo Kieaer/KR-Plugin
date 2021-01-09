@@ -1,6 +1,9 @@
 import Main.Companion.pluginRoot
 import arc.struct.Seq
 import core.Log
+import event.feature.VoteType
+import mindustry.gen.Nulls
+import mindustry.gen.Playerc
 import org.hjson.JsonObject
 import java.security.SecureRandom
 import kotlin.reflect.full.declaredMemberProperties
@@ -13,6 +16,10 @@ object PluginData {
     var totalConnected: Int = 0
     var totalUptime: Long = 0L
     var worldTime: Long = 0L
+
+    var isVoting: Boolean = false
+    var votingType: VoteType? = null
+    var votingPlayer: Playerc = Nulls.player
 
     operator fun get(uuid: String): PlayerData? {
         return playerData.find { d -> uuid == d.uuid }

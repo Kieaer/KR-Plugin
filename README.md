@@ -46,11 +46,11 @@ Some sources may apply to Essentials.
   - [ ] PvP
   - [ ] Sandbox
 - [ ] Add commands
-  - [ ] Vote
-    - [ ] kick
-    - [ ] map
-    - [ ] gameover
-    - [ ] skip wave
+  - [x] Vote
+    - [x] kick
+    - [x] map
+    - [x] gameover
+    - [x] skip wave
     - [ ] and some buff/debuff game modes...
   - [ ] rainbow (Animated rainbow name)
   - [x] kill (self kill)

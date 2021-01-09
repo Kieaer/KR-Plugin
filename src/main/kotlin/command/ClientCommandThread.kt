@@ -3,11 +3,15 @@ package command
 import Main.Companion.pluginRoot
 import PlayerData
 import PluginData
+import PluginData.isVoting
+import PluginData.votingPlayer
+import PluginData.votingType
 import arc.Core
 import arc.math.Mathf
 import arc.struct.Seq
 import command.ClientCommand.Command.*
 import data.PlayerCore
+import event.feature.VoteType
 import exceptions.ClientCommandError
 import external.LongToTime
 import external.RegularExpression
@@ -26,6 +30,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
 import kotlin.random.Random
+
+
+
 
 class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc) : Thread(){
     override fun run() {
@@ -49,7 +56,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     val pw2 = arg[2]
 
                     // 비밀번호 패턴 확인
-                    if (pw == pw2) {
+                    if (pw != pw2) {
                         player.sendMessage("비밀번호 2번 입력하는 값이 일치하지 않습니다!")
                     } else {
                         val result = RegularExpression.check(pw, "", id, true, player)
@@ -109,7 +116,27 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     }
                 }
                 Vote -> {
-                    TODO()
+                    try {
+                        if (!isVoting) {
+                            if (arg.isEmpty()) {
+                                player.sendMessage("사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]")
+                                player.sendMessage("자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요.")
+                            } else {
+                                val mode = Arrays.stream(VoteType.values()).filter { e -> e.name.equals(arg[0], true) }
+                                    .findAny().orElse(null)
+                                if (mode != null) {
+                                    isVoting = true
+                                    event.feature.Vote(player, mode, if(arg.size == 2) arg[1] else "").start()
+                                } else {
+                                    player.sendMessage("${arg[0]} 모드를 찾을 수 없습니다!")
+                                }
+                            }
+                        } else {
+                            player.sendMessage("${votingPlayer.name()} 이 시작한 ${votingType!!.name} 의 투표가 이미 진행 중입니다!")
+                        }
+                    } catch (e: Exception){
+                        e.printStackTrace()
+                    }
                 }
                 Rainbow -> {
                     TODO()
