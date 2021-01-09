@@ -39,7 +39,7 @@ class DriverLoader : Driver {
             val driver = Class.forName("org.h2.Driver", true, cla).getDeclaredConstructor().newInstance() as Driver
             DriverManager.registerDriver(DriverLoader(driver))
             h2 = cla
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             if (!tried) {
                 tried = true
                 download()
@@ -55,7 +55,7 @@ class DriverLoader : Driver {
             pluginRoot.child("Driver/h2.jar").writeString("")
             download(pluginRoot.child("Driver/h2.jar").file(), URL("https://repo1.maven.org/maven2/com/h2database/h2/1.4.200/h2-1.4.200.jar"))
             init()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
@@ -109,7 +109,7 @@ class DriverLoader : Driver {
             }
             `is`.close()
             outputStream.close()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
         }
     }
 

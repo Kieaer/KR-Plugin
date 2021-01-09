@@ -183,7 +183,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val e = event as ServerLoadEvent
                 }
             }
-        } catch (e: Exception){
+        } catch (e: Throwable){
             e.printStackTrace()
         }
     }

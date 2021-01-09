@@ -1,6 +1,6 @@
 package exceptions
 
-class ClientCommandError : Exception() {
+class ClientCommandError : Throwable() {
     override val cause: Throwable?
         get() = super.cause
     override val message: String?

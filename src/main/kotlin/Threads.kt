@@ -1,7 +1,7 @@
 
 import PluginData.playerData
-import arc.Core
 import event.feature.AutoRollback
+import event.feature.RainbowName
 import mindustry.Vars
 import mindustry.core.GameState
 import mindustry.io.SaveIO
@@ -10,11 +10,12 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 object Threads {
-    val worker: ExecutorService = Executors.newFixedThreadPool(3)
+    val worker: ExecutorService = Executors.newFixedThreadPool(4)
     val timer = Timer()
 
     init{
         worker.submit(Seconds())
+        worker.submit(RainbowName)
         timer.scheduleAtFixedRate(Task(), 0, 1000)
         timer.scheduleAtFixedRate(Tick(), 0, 1000/16)
         timer.scheduleAtFixedRate(AutoSave(), 0, 300000)
@@ -22,7 +23,7 @@ object Threads {
 
     class Seconds : Thread(){
         override fun run() {
-            while(Core.assets != null){
+            while(!currentThread().isInterrupted){
                 PluginData.save()
                 sleep(1000)
             }
@@ -53,7 +54,7 @@ object Threads {
             // 롤백 맵 저장
             try {
                 if (Vars.state.`is`(GameState.State.playing)) SaveIO.save(AutoRollback.savePath)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 e.printStackTrace()
             }
         }

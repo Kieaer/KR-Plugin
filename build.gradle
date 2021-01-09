@@ -24,6 +24,9 @@ dependencies {
 
     // Discord
     implementation 'com.mewna:catnip:master-SNAPSHOT'
+
+    // E-mail
+    implementation 'org.simplejavamail:simple-java-mail:+'
 }
 
 jar {

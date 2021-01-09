@@ -11,7 +11,7 @@ class Bundle {
     constructor(locale: Locale) {
         resource = try {
             ResourceBundle.getBundle("bundle.bundle", locale, UTF8Control())
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             ResourceBundle.getBundle("bundle.bundle", Locale.KOREAN, UTF8Control())
         }
     }

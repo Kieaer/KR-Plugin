@@ -144,11 +144,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                     }
                     Skipwave -> {
                         Call.sendMessage("웨이브 넘기기 투표가 통과 되었습니다!")
-                        var a = 0
-                        while (a < amount) {
-                            Vars.logic.runWave()
-                            a++
-                        }
+                        for(a in 0..amount) Vars.logic.runWave()
                     }
                     Rollback -> {
                         Call.sendMessage("빽섭 투표가 통과 되었습니다! 10초후 빽섭을 진행합니다.")
@@ -164,7 +160,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
             }
             isVoting = false
             Events.remove(EventType.PlayerChatEvent::class.java) { listener }
-        } catch (e: Exception){
+        } catch (e: Throwable){
             e.printStackTrace()
         }
     }

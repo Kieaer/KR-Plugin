@@ -17,7 +17,6 @@ import external.LongToTime
 import external.RegularExpression
 import mindustry.Vars
 import mindustry.Vars.netServer
-import mindustry.Vars.world
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.gen.Playerc
@@ -134,12 +133,22 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         } else {
                             player.sendMessage("${votingPlayer.name()} 이 시작한 ${votingType!!.name} 의 투표가 이미 진행 중입니다!")
                         }
-                    } catch (e: Exception){
+                    } catch (e: Throwable){
                         e.printStackTrace()
                     }
                 }
                 Rainbow -> {
-                    TODO()
+                    val data = PluginData[uuid]
+                    if(data != null) {
+                        if(!data.json.has("rainbow")) {
+                            data.json.add("rainbow", true)
+                            event.feature.RainbowName.targets.add(player)
+                            player.sendMessage("무지개 닉네임이 설정 되었습니다!")
+                        } else {
+                            data.json.remove("rainbow")
+                            player.sendMessage("무지개 닉네임이 해제 되었습니다!")
+                        }
+                    }
                 }
                 Kill -> {
                     if (arg.isEmpty()) {
@@ -437,9 +446,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 }
                             } else {
                                 try {
-                                    val tileX = arg[0].toInt()
-                                    val tileY = arg[1].toInt()
-                                    player.set(world.tile(tileX, tileY))
+                                    val tileX = arg[0].toFloat()
+                                    val tileY = arg[1].toFloat()
+                                    player.set(tileX, tileY)
                                 } catch (_: NumberFormatException) {
                                     player.sendMessage("잘못된 명령어 입니다!")
                                 }

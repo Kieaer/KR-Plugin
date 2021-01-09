@@ -1,6 +1,6 @@
 package exceptions
 
-class PluginInternalError : Exception() {
+class PluginInternalError : Throwable() {
     override val cause: Throwable?
         get() = super.cause
     override val message: String?

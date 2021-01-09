@@ -1,3 +1,4 @@
+
 import Main.Companion.pluginRoot
 import arc.struct.Seq
 import core.Log
@@ -35,7 +36,6 @@ object PluginData {
         json.add("totalUptime", totalUptime)
 
         pluginRoot.child("data/PluginData.obj").writeString(json.toString())
-        Log.info("플러그인 데이터 저장됨!")
     }
 
     fun load() {

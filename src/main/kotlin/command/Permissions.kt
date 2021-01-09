@@ -43,7 +43,7 @@ object Permissions {
         data.add("admin", playerData.admin)
         userData.add(playerData.uuid, data)
 
-        pluginRoot.child("permission_data.hjson").writeString(userData.toString(Stringify.HJSON))
+        pluginRoot.child("permission_user.hjson").writeString(userData.toString(Stringify.HJSON))
         Log.info("${playerData.name} 의 권한 데이터가 생성되었습니다.")
     }
 
@@ -62,6 +62,21 @@ object Permissions {
             createDefault(true)
             Log.info("permission.json 파일 생성됨!")
         }
+
+        if (pluginRoot.child("permission_user.hjson").exists()) {
+            try {
+                userData = JsonValue.readHjson(pluginRoot.child("permission_user.hjson").reader()).asObject()
+            } catch (e: ParseException){
+                Log.err("permission_user.json 파일에서 구문 오류로 인해 플레이어 데이터를 사용하지 않습니다!")
+                Log.err("오류가 발생한 위치: ${e.line}줄에서 ${e.column}번째 글자.\n" +
+                        "오류는 ${e.message}.")
+                isError = true
+            }
+        }
+    }
+
+    fun save(){
+        if(!isError) pluginRoot.child("permission_user.hjson").writeString(userData.toString(Stringify.FORMATTED))
     }
 
     private fun createDefault(isSave: Boolean){

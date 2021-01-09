@@ -52,7 +52,7 @@ object DB {
                     }
                     Log.info("DB 주소: jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}")
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 e.printStackTrace()
             }
             database = DriverManager.getConnection("jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}/player", "", "")
