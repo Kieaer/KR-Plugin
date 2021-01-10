@@ -1,4 +1,5 @@
 
+import Main.Companion.isDispose
 import PluginData.playerData
 import event.feature.AutoRollback
 import event.feature.RainbowName
@@ -8,6 +9,7 @@ import mindustry.io.SaveIO
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
 
 object Threads {
     val worker: ExecutorService = Executors.newFixedThreadPool(4)
@@ -23,7 +25,7 @@ object Threads {
 
     class Seconds : Thread(){
         override fun run() {
-            while(!currentThread().isInterrupted){
+            while(!isDispose){
                 PluginData.save()
                 sleep(1000)
             }

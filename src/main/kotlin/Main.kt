@@ -21,6 +21,7 @@ import mindustry.mod.Plugin
 class Main : Plugin() {
     companion object {
         val pluginRoot: Fi = Core.settings.dataDirectory.child("mods/KR-Plugin")
+        var isDispose: Boolean = false
     }
 
     init {
@@ -60,6 +61,8 @@ class Main : Plugin() {
 
         Core.app.addListener(object : ApplicationListener {
             override fun dispose() {
+                isDispose = true
+
                 DB.shutdownServer()
                 Event.service.shutdown()
                 ClientCommand.service.shutdown()
@@ -67,6 +70,9 @@ class Main : Plugin() {
                 Threads.worker.shutdown()
                 Threads.timer.cancel()
                 PluginData.save()
+                Discord.stop()
+
+                Log.info("종료중.. 잠시 기다려주세요")
             }
         })
 

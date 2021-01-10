@@ -45,9 +45,9 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                                 val target = PluginData[player.uuid()]
                                 if (target!!.isLogged) {
                                     if (player.team().name == e.winner.name) {
-                                        target.pvpWinner = target.pvpWinner + 1
+                                        target.pvpWinner++
                                     } else if (player.team().name != e.winner.name) {
-                                        target.pvpLoser = target.pvpLoser + 1
+                                        target.pvpLoser++
                                     }
                                 }
                             }
@@ -56,7 +56,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                         for (p in Groups.player) {
                             val target = PluginData[p.uuid()]
                             if (target!!.isLogged) {
-                                target.attackWinner = target.attackWinner + 1
+                                target.attackWinner++
                             }
                         }
                     }

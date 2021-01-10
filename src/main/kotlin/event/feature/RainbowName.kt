@@ -1,5 +1,6 @@
 package event.feature
 
+import Main.Companion.isDispose
 import PluginData
 import arc.struct.Seq
 import arc.util.async.Threads.sleep
@@ -10,7 +11,7 @@ object RainbowName : Runnable {
     var targets = Seq<Playerc>()
 
     override fun run() {
-        while (!Thread.currentThread().isInterrupted) {
+        while (!isDispose) {
             for (player in targets) {
                 val p = PluginData[player.uuid()]
                 if (p != null) {
