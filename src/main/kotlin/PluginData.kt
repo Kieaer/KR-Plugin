@@ -3,13 +3,14 @@ import Main.Companion.pluginRoot
 import arc.struct.Seq
 import core.Log
 import event.feature.VoteType
+import form.Config
 import mindustry.gen.Nulls
 import mindustry.gen.Playerc
 import org.hjson.JsonObject
 import java.security.SecureRandom
 import kotlin.reflect.full.declaredMemberProperties
 
-object PluginData {
+object PluginData : Config() {
     val dataPort: Int = SecureRandom().nextInt(65535)
     val playerDataFieldSize = PlayerData::class.declaredMemberProperties.size - 1
     val playerData = Seq<PlayerData>()
@@ -30,7 +31,7 @@ object PluginData {
         playerData.remove { d -> uuid == d.uuid }
     }
 
-    fun save() {
+    override fun save() {
         val json = JsonObject()
         json.add("totalConnected", totalConnected)
         json.add("totalUptime", totalUptime)
@@ -38,7 +39,7 @@ object PluginData {
         pluginRoot.child("data/PluginData.obj").writeString(json.toString())
     }
 
-    fun load() {
+    override fun load() {
         if (pluginRoot.child("data/PluginData.obj").exists()) {
             val json = JsonObject.readJSON(pluginRoot.child("data/PluginData.obj").readString())
             if (json != null) {
@@ -49,7 +50,7 @@ object PluginData {
         }
     }
 
-    fun createFile() {
+    override fun createFile() {
         // 파일 생성
         if (!pluginRoot.child("motd").exists()) {
             pluginRoot.child("motd").mkdirs()

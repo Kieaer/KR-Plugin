@@ -35,7 +35,7 @@ Some sources may apply to Essentials.
 - [ ] Ranking system (include Anti-grief and personality evaluation)
   - [x] Trust stat
     - [ ] Changes stat due to player activity
-- [x] Prefix and Suffix
+- [x] Prefix
   - [x] Console
   - [x] In-game
     - [x] Player chat
@@ -52,6 +52,8 @@ Some sources may apply to Essentials.
     - [x] gameover
     - [x] skip wave
     - [ ] and some buff/debuff game modes...
+      - [ ] Random resource dice
+      - [ ] Random unit upgrade/downgrade
   - [ ] rainbow (Animated rainbow name)
   - [x] kill (self kill)
     - [x] all (include all units)

@@ -77,6 +77,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
             OP -> {
                 Call.sendMessage("${player.name()} 에 의해 치트 사용 투표가 시작 되었습니다!")
             }
+            None -> {}
         }
 
         if (isInterrupt){
@@ -154,6 +155,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                         Call.sendMessage("치트 투표가 통과 되었습니다!")
                         Call.sendMessage(".. 하지만 아무것도 없었습니다")
                     }
+                    None -> {}
                 }
             } else {
                 Call.sendMessage("투표 실패!")

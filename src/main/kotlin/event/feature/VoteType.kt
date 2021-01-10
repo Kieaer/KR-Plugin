@@ -30,5 +30,10 @@ enum class VoteType{
         override fun toString(): String {
             return "치트"
         }
+    },
+    None{
+        override fun toString(): String {
+            return "없음"
+        }
     }
 }

@@ -11,6 +11,7 @@ import core.DatabaseUpdater
 import core.DriverLoader
 import core.Log
 import core.PluginUpdater
+import data.Config
 import data.DB
 import data.auth.Discord
 import event.Event
@@ -45,9 +46,11 @@ class Main : Plugin() {
 
         // 플러그인 파일 생성
         PluginData.createFile()
+        Config.createFile()
 
         // 플러그인 데이터 불러오기
         PluginData.load()
+        Config.load()
 
         // 명령어 권한 데이터 불러오기
         Permissions.load(true)

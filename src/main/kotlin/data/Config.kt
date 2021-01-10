@@ -1,51 +1,48 @@
 package data
 
+import Main.Companion.pluginRoot
+import form.Garbage.EqualsIgnoreCase
+import org.hjson.JsonObject
+import org.hjson.JsonValue
+import org.hjson.Stringify
 import java.util.*
+import form.Config as DataConfig
 
-object Config {
+object Config : DataConfig() {
     /** 플러그인에 표시되는 언어 */
-    val locale: Locale = Locale.KOREAN
+    var locale: Locale = Locale.KOREAN
 
     /** 서버 내에서 출력되는 메세지의 앞 태그 */
-    val prefix = ""
-
-    /** 서버 내에서 출력되는 메세지의 뒷 태그 */
-    val suffix = ""
+    var prefix = ""
 
     /** 플러그인 자동 업데이트 **/
-    val update = true
+    var update = true
 
-    /** 사소한 오류 발생시 오류 메세지 출력 */
-    val debug = true
-
-    /** 맵 자동 저장시간. 단위는 1초 */
-    val autoSaveTime = 0L
+    /** 디버그를 위한 기능 작동 */
+    var debug = true
 
     /** 잠수 플레이어 강퇴 시간. 단위는 1초 */
-    val kickAFK = 0L
+    var kickAFK = 0L
 
     /** 계정 관리방식. */
-    val authType = AuthType.Password
+    var authType = AuthType.Password
 
     /** Discord 서버 토큰 */
-    val discordServerToken = 0L
+    var discordServerToken = 0L
 
     /** Discord 채널 토큰 */
-    val discordChannelToken = 0L
+    var discordChannelToken = 0L
 
     /** Discord 봇 토큰 */
-    val discordBotToken = ""
-
-    /** 무지개 닉네임 표시 갱신 시간. 단위는 1초 */
-    val colorNameUpdateInterval = 0L
+    var discordBotToken = ""
 
     /** 투표 기능 활성화 여부 */
-    val enableVote = true
+    var enableVote = true
 
     /** 플러그인의 네트워크 모드.
-     * 서버로 설정할 경우, DB 서버가 되며,
+     * Server 으로 설정할 경우 DB 서버가 켜지고, Client 으로 하면 받기만 함
      */
-    val networkMode = NetworkMode.Server
+    var networkMode = NetworkMode.Server
 
     enum class AuthType{
         None, Password, Discord, Kakaotalk;
@@ -53,5 +50,40 @@ object Config {
 
     enum class NetworkMode{
         Server, Client;
+    }
+
+    override fun createFile() {
+        if (!pluginRoot.child("config.hjson").exists()) save()
+    }
+
+    override fun save() {
+        val data = JsonObject()
+        data.add("prefix", prefix, "서버 내에서 출력되는 메세지의 앞 태그")
+        data.add("update", update, "플러그인 자동 업데이트")
+        data.add("debug", debug, "디버그를 위한 기능 작동")
+        data.add("kickAFK", kickAFK, "잠수 플레이어 강퇴 시간. 단위는 1초")
+        data.add("authType", authType.toString(), "계정 관리방식")
+        data.add("discordServerToken", discordServerToken, "Discord 서버 토큰")
+        data.add("discordChannelToken", discordChannelToken, "Discord 채널 토큰")
+        data.add("discordBotToken", discordBotToken, "Discord 봇 토큰")
+        data.add("enableVote", enableVote, "투표 기능 활성화 여부")
+        data.add("networkMode", networkMode.toString(), "플러그인의 네트워크 모드. Server 으로 설정할 경우 DB 서버가 켜지고, Client 으로 하면 받기만 함")
+
+        pluginRoot.child("config.hjson").writeString(data.toString(Stringify.HJSON_COMMENTS))
+    }
+
+    override fun load() {
+        val data = JsonValue.readHjson(pluginRoot.child("config.hjson").reader()).asObject()
+
+        prefix = data.getString("prefix", prefix)
+        update = data.getBoolean("update", update)
+        debug = data.getBoolean("debug", debug)
+        kickAFK = data.getLong("kickAFK", kickAFK)
+        authType = EqualsIgnoreCase(AuthType.values(), "authType", authType)
+        discordServerToken = data.getLong("discordServerToken", discordServerToken)
+        discordChannelToken = data.getLong("discordChannelToken", discordChannelToken)
+        discordBotToken = data.getString("discordBotToken", discordBotToken)
+        enableVote = data.getBoolean("enableVote", enableVote)
+        networkMode = EqualsIgnoreCase(NetworkMode.values(), "networkMode", networkMode)
     }
 }

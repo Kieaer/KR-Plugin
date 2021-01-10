@@ -15,6 +15,7 @@ import event.feature.VoteType
 import exceptions.ClientCommandError
 import external.LongToTime
 import external.RegularExpression
+import form.Garbage.EqualsIgnoreCase
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.gen.Call
@@ -121,9 +122,8 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 player.sendMessage("사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]")
                                 player.sendMessage("자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요.")
                             } else {
-                                val mode = Arrays.stream(VoteType.values()).filter { e -> e.name.equals(arg[0], true) }
-                                    .findAny().orElse(null)
-                                if (mode != null) {
+                                val mode = EqualsIgnoreCase(VoteType.values(), arg[0], VoteType.None)
+                                if (mode != VoteType.None) {
                                     isVoting = true
                                     event.feature.Vote(player, mode, if(arg.size == 2) arg[1] else "").start()
                                 } else {

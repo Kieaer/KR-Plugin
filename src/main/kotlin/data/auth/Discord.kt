@@ -1,7 +1,6 @@
 package data.auth
 
 import PluginData
-import arc.Core
 import arc.struct.ObjectMap
 import com.mewna.catnip.Catnip
 import com.mewna.catnip.entity.message.Message
@@ -11,23 +10,11 @@ import org.hjson.JsonObject
 
 object Discord {
     val pin: ObjectMap<Long, String> = ObjectMap()
-    private val catnip: Catnip = Catnip.catnip(if(Core.settings.dataDirectory.child("bot.txt").exists()) Core.settings.dataDirectory.child("bot.txt").readString() else Config.discordBotToken)
+    private val catnip: Catnip = Catnip.catnip(Config.discordBotToken)
 
     fun start(){
-        val channelToken = if(Core.settings.dataDirectory.child("channel.txt").exists()) {
-            Core.settings.dataDirectory.child("channel.txt").readString().toLong()
-        } else {
-            Config.discordChannelToken
-        }
-
-        val serverToken = if(Core.settings.dataDirectory.child("server.txt").exists()) {
-            Core.settings.dataDirectory.child("server.txt").readString().toLong()
-        } else {
-            Config.discordServerToken
-        }
-
         catnip.observable(DiscordEvent.MESSAGE_CREATE).subscribe({ msg: Message ->
-            if (msg.channelIdAsLong() == channelToken && !msg.author().bot()) {
+            if (msg.channelIdAsLong() == Config.discordChannelToken && !msg.author().bot()) {
                 with (msg.content()) {
                     when {
                         equals("!ping", true) -> {
@@ -58,6 +45,10 @@ object Discord {
                             } else {
                                 msg.channel().sendMessage("사용법: ``!auth <PIN 번호>``")
                             }
+                        }
+                        // Console commands
+                        equals("") -> {
+
                         }
                         else -> {
                             msg.channel().sendMessage("알 수 없는 명령어 입니다!")
