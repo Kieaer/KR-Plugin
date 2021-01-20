@@ -44,6 +44,18 @@ object Config : DataConfig() {
      */
     var networkMode = NetworkMode.Server
 
+    /** 이메일 인증에 사용될 메일의 ID */
+    var emailID = ""
+
+    /** 이메일 인증에 사용될 계정의 비밀번호 */
+    var emailPassword = ""
+
+    /** 메일 전송에 사용할 SMTP 서버 주소 */
+    var smtpServer = "smtp.gmail.com"
+
+    /** 메일 전송에 사용될 SMTP 서버 포트 */
+    var smtpPort = 587
+
     enum class AuthType{
         None, Password, Discord, Kakaotalk;
     }
@@ -68,6 +80,10 @@ object Config : DataConfig() {
         data.add("discordBotToken", discordBotToken, "Discord 봇 토큰")
         data.add("enableVote", enableVote, "투표 기능 활성화 여부")
         data.add("networkMode", networkMode.toString(), "플러그인의 네트워크 모드. Server 으로 설정할 경우 DB 서버가 켜지고, Client 으로 하면 받기만 함")
+        data.add("emailID", emailID, "이메일 인증에 사용될 메일의 ID")
+        data.add("emailPassword", emailPassword, "이메일 인증에 사용될 계정의 비밀번호")
+        data.add("smtpServer", smtpServer, "메일 전송에 사용할 SMTP 서버 주소")
+        data.add("smtpPort", smtpPort, "메일 전송에 사용될 SMTP 서버 포트")
 
         pluginRoot.child("config.hjson").writeString(data.toString(Stringify.HJSON_COMMENTS))
     }
@@ -85,5 +101,9 @@ object Config : DataConfig() {
         discordBotToken = data.getString("discordBotToken", discordBotToken)
         enableVote = data.getBoolean("enableVote", enableVote)
         networkMode = EqualsIgnoreCase(NetworkMode.values(), "networkMode", networkMode)
+        emailID = data.getString("emailID", emailID)
+        emailPassword = data.getString("emailPassword", emailPassword)
+        smtpServer = data.getString("smtpServer", smtpServer)
+        smtpPort = data.getInt("smtpPort", smtpPort)
     }
 }
