@@ -12,7 +12,6 @@ import arc.struct.Seq
 import command.ClientCommand.Command.*
 import data.PlayerCore
 import event.feature.VoteType
-import exceptions.ClientCommandError
 import external.LongToTime
 import external.RegularExpression
 import form.Garbage.EqualsIgnoreCase
@@ -505,7 +504,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     player.sendMessage("PIN 번호: $pin")
                 }
             }
-        } catch (e: ClientCommandError){
+        } catch (e: Exception){
             e.printStackTrace()
         }
     }

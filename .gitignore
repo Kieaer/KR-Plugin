@@ -2,3 +2,7 @@
 .idea
 out
 /build/
+version.properties
+locales
+mods
+maps

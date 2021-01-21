@@ -33,6 +33,10 @@ class Main : Plugin() {
         // IP 목록 업데이트
         DatabaseUpdater()
 
+        // 플러그인 파일 생성
+        PluginData.createFile()
+        Config.createFile()
+
         // DB 드라이버 다운로드
         Log.info("DB 드라이버 설정")
         DriverLoader().init()
@@ -44,10 +48,6 @@ class Main : Plugin() {
         // 이벤트 등록
         Log.info("이벤트 트리거 설정")
         Event.register()
-
-        // 플러그인 파일 생성
-        PluginData.createFile()
-        Config.createFile()
 
         // 플러그인 데이터 불러오기
         PluginData.load()

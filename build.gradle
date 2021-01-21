@@ -1,5 +1,3 @@
-import java.text.DecimalFormat
-
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.21'
 }
@@ -27,6 +25,14 @@ dependencies {
 
     // E-mail
     implementation 'org.simplejavamail:simple-java-mail:+'
+
+    testImplementation "org.jetbrains.kotlin:kotlin-test:1.4.21"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.4.21"
+    testImplementation 'com.github.Anuken.arc:arc-core:+'
+    testImplementation 'com.github.Anuken.Mindustry:core:+'
+    testImplementation 'com.github.Anuken.Mindustry:server:+'
+    testImplementation 'com.github.Anuken.arc:backend-headless:+'
+    testImplementation 'com.github.javafaker:javafaker:+'
 }
 
 jar {

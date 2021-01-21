@@ -54,7 +54,7 @@ Some sources may apply to Essentials.
     - [ ] and some buff/debuff game modes...
       - [ ] Random resource dice
       - [ ] Random unit upgrade/downgrade
-  - [ ] rainbow (Animated rainbow name)
+  - [x] rainbow (Animated rainbow name)
   - [x] kill (self kill)
     - [x] all (include all units)
   - [x] info

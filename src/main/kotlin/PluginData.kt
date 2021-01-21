@@ -61,5 +61,9 @@ object PluginData : Config() {
             """.trimIndent()
             pluginRoot.child("motd/motd.txt").writeString(message)
         }
+
+        if (!pluginRoot.child("data").exists()){
+            pluginRoot.child("data").mkdirs()
+        }
     }
 }

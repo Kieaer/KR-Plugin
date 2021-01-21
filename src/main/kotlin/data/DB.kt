@@ -21,7 +21,7 @@ object DB {
                 clazz = Class.forName("org.h2.tools.Server", true, h2)
                 val obj = clazz.getDeclaredConstructor().newInstance()
 
-                val arr = arrayOf("-tcpPort", "${if(!Config.debug) PluginData.dataPort else 8979}", "-tcpAllowOthers", "-tcpDaemon", "-ifNotExists", "-baseDir", "./" + pluginRoot.child("data").path())
+                val arr = arrayOf("-tcpPort", "${if(!Config.debug) PluginData.dataPort else 8979}", "-tcpAllowOthers", "-tcpDaemon", "-ifNotExists", "-baseDir", pluginRoot.child("data").absolutePath())
                 for (m in clazz.methods) {
                     if (m.name == "createTcpServer") {
                         val any = m.invoke(obj, arr)
