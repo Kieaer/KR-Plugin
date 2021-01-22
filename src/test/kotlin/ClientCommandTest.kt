@@ -1,4 +1,5 @@
 
+
 import arc.ApplicationCore
 import arc.Core
 import arc.Net
@@ -8,7 +9,6 @@ import arc.files.Fi
 import arc.graphics.Color
 import arc.util.CommandHandler
 import com.github.javafaker.Faker
-import data.Config
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.core.FileTree
@@ -21,12 +21,17 @@ import mindustry.gen.Player
 import mindustry.gen.Playerc
 import mindustry.maps.Map
 import mindustry.net.NetConnection
+import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.Test
+import java.io.File
 import java.lang.Thread.sleep
+import java.nio.file.Paths
 import java.util.*
+import java.util.zip.ZipFile
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+
 
 class ClientCommandTest {
     private val main: Main
@@ -35,13 +40,41 @@ class ClientCommandTest {
     private val r = Random()
     private val player: Playerc
 
+    companion object{
+        @AfterClass
+        @JvmStatic
+        fun shutdown() {
+            Core.app.listeners[0].dispose()
+            Core.settings.dataDirectory.child("maps").deleteDirectory()
+        }
+    }
+
     init {
         Core.settings = Settings()
         Core.settings.dataDirectory = Fi("")
-        Core.settings.dataDirectory.child("locales").writeString("en")
-        Core.settings.dataDirectory.child("version.properties").writeString("modifier=release\ntype=official\nnumber=5\nbuild=custom build")
+        val path = Core.settings.dataDirectory
+
+        path.child("locales").writeString("en")
+        path.child("version.properties").writeString("modifier=release\ntype=official\nnumber=6\nbuild=custom build")
         Core.net = Net()
-        Config.debug = true
+
+        if (!path.child("maps").exists()) {
+            path.child("maps").mkdirs()
+
+            ZipFile(Paths.get("src","test","resources","maps.zip").toFile().absolutePath).use { zip ->
+                zip.entries().asSequence().forEach { entry ->
+                    if (entry.isDirectory) {
+                        File(path.child("maps").absolutePath(), entry.name).mkdirs()
+                    } else {
+                        zip.getInputStream(entry).use { input ->
+                            File(path.child("maps").absolutePath(), entry.name).outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         val testMap = arrayOfNulls<Map>(1)
         try {
@@ -72,7 +105,7 @@ class ClientCommandTest {
                     exceptionThrown[0]!!.printStackTrace()
                     Assert.fail()
                 }
-                Thread.sleep(10)
+                sleep(10)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -81,8 +114,8 @@ class ClientCommandTest {
         Groups.init()
         Vars.world.loadMap(testMap[0])
         Vars.state.set(GameState.State.playing)
-        Core.settings.dataDirectory.child("locales").delete()
-        Core.settings.dataDirectory.child("version.properties").delete()
+        path.child("locales").delete()
+        path.child("version.properties").delete()
 
         main = Main()
         main.init()
