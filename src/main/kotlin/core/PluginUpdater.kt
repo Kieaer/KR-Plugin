@@ -14,7 +14,7 @@ import kotlin.system.exitProcess
 
 class PluginUpdater {
     init {
-        Log.info("플러그인 버전 확인중...")
+        Log.system("플러그인 버전 확인중...")
 
         javaClass.getResourceAsStream("/plugin.hjson").use { reader ->
             BufferedReader(InputStreamReader(reader)).use { br ->
@@ -32,7 +32,7 @@ class PluginUpdater {
                     }
                     val url = asset.getString("browser_download_url", "")
                     DriverLoader().download(Core.settings.dataDirectory.child("mods/Essentials.jar").file(), URL(url))
-                    Log.info("플러그인 업데이트됨! 기존: $version 최신: $current. 서버 종료됨")
+                    Log.system("플러그인 업데이트됨! 기존: $version 최신: $current. 서버 종료됨")
                     exitProcess(0)
                 }
             } else {

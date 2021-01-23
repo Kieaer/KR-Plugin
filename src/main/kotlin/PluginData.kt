@@ -45,7 +45,7 @@ object PluginData : Config() {
             if (json != null) {
                 totalConnected = json.asObject().getInt("totalConnected", totalConnected)
                 totalUptime = json.asObject().getLong("totalUptime", totalUptime)
-                Log.info("플러그인 데이터 로드됨!")
+                Log.system("플러그인 데이터 로드됨!")
             }
         }
     }

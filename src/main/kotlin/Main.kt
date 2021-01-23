@@ -25,7 +25,7 @@ class Main : Plugin() {
     }
 
     init {
-        Log.info("플러그인 초기화... 잠시 기다려 주세요")
+        Log.system("플러그인 초기화... 잠시 기다려 주세요")
 
         // 플러그인 업데이트 확인
         PluginUpdater()
@@ -38,15 +38,15 @@ class Main : Plugin() {
         Config.createFile()
 
         // DB 드라이버 다운로드
-        Log.info("DB 드라이버 설정")
+        Log.system("DB 드라이버 설정")
         DriverLoader().init()
 
         // Database 서비스 시작 & Table 생성
-        Log.info("DB 테이블 생성")
+        Log.system("DB 테이블 생성")
         DB.createTable()
 
         // 이벤트 등록
-        Log.info("이벤트 트리거 설정")
+        Log.system("이벤트 트리거 설정")
         Event.register()
 
         // 플러그인 데이터 불러오기
@@ -72,7 +72,7 @@ class Main : Plugin() {
                 PluginData.save()
                 Discord.stop()
 
-                Log.info("종료중.. 잠시 기다려주세요")
+                Log.system("종료중.. 잠시 기다려주세요")
             }
         })
 
@@ -89,7 +89,7 @@ class Main : Plugin() {
             return@addActionFilter playerData.find { d -> e.player.uuid() == d.uuid } != null
         }
 
-        Log.info("플러그인 로드 완료!")
+        Log.system("플러그인 로드 완료!")
     }
 
     override fun registerServerCommands(handler: CommandHandler) {

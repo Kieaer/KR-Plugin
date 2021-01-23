@@ -44,7 +44,7 @@ object Permissions {
         userData.add(playerData.uuid, data)
 
         pluginRoot.child("permission_user.hjson").writeString(userData.toString(Stringify.HJSON))
-        Log.info("${playerData.name} 의 권한 데이터가 생성되었습니다.")
+        Log.system("${playerData.name} 의 권한 데이터가 생성되었습니다.")
     }
 
     fun load(isInit: Boolean){
@@ -60,7 +60,7 @@ object Permissions {
             }
         } else {
             createDefault(true)
-            Log.info("permission.json 파일 생성됨!")
+            Log.system("permission.json 파일 생성됨!")
         }
 
         if (pluginRoot.child("permission_user.hjson").exists()) {

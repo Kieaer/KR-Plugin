@@ -50,7 +50,7 @@ object DB {
                             break
                         }
                     }
-                    Log.info("DB 주소: jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}")
+                    Log.system("DB 주소: jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}")
                 }
             } catch (e: Throwable) {
                 e.printStackTrace()
@@ -84,10 +84,10 @@ object DB {
             for (m in clazz.methods) {
                 if (m.name == "stop") {
                     m.invoke(databaseServer)
-                    Log.info("DB 서버 종료됨!")
+                    Log.system("DB 서버 종료됨!")
                     if(::consoleServer.isInitialized) {
                         m.invoke(consoleServer)
-                        Log.info("웹 서버 종료됨!")
+                        Log.system("웹 서버 종료됨!")
                     }
 
                     break

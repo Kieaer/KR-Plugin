@@ -109,6 +109,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
 
         timer.start()
         Events.on(EventType.PlayerChatEvent::class.java){
+            // TODO 아무 메세지가 안뜨는 버그 수정 + 투표 인원표시
             if (it.message == "y" && playerData.find { a -> a.uuid == it.player.uuid() } != null){
                 add(it.player.uuid())
             }

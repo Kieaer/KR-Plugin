@@ -12,6 +12,10 @@ object Log {
     private const val tag = "KR-Plugin"
 
     fun info(message: String){
+        arc.util.Log.info(message)
+    }
+
+    fun system(message: String){
         arc.util.Log.infoTag(tag, message)
     }
 
