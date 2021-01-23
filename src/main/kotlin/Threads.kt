@@ -18,6 +18,7 @@ object Threads {
     init{
         worker.submit(Seconds())
         worker.submit(RainbowName)
+        worker.submit(PermissionFileRead)
         timer.scheduleAtFixedRate(Task(), 0, 1000)
         timer.scheduleAtFixedRate(Tick(), 0, 1000/16)
         timer.scheduleAtFixedRate(AutoSave(), 0, 300000)

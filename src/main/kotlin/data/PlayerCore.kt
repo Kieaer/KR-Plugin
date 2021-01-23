@@ -115,7 +115,7 @@ object PlayerCore {
         val data = getData(player)
 
         // 고정닉 설정
-        player.name(Permissions.userData.getString("name", data.name))
+        player.name(Permissions.userData.get(data.uuid).asObject().getString("name", player.name()))
 
         data.joinCount++
         data.lastDate = System.currentTimeMillis()

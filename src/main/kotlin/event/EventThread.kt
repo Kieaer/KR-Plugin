@@ -2,6 +2,7 @@ package event
 
 import Main.Companion.pluginRoot
 import PluginData
+import command.Permissions
 import core.Log
 import data.Config
 import data.Config.AuthType.*
@@ -20,7 +21,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
             when (type) {
                 EventTypes.Config -> {
                     val e = event as ConfigEvent
-                    if (e.tile != null && e.tile.block != null) {
+                    if (e.player != null && e.tile != null && e.tile.block != null) {
                         Log.write(Log.LogType.Activity, "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함")
                     }
                 }
@@ -71,6 +72,12 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
+
+                    if (Vars.netServer.admins.findByName(e.player.name).size != 1){
+                        Call.kick(e.player.con, "사용할 수 없는 계정입니다")
+                        return
+                    }
+
                     val ip = e.player.con.address
 
                     val br = pluginRoot.child("data/ipv4.txt").reader(1024)
@@ -89,6 +96,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerJoin -> {
                     val e = event as PlayerJoin
+
                     val uuid = e.player.uuid()
 
                     // 접속 인원 카운트
@@ -157,7 +165,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                             if(data.isMute){
                                 e.player.sendMessage("[scarlet]당신은 누군가에 의해 묵언 처리가 되었습니다.")
                             } else {
-                                Call.sendMessage("${NetClient.colorizeName(e.player.id, e.player.name)} [orange]>[white] ${e.message}")
+                                Call.sendMessage(Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "").replace("%1", NetClient.colorizeName(e.player.id, e.player.name)).replace("%2", e.message))
                             }
                         }
                     } else {
