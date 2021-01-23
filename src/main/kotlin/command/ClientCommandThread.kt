@@ -17,8 +17,10 @@ import external.RegularExpression
 import form.Garbage.EqualsIgnoreCase
 import mindustry.Vars
 import mindustry.Vars.netServer
+import mindustry.core.NetClient
 import mindustry.gen.Call
 import mindustry.gen.Groups
+import mindustry.gen.Nulls
 import mindustry.gen.Playerc
 import mindustry.maps.Map
 import mindustry.net.Administration
@@ -36,6 +38,10 @@ import kotlin.random.Random
 class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc) : Thread(){
     override fun run() {
         val uuid = player.uuid()
+
+        if (!Permissions.check(player, type.toString().toLowerCase())){
+            return
+        }
 
         try {
             when (type) {
@@ -163,6 +169,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 }
                 Info -> {
                     var data: PlayerData? = null
+                    var target: Playerc = Nulls.player
 
                     if (arg.isEmpty()) {
                         val buffer = PluginData[uuid]
@@ -170,9 +177,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             data = buffer
                         }
                     } else {
-                        val target = Groups.player.find { d -> d.name == arg[0] }
+                        target = Groups.player.find { d -> d.name.equals(arg[0], true) }
                         if (target != null) {
-                            val buffer = PluginData[uuid]
+                            val buffer = PluginData[target.uuid()]
                             if (buffer != null) {
                                 data = buffer
                             }
@@ -181,16 +188,16 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                     if (data != null) {
                         val message = """
-                        이름: ${data.name}
-                        블럭 설치개수: ${data.placeCount}
-                        블럭 파괴개수: ${data.breakCount}
-                        레벨: ${data.level}
-                        경험치: ${data.exp}
-                        최초 접속일: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date(data.joinDate))}
-                        플레이 시간: ${LongToTime()[data.playTime]}
-                        공격 맵 클리어: ${data.attackWinner}
-                        PvP 승리: ${data.pvpWinner}
-                        PvP 패배: ${data.pvpLoser}
+                        [green]이름[white]: ${NetClient.colorizeName(target.id(), target.name())}
+                        [green]블럭 설치개수[white]: ${data.placeCount}
+                        [green]블럭 파괴개수[white]: ${data.breakCount}
+                        [green]레벨[white]: ${data.level}
+                        [green]경험치: ${data.exp}
+                        [green]최초 접속일[white]: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date(data.joinDate))}
+                        [green]플레이 시간[white]: ${LongToTime()[data.playTime]}
+                        [green]공격 맵 클리어[white]: ${data.attackWinner}
+                        [green]PvP 승리[white]: ${data.pvpWinner}
+                        [green]PvP 패배[white]: ${data.pvpLoser}
                     """.trimIndent()
                         Call.infoMessage(player.con(), message)
                     }
@@ -211,10 +218,10 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         for (map in Vars.maps.all()) maps.add(map)
                         for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Groups.player.size())) {
                             message.append(
-                                "[gray]$a[white] ${maps.get(a).name()} v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}"
+                                "[gray]$a[white] ${maps.get(a).name()} v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n"
                             )
                         }
-                        player.sendMessage(message.toString())
+                        player.sendMessage(message.toString().dropLast(2))
                     }
                 }
                 Motd -> {
@@ -242,10 +249,10 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         }
 
                         for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Groups.player.size())) {
-                            message.append("[gray]${players.get(a).id()}[white] ${players.get(a).name()}")
+                            message.append("[gray]${players.get(a).id()}[white] ${players.get(a).name()}\n")
                         }
 
-                        player.sendMessage(message.toString())
+                        player.sendMessage(message.toString().dropLast(2))
                     }
                 }
                 Router -> {

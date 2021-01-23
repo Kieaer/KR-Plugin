@@ -20,7 +20,9 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
             when (type) {
                 EventTypes.Config -> {
                     val e = event as ConfigEvent
-                    Log.write(Log.LogType.Activity, "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함")
+                    if (e.tile != null && e.tile.block != null) {
+                        Log.write(Log.LogType.Activity, "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함")
+                    }
                 }
                 EventTypes.Tap -> {
                     val e = event as TapEvent
@@ -149,6 +151,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     if (!e.message.startsWith("/")) {
                         // 채팅 내용을 기록에 저장
                         Log.write(Log.LogType.Chat, "$type ${e.player.name}: ${e.message}")
+                        Log.info("$type${e.player.name}: ${e.message}")
 
                         if (data != null){
                             if(data.isMute){
@@ -160,8 +163,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     } else {
                         Log.write(Log.LogType.Command, "${e.player.name}: ${e.message}")
                     }
-
-                    Log.info("$type${e.player.name}: ${e.message}")
                 }
                 EventTypes.BlockBuildEnd -> {
                     val e = event as BlockBuildEndEvent
