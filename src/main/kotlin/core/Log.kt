@@ -4,7 +4,6 @@ import Main.Companion.pluginRoot
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -37,32 +36,31 @@ object Log {
         if (!pluginRoot.child("log").exists()){
             pluginRoot.child("log/old").mkdirs()
             for (day in LogType.values()) {
-                if(!pluginRoot.child("log/$type.log").exists()) {
-                    pluginRoot.child("log/$type.log").writeString("")
+                if(!pluginRoot.child("log/${type.name}.log").exists()) {
+                    pluginRoot.child("log/${type.name}.log").writeString("")
                 }
             }
         }
 
-        val new = Paths.get(pluginRoot.child("log/$type.log").path())
-        val old = Paths.get(pluginRoot.child("log/old/$type/$date.log").path())
-        var log = pluginRoot.child("log/$type.log")
+        val new = Paths.get(pluginRoot.child("log/${type.name}.log").path())
+        val old = Paths.get(pluginRoot.child("log/old/${type.name}/$date.log").path())
+        var log = pluginRoot.child("log/${type.name}.log")
         val path = pluginRoot.child("log")
 
         if (log != null && log.length() > 1024 * 256) {
-            log.writeString(Bundle()["log.file-end", date], true)
+            log.writeString("== 이 파일의 끝입니다. 날짜: $date", true)
             try {
-                if(!pluginRoot.child("log/old/$type").exists()){
-                    pluginRoot.child("log/old/$type").mkdirs()
+                if(!pluginRoot.child("log/old/${type.name}").exists()){
+                    pluginRoot.child("log/old/${type.name}").mkdirs()
                 }
-                Files.move(new, old, StandardCopyOption.REPLACE_EXISTING)
+                Files.move(new, old)
             } catch (e: IOException) {
                 e.printStackTrace()
             }
             log = null
         }
-        if (log == null) log = path.child("$type.log")
-
-        log!!.writeString("[${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))}] ${value}\n", true)
+        if (log == null) log = path.child("${type.name}.log")
+        log?.writeString("[${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))}] ${value}\n", true)
     }
 
     enum class LogType {

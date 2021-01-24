@@ -114,18 +114,20 @@ object PlayerCore {
     fun load(player: Playerc){
         val data = getData(player)
 
+        // 권한 파일 생성
+        if(Permissions.userData.find { e -> e.name == player.uuid() } == null) {
+            Permissions.createNewData(data)
+        }
+
         // 고정닉 설정
-        player.name(Permissions.userData.get(data.uuid).asObject().getString("name", player.name()))
+        val perms = Permissions.userData.get(data.uuid).asObject()
+        player.name(perms.getString("name", player.name()))
+        player.admin(perms.getBoolean("admin", false))
 
         data.joinCount++
         data.lastDate = System.currentTimeMillis()
 
         playerData.add(data)
-
-        // 권한 파일 생성
-        if(Permissions.userData.find { e -> e.name == player.uuid() } == null) {
-            Permissions.createNewData(data)
-        }
     }
 
     fun save(uuid: String): Boolean{

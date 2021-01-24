@@ -23,7 +23,7 @@ import mindustry.net.Packets
 
 class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
     val voted: Seq<String> = Seq<String>()
-    val require: Int = if (Config.debug) 1 else if (playerData.size > 8) 6 else if (playerData.size > 4) 3 else 1
+    val require: Int = if (Config.debug) 1 else 3 + if (Groups.player.size() > 5) 1 else 0
 
     var world: mindustry.maps.Map? = null
     var target: Playerc = Nulls.player
@@ -37,6 +37,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
     fun start(){
         votingPlayer = player
         votingType = type
+        voted.clear()
 
         when (type){
             Kick -> {
@@ -91,8 +92,9 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
 
             while (!isInterrupt) {
                 try {
-                    Call.infoPopup("투표 시작한 유저: ${player.name()}\n" +
-                            "$type 투표 종료까지 ${remain}초", 1f, Align.left,0, 0,0,0)
+                    Call.infoPopup("투표 시작한 유저: ${player.name()}[white]\n" +
+                            "$type 투표 종료까지 ${remain}초\n" +
+                            "${voted.size} 명 투표. 필요 투표 인원: ${require - voted.size}", 1f, Align.left,0, 0,0,0)
                     remain--
                     when (remain) {
                         50,40,30,20,10 -> Call.sendMessage("투표 종료까지 ${remain}초 남았습니다.")
@@ -121,7 +123,6 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
     private fun add(uuid: String){
         if(!voted.contains(uuid)){
             voted.add(uuid)
-            Call.sendMessage("${voted.size} 명 투표. 필요 투표 인원: ${require - voted.size}")
             if (voted.size >= require) {
                 isInterrupt = true
             }
@@ -138,6 +139,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                     }
                     Map -> {
                         Call.sendMessage("맵 투표가 통과 되었습니다!")
+                        AutoRollback.isVote = true
                         AutoRollback.load(world)
                     }
                     Gameover -> {

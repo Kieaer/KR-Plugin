@@ -5,6 +5,7 @@ import arc.struct.ObjectMap
 import com.mewna.catnip.Catnip
 import com.mewna.catnip.entity.message.Message
 import com.mewna.catnip.shard.DiscordEvent
+import core.Log
 import data.Config
 import org.hjson.JsonObject
 
@@ -13,8 +14,9 @@ object Discord {
     private lateinit var catnip: Catnip
 
     init {
-        if (Config.discordBotToken.isNotEmpty() || Config.discordChannelToken != 0L) {
+        if (Config.discordBotToken.isNotEmpty()) {
             catnip = Catnip.catnip(Config.discordBotToken)
+            Log.info("Discord 기능 활성화됨")
         }
     }
 
@@ -43,6 +45,7 @@ object Discord {
                                             info.add("isAuthorized", true)
 
                                             data.json.add("discord", info)
+                                            msg.channel().sendMessage("성공~!")
                                         } else {
                                             msg.channel().sendMessage("알 수 없는 플레이어 입니다!")
                                         }
