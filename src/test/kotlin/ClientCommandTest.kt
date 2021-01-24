@@ -9,6 +9,8 @@ import arc.files.Fi
 import arc.graphics.Color
 import arc.util.CommandHandler
 import com.github.javafaker.Faker
+import korea.Main
+import korea.PluginData
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.core.FileTree

@@ -1,7 +1,7 @@
 {
   "name": "KR-Plugin",
   "author": "Kieaer",
-  "main": "Main",
+  "main": "korea.Main",
   "description": "KR-Plugin",
   "version": 1
 }
