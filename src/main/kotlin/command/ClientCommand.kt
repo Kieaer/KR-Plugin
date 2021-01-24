@@ -9,7 +9,7 @@ import java.util.concurrent.Executors
 
 
 object ClientCommand {
-    val service: ExecutorService = Executors.newFixedThreadPool(4)
+    val service: ExecutorService = Executors.newFixedThreadPool(8)
 
     fun register(handler: CommandHandler){
         handler.register("login", "<id> <password>", "Log in to player's account") { arg: Array<String>, player: Playerc ->

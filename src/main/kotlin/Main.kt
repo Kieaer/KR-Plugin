@@ -81,7 +81,7 @@ class Main : Plugin() {
 
     override fun init() {
         // 채팅 포맷 변경
-        Vars.netServer.admins.addChatFilter { _, _ -> null }
+        /*Vars.netServer.admins.addChatFilter { _, _ -> null }*/
 
         // 비 로그인 유저 통제
         Vars.netServer.admins.addActionFilter { e ->

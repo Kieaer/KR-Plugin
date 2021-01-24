@@ -83,7 +83,7 @@ class ClientCommandTest {
                         Vars.init()
                         Vars.content.createBaseContent()
                         add(Logic().also { Vars.logic = it })
-                        add(NetServer().also { Vars.netServer = it })
+                        add(NetServer().also { netServer = it })
                         Vars.content.init()
                     }
 

@@ -9,13 +9,25 @@ import data.Config.AuthType.*
 import data.PlayerCore
 import external.IpAddressMatcher
 import mindustry.Vars
-import mindustry.core.NetClient
+import mindustry.content.Blocks
 import mindustry.game.EventType.*
 import mindustry.game.Team
 import mindustry.gen.Call
 import mindustry.gen.Groups
+import mindustry.gen.Playerc
+import mindustry.net.Administration
+import mindustry.world.Tile
+import java.util.regex.Pattern
 
 class EventThread(private val type: EventTypes, private val event: Any) : Thread() {
+    fun Label(player: Playerc, tile: Tile, name: String, time: Float){
+        /*for (a in Groups.player){
+            if (a.admin){
+                Call.label(a.con,"${player.name()} $name", 5f, tile.getX(), tile.getY())
+            }
+        }*/
+    }
+
     override fun run() {
         try {
             when (type) {
@@ -23,15 +35,18 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val e = event as ConfigEvent
                     if (e.player != null && e.tile != null && e.tile.block != null) {
                         Log.write(Log.LogType.Activity, "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함")
+                        Label(e.player, e.tile.tile, "설정", 5f)
                     }
                 }
                 EventTypes.Tap -> {
                     val e = event as TapEvent
                     Log.write(Log.LogType.Activity, "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})을 클릭함")
+                    Label(e.player, e.tile, "클릭", 2f)
                 }
                 EventTypes.Withdraw -> {
                     val e = event as WithdrawEvent
                     Log.write(Log.LogType.Activity, "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})에 있는 ${e.tile.block.name} 에 ${e.item.name} 을 ${e.amount} 개 넣었음")
+                    Label(e.player, e.tile.tile, "드랍", 5f)
                 }
                 EventTypes.Gameover -> {
                     val e = event as GameOverEvent
@@ -58,7 +73,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     } else if (Vars.state.rules.attackMode) {
                         for (p in Groups.player) {
                             val target = PluginData[p.uuid()]
-                            if (target!!.isLogged) {
+                            if (target != null) {
                                 target.attackWinner++
                             }
                         }
@@ -75,28 +90,27 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
 
                     if (Vars.netServer.admins.findByName(e.player.name).size != 1){
                         Call.kick(e.player.con, "사용할 수 없는 계정입니다")
-                        return
-                    }
+                    } else {
+                        val ip = e.player.con.address
 
-                    val ip = e.player.con.address
-
-                    val br = pluginRoot.child("data/ipv4.txt").reader(1024)
-                    br.use {
-                        var line: String
-                        while (br.readLine().also { line = it } != null) {
-                            val match = IpAddressMatcher(line)
-                            if (match.matches(ip)) {
-                                Call.kick(e.player.con, "VPN 사용 ㄴㄴ")
+                        val br = pluginRoot.child("data/ipv4.txt").reader(1024)
+                        br.use {
+                            var line: String
+                            while (br.readLine().also { line = it } != null) {
+                                val match = IpAddressMatcher(line)
+                                if (match.matches(ip)) {
+                                    Call.kick(e.player.con, "VPN 사용 ㄴㄴ")
+                                }
                             }
                         }
                     }
                 }
                 EventTypes.Deposit -> {
                     val e = event as DepositEvent
+                    Label(e.player, e.tile.tile, "놓기", 3f)
                 }
                 EventTypes.PlayerJoin -> {
                     val e = event as PlayerJoin
-
                     val uuid = e.player.uuid()
 
                     // 접속 인원 카운트
@@ -104,6 +118,13 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
 
                     // 계정 인증 전까지 관리자 상태 해제
                     e.player.admin(false)
+
+                    // motd 표시
+                    if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
+                        Call.infoMessage(e.player.con, Administration.Config.motd.string())
+                    } else {
+                        Call.infoMessage(e.player.con, pluginRoot.child("motd/motd.txt").readString("UTF-8"))
+                    }
 
                     // 자동 로그인
                     if(PlayerCore.check(uuid)){
@@ -157,15 +178,21 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val type = if(data == null) "[비 로그인] " else if (data.isMute) "[묵언] " else ""
 
                     if (!e.message.startsWith("/")) {
+                        if (data == null) Call.sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")
+
                         // 채팅 내용을 기록에 저장
-                        Log.write(Log.LogType.Chat, "$type ${e.player.name}: ${e.message}")
                         Log.info("$type${e.player.name}: ${e.message}")
+                        Log.write(Log.LogType.Chat, "$type ${e.player.name}: ${e.message}")
 
                         if (data != null){
                             if(data.isMute){
                                 e.player.sendMessage("[scarlet]당신은 누군가에 의해 묵언 처리가 되었습니다.")
                             } else {
-                                Call.sendMessage(Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "").replace("%1", NetClient.colorizeName(e.player.id, e.player.name)).replace("%2", e.message))
+                                if (Permissions.userData.has(data.uuid)) {
+                                    Call.sendMessage(Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "").replace("%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}").replace("%2", e.message))
+                                } else {
+                                    Call.sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")
+                                }
                             }
                         }
                     } else {
@@ -174,9 +201,37 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.BlockBuildEnd -> {
                     val e = event as BlockBuildEndEvent
+                    val player = e.unit.player
+
+                    if (player != null) {
+                        if (e.breaking && player.unit() != null && player.unit().buildPlan() != null && !Pattern.matches(".*build.*", player.unit().buildPlan().block.name) && e.tile.block() !== Blocks.air && e.breaking) {
+                            Label(player, e.tile, "파괴", 7f)
+                            val data = PluginData[player.uuid()]
+                            if (data != null) {
+                                data.breakCount++
+                            }
+                        } else {
+                            Label(player, e.tile, "설치", 5f)
+                        }
+
+                        val data = PluginData[player.uuid()]
+                        if (data != null) {
+                            data.placeCount++
+                        }
+                    }
                 }
                 EventTypes.BuildSelect -> {
                     val e = event as BuildSelectEvent
+
+                    if (e.builder is Playerc && e.builder.buildPlan() != null && !Pattern.matches(".*build.*", e.builder.buildPlan().block.name) && e.tile.block() !== Blocks.air && e.breaking) {
+                        val player = e.builder as Playerc
+
+                        Label(player, e.tile, "파괴", 7f)
+                        val data = PluginData[player.uuid()]
+                        if (data != null) {
+                            data.breakCount++
+                        }
+                    }
                 }
                 EventTypes.UnitDestroy -> {
                     val e = event as UnitDestroyEvent

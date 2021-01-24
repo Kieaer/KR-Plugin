@@ -12,6 +12,7 @@ object RainbowName : Runnable {
 
     override fun run() {
         while (!isDispose) {
+            // TODO 재접시 무지개 닉 설정
             for (player in targets) {
                 val p = PluginData[player.uuid()]
                 if (p != null) {

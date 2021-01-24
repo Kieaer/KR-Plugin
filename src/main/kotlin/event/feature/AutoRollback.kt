@@ -14,6 +14,7 @@ import mindustry.maps.Map
 
 object AutoRollback {
     val savePath: Fi = Vars.saveDirectory.child("Rollback.${Vars.saveExtension}")
+    var isVote = false
 
     fun load(map: Map?) {
         val players = Seq<Player>()
@@ -54,7 +55,8 @@ object AutoRollback {
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
-            if (Vars.state.`is`(GameState.State.playing)) Call.sendMessage("[green]빽섭 완료.")
+            if (Vars.state.`is`(GameState.State.playing) && !isVote) Call.sendMessage("[green]빽섭 완료.")
+            isVote = false
         }
     }
 }

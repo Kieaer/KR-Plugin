@@ -32,7 +32,10 @@ object Permissions {
                 return false
             }
         }
-        return false
+        return when (command){
+            "login", "register" -> true
+            else -> false
+        }
     }
 
     fun createNewData(playerData: PlayerData) {
@@ -93,6 +96,19 @@ object Permissions {
         data = JsonObject()
         nodes = JsonArray()
         nodes.add("mute", "spawn")
+
+        nodes.add("info")
+        nodes.add("login")
+        nodes.add("register")
+        nodes.add("maps")
+        nodes.add("motd")
+        nodes.add("r")
+        nodes.add("players")
+        nodes.add("status")
+        nodes.add("tp")
+        nodes.add("vote")
+        nodes.add("help")
+
         data.add("admin", true)
         data.add("chatFormat", "[yellow][Admin] %1[orange] > [white]%2")
         data.add("nodes", nodes)
@@ -110,6 +126,7 @@ object Permissions {
         nodes.add("status")
         nodes.add("tp")
         nodes.add("vote")
+        nodes.add("help")
         data.add("chatFormat", "%1[orange] >[white] %2")
         data.add("nodes", nodes)
         json.add("default", data)
