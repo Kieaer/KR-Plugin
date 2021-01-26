@@ -7,6 +7,7 @@ import korea.Main.Companion.pluginRoot
 import korea.PlayerData
 import korea.PluginData
 import korea.PluginData.isVoting
+import korea.PluginData.votingClass
 import korea.PluginData.votingPlayer
 import korea.PluginData.votingType
 import korea.command.ClientCommand.Command.*
@@ -105,12 +106,18 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     player.sendMessage("사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]")
                                     player.sendMessage("자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요.")
                                 } else {
-                                    val mode = EqualsIgnoreCase(VoteType.values(), arg[0], VoteType.None)
-                                    if (mode != VoteType.None) {
-                                        isVoting = true
-                                        Vote(player, mode, if (arg.size == 2) arg[1] else "").start()
+                                    if (arg[0].equals("kill", true) && player.admin()) {
+                                        if(votingClass != null && isVoting){
+                                            votingClass!!.isInterrupt = true
+                                        }
                                     } else {
-                                        player.sendMessage("${arg[0]} 모드를 찾을 수 없습니다!")
+                                        val mode = EqualsIgnoreCase(VoteType.values(), arg[0], VoteType.None)
+                                        if (mode != VoteType.None) {
+                                            isVoting = true
+                                            Vote(player, mode, if (arg.size == 2) arg[1] else "").start()
+                                        } else {
+                                            player.sendMessage("${arg[0]} 모드를 찾을 수 없습니다!")
+                                        }
                                     }
                                 }
                             } else {
@@ -184,7 +191,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val message = StringBuilder()
                         val page = if (arg.isNotEmpty()) arg[0].toInt() else 0
 
-                        val buffer = Mathf.ceil(Groups.player.size().toFloat() / 6)
+                        val buffer = Mathf.ceil(Vars.maps.all().size.toFloat() / 6)
                         val pages = if (buffer > 1.0) buffer - 1 else 0
 
                         if (pages < page) {
@@ -194,7 +201,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                             val maps = Seq<Map>()
                             for (map in Vars.maps.all()) maps.add(map)
-                            for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Groups.player.size())) {
+                            for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Vars.maps.all().size)) {
                                 message.append("[gray]$a[white] ${maps.get(a).name()} v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n")
                             }
                             player.sendMessage(message.toString().dropLast(2))

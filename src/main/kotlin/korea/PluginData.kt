@@ -2,6 +2,7 @@ package korea
 import arc.struct.Seq
 import korea.Main.Companion.pluginRoot
 import korea.core.Log
+import korea.event.feature.Vote
 import korea.event.feature.VoteType
 import korea.form.Config
 import mindustry.gen.Nulls
@@ -19,6 +20,7 @@ object PluginData : Config() {
     var totalUptime: Long = 0L
     var worldTime: Long = 0L
 
+    var votingClass: Vote? = null
     var isVoting: Boolean = false
     var votingType: VoteType? = null
     var votingPlayer: Playerc = Nulls.player
