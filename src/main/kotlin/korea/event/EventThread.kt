@@ -2,7 +2,6 @@ package korea.event
 
 import korea.Main.Companion.pluginRoot
 import korea.PluginData
-import arc.Core
 import korea.command.Permissions
 import korea.core.Log
 import korea.data.Config
@@ -24,7 +23,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
     private fun label(player: Playerc, tile: Tile, name: String, time: Float){
         for (a in Groups.player){
             if (a.admin){
-                Core.app.post{Call.label(a.con,"${player.name()} $name", time, tile.getX(), tile.getY())}
+                Call.label(a.con,"${player.name()} $name", time, tile.getX(), tile.getY())
             }
         }
     }
@@ -179,7 +178,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val type = if(data == null) "[비 로그인] " else if (data.isMute) "[묵언] " else ""
 
                     if (!e.message.startsWith("/")) {
-                        if (data == null) Core.app.post{Call.sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")}
+                        if (data == null) Call.sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")
 
                         // 채팅 내용을 기록에 저장
                         Log.info("$type${e.player.name}: ${e.message}")
@@ -190,9 +189,9 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                                 e.player.sendMessage("[scarlet]당신은 누군가에 의해 묵언 처리가 되었습니다.")
                             } else {
                                 if (Permissions.userData.has(data.uuid)) {
-                                    Core.app.post{Call.sendMessage(Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "").replace("%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}").replace("%2", e.message))}
+                                    Call.sendMessage(Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "").replace("%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}").replace("%2", e.message))
                                 } else {
-                                    Core.app.post{Call.sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")}
+                                    Call.sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")
                                 }
                             }
                         }
