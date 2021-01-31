@@ -48,8 +48,12 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     Login -> { // 계정 존재 유무확인
                         val isCorrect = PlayerCore.login(arg[0], arg[1])
                         if (isCorrect) {
-                            player.sendMessage("로그인 성공!")
-                            PlayerCore.load(player)
+                            if (PluginData.playerData.find { e -> e.uuid == player.uuid() } != null){
+                                player.sendMessage("이미 로그인 된 상태입니다!")
+                            } else {
+                                PlayerCore.load(player)
+                                player.sendMessage("로그인 성공!")
+                            }
                         } else {
                             player.sendMessage("로그인 실패!")
                         }
