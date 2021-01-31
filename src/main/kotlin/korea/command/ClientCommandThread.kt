@@ -403,7 +403,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             1 -> {
                                 val target = Groups.player.find { e -> e.name() == arg[0] }
                                 if (target != null) {
-                                    player.set(target.x, target.y)
+                                    Call.setPosition(player.con(), target.x, target.y)
+                                    player.unit().set(target.x, target.y)
+                                    player.snapSync()
                                     player.sendMessage("${target.name()} 에게로 이동했습니다.")
                                 } else {
                                     player.sendMessage("${arg[0]} 플레이어를 찾을 수 없습니다!")
@@ -414,7 +416,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 if (target != null) {
                                     val other = Groups.player.find { e -> e.name() == arg[1] }
                                     if (other != null) {
-                                        target.set(other.x, other.y)
+                                        Call.setPosition(target.con(), other.x, other.y)
+                                        target.unit().set(other.x, other.y)
+                                        target.snapSync()
                                         player.sendMessage("${target.name()} 님을 ${other.name()} 에게로 이동했습니다.")
                                     } else {
                                         player.sendMessage("${arg[1]} 플레이어를 찾을 수 없습니다!")
@@ -423,7 +427,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     try {
                                         val tileX = arg[0].toFloat()
                                         val tileY = arg[1].toFloat()
-                                        player.set(tileX, tileY)
+                                        Call.setPosition(player.con(), tileX*8, tileY*8)
+                                        player.unit().set(tileX, tileY)
+                                        player.snapSync()
                                     } catch (_: NumberFormatException) {
                                         player.sendMessage("잘못된 명령어 입니다!")
                                     }
