@@ -402,10 +402,15 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         TODO()
                     }
                     Tp -> {
-                        val mode: String
+                        val target: Playerc
                         when (arg.size) {
                             1 -> {
-                                val target = Groups.player.find { e -> e.name() == arg[0] }
+                                target = if (arg[0].toIntOrNull() != null){
+                                    Groups.player.getByID(arg[0].toInt())
+                                } else {
+                                    Groups.player.find { e -> e.name().contains(arg[0]) }
+                                }
+
                                 if (target != null) {
                                     Call.setPosition(player.con(), target.x, target.y)
                                     player.unit().set(target.x, target.y)
@@ -416,9 +421,18 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 }
                             }
                             2 -> {
-                                val target = Groups.player.find { e -> e.name() == arg[0] }
+                                target = if (arg[0].toIntOrNull() != null){
+                                    Groups.player.getByID(arg[0].toInt())
+                                } else {
+                                    Groups.player.find { e -> e.name().contains(arg[0]) }
+                                }
+
                                 if (target != null) {
-                                    val other = Groups.player.find { e -> e.name() == arg[1] }
+                                    val other = if (arg[1].toIntOrNull() != null){
+                                        Groups.player.getByID(arg[1].toInt())
+                                    } else {
+                                        Groups.player.find { e -> e.name().contains(arg[1]) }
+                                    }
                                     if (other != null) {
                                         Call.setPosition(target.con(), other.x, other.y)
                                         target.unit().set(other.x, other.y)

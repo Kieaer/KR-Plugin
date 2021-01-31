@@ -14,7 +14,7 @@ object ClientCommand {
 
     fun register(handler: CommandHandler){
         handler.register("login", "<id> <password>", "Log in to player's account") { arg: Array<String>, player: Playerc ->
-            Core.app.post {ClientCommandThread(Command.Login, arg, player)}
+            Core.app.post{ClientCommandThread(Command.Login, arg, player)}
         }
         handler.register("register", "<new_id> <new_password> <password_repeat>", "Register an account on the server") { arg: Array<String>, player: Playerc ->
             Core.app.post{ClientCommandThread(Command.Register, arg, player)}
