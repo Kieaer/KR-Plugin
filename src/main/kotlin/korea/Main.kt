@@ -73,6 +73,7 @@ class Main : Plugin() {
                 Threads.timer.cancel()
                 PluginData.save()
                 Discord.stop()
+                Permissions.save()
 
                 Log.system("종료중.. 잠시 기다려주세요")
             }

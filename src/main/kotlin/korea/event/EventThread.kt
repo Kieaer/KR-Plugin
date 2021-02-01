@@ -1,5 +1,6 @@
 package korea.event
 
+import arc.Core
 import korea.Main.Companion.pluginRoot
 import korea.PluginData
 import korea.command.Permissions
@@ -129,7 +130,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     // 자동 로그인
                     if(PlayerCore.check(uuid)){
                         PlayerCore.load(e.player)
-                        e.player.sendMessage("자동 로그인이 되었습니다!")
+                        Core.app.post{e.player.sendMessage("자동 로그인이 되었습니다!")}
                     } else {
                         val message: String
                         when (Config.authType) {
@@ -156,7 +157,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                             """.trimIndent()
                             }
                         }
-                        e.player.sendMessage(message)
+                        Core.app.post{e.player.sendMessage(message)}
                     }
                 }
                 EventTypes.PlayerLeave -> {

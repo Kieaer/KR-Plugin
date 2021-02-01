@@ -49,13 +49,13 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val isCorrect = PlayerCore.login(arg[0], arg[1])
                         if (isCorrect) {
                             if (PluginData.playerData.find { e -> e.uuid == player.uuid() } != null){
-                                player.sendMessage("이미 로그인 된 상태입니다!")
+                                Core.app.post{player.sendMessage("이미 로그인 된 상태입니다!")}
                             } else {
                                 PlayerCore.load(player)
-                                player.sendMessage("로그인 성공!")
+                                Core.app.post{player.sendMessage("로그인 성공!")}
                             }
                         } else {
-                            player.sendMessage("로그인 실패!")
+                            Core.app.post{player.sendMessage("로그인 실패!")}
                         }
                     }
                     Register -> {
@@ -65,17 +65,20 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                         // 비밀번호 패턴 확인
                         if (pw != pw2) {
-                            player.sendMessage("비밀번호 2번 입력하는 값이 일치하지 않습니다!")
+                            Core.app.post{player.sendMessage("비밀번호 2번 입력하는 값이 일치하지 않습니다!")}
                         } else {
-                            val result = RegularExpression.check(pw, "", id, true, player)
+                            val result = RegularExpression.check(pw, "", id, true)
 
-                            if (result == "t") {
+                            if (result == "passed") {
                                 val data = netServer.admins.findByName(uuid).first() // TODO country 만들기
                                 PlayerCore.register(player.name(), uuid, data.timesKicked.toLong(), data.timesJoined.toLong(), System.currentTimeMillis(), System.currentTimeMillis(), "none", 0L, Permissions.defaultGroup, JsonObject(), id, pw)
-                                player.sendMessage("계정 등록 성공!")
+                                Core.app.post{player.sendMessage("계정 등록 성공!")}
                                 PlayerCore.load(player)
                             } else {
-                                player.sendMessage("계정 등록 실패!")
+                                Core.app.post{
+                                    player.sendMessage(result)
+                                    player.sendMessage("계정 등록 실패!")
+                                }
                             }
                         }
                     }
@@ -107,8 +110,8 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         try {
                             if (!isVoting) {
                                 if (arg.isEmpty()) {
-                                    player.sendMessage("사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]")
-                                    player.sendMessage("자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요.")
+                                    Core.app.post{player.sendMessage("사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]")}
+                                    Core.app.post{player.sendMessage("자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요.")}
                                 } else {
                                     if (arg[0].equals("kill", true) && player.admin()) {
                                         if(votingClass != null && isVoting){
@@ -120,12 +123,12 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                             isVoting = true
                                             Vote(player, mode, if (arg.size == 2) arg[1] else "").start()
                                         } else {
-                                            player.sendMessage("${arg[0]} 모드를 찾을 수 없습니다!")
+                                            Core.app.post{player.sendMessage("${arg[0]} 모드를 찾을 수 없습니다!")}
                                         }
                                     }
                                 }
                             } else {
-                                player.sendMessage("${votingPlayer.name()} 이 시작한 ${votingType!!.name} 의 투표가 이미 진행 중입니다!")
+                                Core.app.post{player.sendMessage("${votingPlayer.name()} 이 시작한 ${votingType!!.name} 의 투표가 이미 진행 중입니다!")}
                             }
                         } catch (e: Throwable) {
                             e.printStackTrace()
@@ -137,10 +140,10 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             if (!data.json.has("rainbow")) {
                                 data.json.add("rainbow", true)
                                 RainbowName.targets.add(player)
-                                player.sendMessage("무지개 닉네임이 설정 되었습니다!")
+                                Core.app.post{player.sendMessage("무지개 닉네임이 설정 되었습니다!")}
                             } else {
                                 data.json.remove("rainbow")
-                                player.sendMessage("무지개 닉네임이 해제 되었습니다!")
+                                Core.app.post{player.sendMessage("무지개 닉네임이 해제 되었습니다!")}
                             }
                         }
                     }
@@ -152,7 +155,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             if (target != null) {
                                 target.unit().kill()
                             } else {
-                                player.sendMessage("목표를 찾을 수 없습니다!")
+                                Core.app.post{player.sendMessage("목표를 찾을 수 없습니다!")}
                             }
                         }
                     }
@@ -199,7 +202,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val pages = if (buffer > 1.0) buffer - 1 else 0
 
                         if (pages < page) {
-                            player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")
+                            Core.app.post{player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")}
                         } else {
                             message.append("[green]==[white] 서버 맵 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
 
@@ -208,14 +211,14 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Vars.maps.all().size)) {
                                 message.append("[gray]$a[white] ${maps.get(a).name()} v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n")
                             }
-                            player.sendMessage(message.toString().dropLast(2))
+                            Core.app.post{player.sendMessage(message.toString().dropLast(2))}
                         }
                     }
                     Motd -> {
                         if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
-                            player.sendMessage(Administration.Config.motd.string())
+                            Core.app.post{player.sendMessage(Administration.Config.motd.string())}
                         } else {
-                            player.sendMessage(pluginRoot.child("motd/motd.txt").readString("UTF-8"))
+                            Core.app.post{player.sendMessage(pluginRoot.child("motd/motd.txt").readString("UTF-8"))}
                         }
                     }
                     Players -> {
@@ -226,7 +229,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val pages = if (buffer > 1.0) buffer - 1 else 0
 
                         if (pages < page) {
-                            player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")
+                            Core.app.post{player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")}
                         } else {
                             message.append("[green]==[white] 현재 서버 플레이어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
 
@@ -239,7 +242,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 message.append("[gray]${players.get(a).id()}[white] ${players.get(a).name()}\n")
                             }
 
-                            player.sendMessage(message.toString().dropLast(2))
+                            Core.app.post{player.sendMessage(message.toString().dropLast(2))}
                         }
                     }
                     Router -> {
@@ -379,7 +382,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     서버 총 온라인 시간: ${LongToTime()[PluginData.totalUptime]}
                     맵 플레이 시간: ${LongToTime()[PluginData.worldTime]}
                 """.trimIndent()
-                        player.sendMessage(message)
+                        Core.app.post{player.sendMessage(message)}
                     }
                     Team -> {
                         val team = mindustry.game.Team.all.find { e -> e.name == arg[0] }
@@ -389,13 +392,13 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 if (target != null) {
                                     target.team(team)
                                 } else {
-                                    player.sendMessage("${arg[1]} 플레이어를 찾을 수 없습니다!")
+                                    Core.app.post{player.sendMessage("${arg[1]} 플레이어를 찾을 수 없습니다!")}
                                 }
                             } else {
                                 player.team(team)
                             }
                         } else {
-                            player.sendMessage("${arg[0]} 팀을 찾을 수 없습니다!")
+                            Core.app.post{player.sendMessage("${arg[0]} 팀을 찾을 수 없습니다!")}
                         }
                     }
                     Ban -> {
@@ -415,9 +418,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     Call.setPosition(player.con(), target.x, target.y)
                                     player.unit().set(target.x, target.y)
                                     player.snapSync()
-                                    player.sendMessage("${target.name()} 에게로 이동했습니다.")
+                                    Core.app.post{player.sendMessage("${target.name()} 에게로 이동했습니다.")}
                                 } else {
-                                    player.sendMessage("${arg[0]} 플레이어를 찾을 수 없습니다!")
+                                    Core.app.post{player.sendMessage("${arg[0]} 플레이어를 찾을 수 없습니다!")}
                                 }
                             }
                             2 -> {
@@ -437,9 +440,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                         Call.setPosition(target.con(), other.x, other.y)
                                         target.unit().set(other.x, other.y)
                                         target.snapSync()
-                                        player.sendMessage("${target.name()} 님을 ${other.name()} 에게로 이동했습니다.")
+                                        Core.app.post{player.sendMessage("${target.name()} 님을 ${other.name()} 에게로 이동했습니다.")}
                                     } else {
-                                        player.sendMessage("${arg[1]} 플레이어를 찾을 수 없습니다!")
+                                        Core.app.post{player.sendMessage("${arg[1]} 플레이어를 찾을 수 없습니다!")}
                                     }
                                 } else {
                                     try {
@@ -449,9 +452,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                         player.unit().set(tileX, tileY)
                                         player.snapSync()
                                     } catch (_: NumberFormatException) {
-                                        player.sendMessage("잘못된 명령어 입니다!")
+                                        Core.app.post{player.sendMessage("잘못된 명령어 입니다!")}
                                     }
-                                    player.sendMessage("${arg[0]} 플레이어를 찾을 수 없습니다!")
+                                    Core.app.post{player.sendMessage("${arg[0]} 플레이어를 찾을 수 없습니다!")}
                                 }
                             }
                         }
@@ -463,10 +466,10 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             val data = PluginData[target.uuid()]
                             if (data!!.isMute) {
                                 data.isMute = false
-                                target.sendMessage("축하드립니다. 묵언 상태가 해제되었습니다!")
+                                Core.app.post{target.sendMessage("축하드립니다. 묵언 상태가 해제되었습니다!")}
                             } else {
                                 data.isMute = true
-                                target.sendMessage("누군가에 의해 묵언 상태가 되었습니다.")
+                                Core.app.post{target.sendMessage("누군가에 의해 묵언 상태가 되었습니다.")}
                             }
                         }
                     }
@@ -486,22 +489,22 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val pages = if (buffer > 1.0) buffer - 1 else 0
 
                         if (pages < page) {
-                            player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")
+                            Core.app.post{player.sendMessage("[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다!")}
                         } else {
-                            message.append("[green]==[white] 사용 가능한 명령어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
+                            message.append("[green]==[white] 사용 가능한 명령어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")}
 
                             for (a in 6 * page until (6 * (page + 1)).coerceAtMost(commands.size)) {
                                 message.append(commands.get(a))
                             }
 
-                            player.sendMessage(message.toString())
+                            Core.app.post{player.sendMessage(message.toString())
                         }
                     }
                     ClientCommand.Command.Discord -> {
                         val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
                         Discord.pin.put(pin, player.uuid())
-                        player.sendMessage("Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요!")
-                        player.sendMessage("PIN 번호: $pin")
+                        Core.app.post{player.sendMessage("Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요!")}
+                        Core.app.post{player.sendMessage("PIN 번호: $pin")}
                     }
                 }
             }

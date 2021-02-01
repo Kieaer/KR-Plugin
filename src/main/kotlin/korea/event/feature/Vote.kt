@@ -1,5 +1,6 @@
 package korea.event.feature
 
+import arc.Core
 import arc.Events
 import arc.struct.Seq
 import arc.util.Align
@@ -44,39 +45,43 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                 if(arg.size == 1){
                     target = Groups.player.find{e -> e.name.equals(arg[0], true)}
                     if (!target.isNull){
-                        Call.sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")
+                        Core.app.post{Call.sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")}
                     } else {
-                        player.sendMessage("${arg[0]} 유저를 찾을 수 없습니다!")
+                        Core.app.post{player.sendMessage("${arg[0]} 유저를 찾을 수 없습니다!")}
                         isInterrupt = true
                     }
                 }
             }
             Map -> {
-                world = maps.all().find{ e -> e.name().equals(arg[0], true)}
+                world = when {
+                    arg[0].toIntOrNull() != null -> maps.all().get(arg[0].toInt())
+                    else -> maps.all().find { e -> e.name().equals(arg[0], true) }
+                }
+                
                 if (world != null){
-                    Call.sendMessage("${player.name()} 에 의해 ${world!!.name()} 맵으로 가기 위한 투표가 시작 되었습니다.")
+                    Core.app.post{Call.sendMessage("${player.name()} 에 의해 ${world!!.name()} 맵으로 가기 위한 투표가 시작 되었습니다.")}
                 } else {
-                    player.sendMessage("${arg[0]} 유저를 찾을 수 없습니다!")
+                    Core.app.post{player.sendMessage("${arg[0]} 맵을 찾을 수 없습니다!")}
                     isInterrupt = true
                 }
             }
             Gameover -> {
-                Call.sendMessage("${player.name()} 에 의해 항복 투표가 시작 되었습니다!")
+                Core.app.post{Call.sendMessage("${player.name()} 에 의해 항복 투표가 시작 되었습니다!")}
             }
             Skipwave -> {
                 try {
                     amount = arg[0].toInt()
-                    Call.sendMessage("${player.name()} 에 의해 $amount 웨이브 건너뛰기 투표가 시작 되었습니다!")
+                    Core.app.post{Call.sendMessage("${player.name()} 에 의해 $amount 웨이브 건너뛰기 투표가 시작 되었습니다!")}
                 } catch (e: NumberFormatException){
-                    player.sendMessage("넘길 웨이브 숫자를 입력하셔야 합니다!")
+                    Core.app.post{player.sendMessage("넘길 웨이브 숫자를 입력하셔야 합니다!")}
                     isInterrupt = true
                 }
             }
             Rollback -> {
-                Call.sendMessage("${player.name()} 에 의해 빽섭 투표가 시작 되었습니다!")
+                Core.app.post{Call.sendMessage("${player.name()} 에 의해 빽섭 투표가 시작 되었습니다!")}
             }
             OP -> {
-                Call.sendMessage("${player.name()} 에 의해 치트 사용 투표가 시작 되었습니다!")
+                Core.app.post{Call.sendMessage("${player.name()} 에 의해 치트 사용 투표가 시작 되었습니다!")}
             }
             None -> {}
         }
@@ -85,7 +90,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
             isVoting = false
             return
         }
-        Call.sendMessage("필요 투표 인원: $require, 총 인원 ${playerData.size}")
+        Core.app.post{Call.sendMessage("필요 투표 인원: $require, 총 인원 ${playerData.size}")}
 
         timer = Thread {
             var remain = 60
@@ -97,7 +102,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                             "${voted.size} 명 투표. 필요 투표 인원: ${require - voted.size}", 1f, Align.left,0, 0,0,0)
                     remain--
                     when (remain) {
-                        50,40,30,20,10 -> Call.sendMessage("투표 종료까지 ${remain}초 남았습니다.")
+                        50,40,30,20,10 -> Core.app.post{Call.sendMessage("투표 종료까지 ${remain}초 남았습니다.")}
                         0 -> isInterrupt = true
                     }
                     sleep(1000)
@@ -134,34 +139,34 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
             if (voted.size >= require) {
                 when (type) {
                     Kick -> {
-                        Call.sendMessage("강퇴 투표가 통과 되었습니다!")
+                        Core.app.post{Call.sendMessage("강퇴 투표가 통과 되었습니다!")}
                         Call.kick(target.con(), Packets.KickReason.vote)
                     }
                     Map -> {
-                        Call.sendMessage("맵 투표가 통과 되었습니다!")
+                        Core.app.post{Call.sendMessage("맵 투표가 통과 되었습니다!")}
                         AutoRollback.isVote = true
                         AutoRollback.load(world)
                     }
                     Gameover -> {
-                        Call.sendMessage("항복 투표가 통과 되었습니다!")
+                        Core.app.post{Call.sendMessage("항복 투표가 통과 되었습니다!")}
                         Events.fire(EventType.GameOverEvent(Team.crux))
                     }
                     Skipwave -> {
-                        Call.sendMessage("웨이브 넘기기 투표가 통과 되었습니다!")
+                        Core.app.post{Call.sendMessage("웨이브 넘기기 투표가 통과 되었습니다!")}
                         for(a in 0..amount) Vars.logic.runWave()
                     }
                     Rollback -> {
-                        Call.sendMessage("빽섭 투표가 통과 되었습니다! 10초후 빽섭을 진행합니다.")
+                        Core.app.post{Call.sendMessage("빽섭 투표가 통과 되었습니다! 10초후 빽섭을 진행합니다.")}
                         AutoRollback.load(null)
                     }
                     OP -> {
-                        Call.sendMessage("치트 투표가 통과 되었습니다!")
-                        Call.sendMessage(".. 하지만 아무것도 없었습니다")
+                        Core.app.post{Call.sendMessage("치트 투표가 통과 되었습니다!")}
+                        Core.app.post{Call.sendMessage(".. 하지만 아무것도 없었습니다")}
                     }
                     None -> {}
                 }
             } else {
-                Call.sendMessage("투표 실패!")
+                Core.app.post{Call.sendMessage("투표 실패!")}
             }
             isVoting = false
             Events.remove(EventType.PlayerChatEvent::class.java) { listener }

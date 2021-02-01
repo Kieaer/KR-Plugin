@@ -48,7 +48,7 @@ object AutoRollback {
                         p.team(Vars.netServer.assignTeam(p, Seq.SeqIterable(players)))
                     }
                     Vars.netServer.sendWorldData(p)
-                    p.sendMessage("다른 플레이어들을 기다리는 중입니다...")
+                    Core.app.post{p.sendMessage("다른 플레이어들을 기다리는 중입니다...")}
                 }
                 Vars.state.serverPaused = false
                 Vars.logic.play()

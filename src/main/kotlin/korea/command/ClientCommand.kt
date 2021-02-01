@@ -2,6 +2,7 @@ package korea.command
 
 import arc.Core
 import arc.util.CommandHandler
+import korea.data.Config
 import mindustry.gen.Playerc
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -13,6 +14,8 @@ object ClientCommand {
     val service: ExecutorService = Executors.newFixedThreadPool(8)
 
     fun register(handler: CommandHandler){
+        if(Config.enableVote) handler.removeCommand("vote")
+
         handler.register("login", "<id> <password>", "Log in to player's account") { arg: Array<String>, player: Playerc ->
             Core.app.post{ClientCommandThread(Command.Login, arg, player)}
         }

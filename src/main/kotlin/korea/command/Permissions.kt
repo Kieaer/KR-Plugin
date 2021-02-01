@@ -69,6 +69,7 @@ object Permissions {
         if (pluginRoot.child("permission_user.hjson").exists()) {
             try {
                 userData = JsonValue.readHjson(pluginRoot.child("permission_user.hjson").reader()).asObject()
+                userData.filter { it.value.asObject().get("name").asString().isEmpty() }.forEach { userData.remove(it.name) }
             } catch (e: ParseException){
                 Log.err("permission_user.json 파일에서 구문 오류로 인해 플레이어 데이터를 사용하지 않습니다!")
                 Log.err("오류가 발생한 위치: ${e.line}줄에서 ${e.column}번째 글자.\n" +
