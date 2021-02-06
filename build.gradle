@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
 }
 
 repositories {
@@ -11,7 +11,7 @@ repositories {
 dependencies {
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.21"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.30"
 
     // Mindustry sources
     compileOnly 'com.github.Anuken.Arc:arc-core:+'
@@ -26,8 +26,8 @@ dependencies {
     // E-mail
     implementation 'org.simplejavamail:simple-java-mail:+'
 
-    testImplementation "org.jetbrains.kotlin:kotlin-test:1.4.21"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.4.21"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:1.4.30"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.4.30"
     testImplementation 'com.github.Anuken.arc:arc-core:+'
     testImplementation 'com.github.Anuken.Mindustry:core:+'
     testImplementation 'com.github.Anuken.Mindustry:server:+'
@@ -43,11 +43,11 @@ jar {
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = 1.8
+    kotlinOptions.jvmTarget = 14
 }
 
 wrapper {
     gradleVersion = '6.7.1'
 }
 
-//[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'

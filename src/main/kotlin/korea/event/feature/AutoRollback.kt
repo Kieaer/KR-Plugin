@@ -4,6 +4,7 @@ import arc.Core
 import arc.files.Fi
 import arc.struct.Seq
 import arc.util.async.Threads.sleep
+import korea.eof.sendMessage
 import mindustry.Vars
 import mindustry.core.GameState
 import mindustry.gen.Call
@@ -48,14 +49,14 @@ object AutoRollback {
                         p.team(Vars.netServer.assignTeam(p, Seq.SeqIterable(players)))
                     }
                     Vars.netServer.sendWorldData(p)
-                    Core.app.post{p.sendMessage("다른 플레이어들을 기다리는 중입니다...")}
+                    p.sendMessage("다른 플레이어들을 기다리는 중입니다...")
                 }
                 Vars.state.serverPaused = false
                 Vars.logic.play()
             } catch (t: Throwable) {
                 t.printStackTrace()
             }
-            if (Vars.state.`is`(GameState.State.playing) && !isVote) Core.app.post{Call.sendMessage("[green]빽섭 완료.")}
+            if (Vars.state.`is`(GameState.State.playing) && !isVote) sendMessage("[green]빽섭 완료.")
             isVote = false
         }
     }

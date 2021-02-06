@@ -28,7 +28,7 @@ object PermissionFileRead : Runnable{
                     val paths = (event.context() as Path).fileName.toString()
                     if (paths == "permission_user.hjson" || paths == "permission.hjson") {
                         if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                            Permissions.load(false)
+                            Permissions.load()
                             tried = !tried
                             Log.info("Permission 파일 업데이트됨")
 

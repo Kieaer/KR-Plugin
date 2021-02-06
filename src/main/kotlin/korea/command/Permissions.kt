@@ -33,7 +33,7 @@ object Permissions {
             }
         }
         return when (command){
-            "login", "register" -> true
+            "login", "register", "help" -> true
             else -> false
         }
     }
@@ -50,7 +50,7 @@ object Permissions {
         Log.system("${playerData.name} 의 권한 데이터가 생성되었습니다.")
     }
 
-    fun load(isInit: Boolean){
+    fun load() {
         if (pluginRoot.child("permission.hjson").exists()) {
             try {
                 permissionData = JsonValue.readHjson(pluginRoot.child("permission.hjson").reader()).asObject()

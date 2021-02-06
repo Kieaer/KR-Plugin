@@ -16,9 +16,7 @@ import korea.data.DB
 import korea.data.auth.Discord
 import korea.event.Event
 import mindustry.Vars
-import mindustry.gen.RemoteReadClient
 import mindustry.mod.Plugin
-import mindustry.net.Packets.InvokePacket
 
 class Main : Plugin() {
     companion object {
@@ -56,7 +54,7 @@ class Main : Plugin() {
         Config.load()
 
         // 명령어 권한 데이터 불러오기
-        Permissions.load(true)
+        Permissions.load()
 
         // 스레드 시작
         Threads
@@ -78,11 +76,6 @@ class Main : Plugin() {
                 Log.system("종료중.. 잠시 기다려주세요")
             }
         })
-
-        Vars.net.handleClient(InvokePacket::class.java) {
-            packet: InvokePacket -> RemoteReadClient.readPacket(packet.reader(), packet.type.toInt())
-            println("captured!")
-        }
 
         Discord.start()
     }

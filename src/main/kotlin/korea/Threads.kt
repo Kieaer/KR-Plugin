@@ -1,15 +1,12 @@
 package korea
 import PermissionFileRead
+import arc.struct.ArrayMap
 import korea.Main.Companion.isDispose
 import korea.PluginData.playerData
-import arc.Core
-import arc.struct.ArrayMap
-import arc.util.Align
 import korea.event.feature.AutoRollback
 import korea.event.feature.RainbowName
 import mindustry.Vars
 import mindustry.core.GameState
-import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.io.SaveIO
 import java.util.*
@@ -47,8 +44,6 @@ object Threads {
                             }
 
                             memory.put(a.uuid(),a.unit().health())
-
-                            Core.app.post{Call.infoPopup("유닛 체력: $color${a.unit().health()}/${a.unit().maxHealth()}\n", 1f, Align.right,0, 0,0,0)}
                         }
                     }
                 }
