@@ -2,12 +2,12 @@ package korea.event
 
 import korea.Main.Companion.pluginRoot
 import korea.PluginData
-import korea.eof.sendMessage
 import korea.command.Permissions
 import korea.core.Log
 import korea.data.Config
 import korea.data.Config.AuthType.*
 import korea.data.PlayerCore
+import korea.eof.sendMessage
 import korea.external.IpAddressMatcher
 import mindustry.Vars
 import mindustry.content.Blocks
@@ -25,8 +25,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 EventTypes.Config -> {
                     val e = event as ConfigEvent
                     if (e.player != null && e.tile != null && e.tile.block != null) {
-                        Log.info("${e.player.name()} Config event thread")
-
                         Log.write(
                             Log.LogType.Activity,
                             "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함"
@@ -35,14 +33,10 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.Tap -> {
                     val e = event as TapEvent
-                    Log.info("${e.player.name()} Tap event thread")
-
                     Log.write(Log.LogType.Activity, "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})을 클릭함")
                 }
                 EventTypes.Withdraw -> {
                     val e = event as WithdrawEvent
-                    Log.info("${e.player.name()} withdraw event thread")
-
                     Log.write(
                         Log.LogType.Activity,
                         "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})에 있는 ${e.tile.block.name} 에 ${e.item.name} 을 ${e.amount} 개 넣었음"
@@ -50,8 +44,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.Gameover -> {
                     val e = event as GameOverEvent
-                    Log.info("gameover thread")
-
                     if (Vars.state.rules.pvp) {
                         var index = 5
                         for (a in 0..4) {
@@ -81,16 +73,11 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     }
                 }
                 EventTypes.WorldLoad -> {
-                    val e = event as WorldLoadEvent
-
-                    Log.info("worldload thread")
                     PluginData.worldTime = 0L
                     PluginData.playerData.clear()
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
-                    Log.info("${e.player.name()} playerconnect thread")
-
                     if (Vars.netServer.admins.findByName(e.player.name).size != 1) {
                         Call.kick(e.player.con, "사용할 수 없는 계정입니다")
                     } else {
@@ -109,12 +96,10 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     }
                 }
                 EventTypes.Deposit -> {
-                    val e = event as DepositEvent
-                    Log.info("${e.player.name()} deposit event thread")
+
                 }
                 EventTypes.PlayerJoin -> {
                     val e = event as PlayerJoin
-                    Log.info("${e.player.name()} playerjoin event thread")
                     val uuid = e.player.uuid()
 
                     // 접속 인원 카운트
@@ -164,7 +149,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerLeave -> {
                     val e = event as PlayerLeave
-                    Log.info("${e.player.name()} playerleave event thread")
                     val uuid = e.player.uuid()
 
                     val data = PluginData[uuid]
@@ -176,7 +160,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerChat -> {
                     val e = event as PlayerChatEvent
-                    Log.info("${e.player.name()} playerchat event thread")
                     val uuid = e.player.uuid()
 
                     val data = PluginData[uuid]
@@ -222,7 +205,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val player = e.unit.player
 
                     if (player != null) {
-                        Log.info("${player.name()} blockbuildend event thread")
                         if (e.breaking && player.unit() != null && player.unit()
                                 .buildPlan() != null && !Pattern.matches(
                                 ".*build.*", player.unit().buildPlan().block.name
@@ -244,13 +226,11 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.BuildSelect -> {
                     val e = event as BuildSelectEvent
-
                     if (e.builder.plans().size != 0 && !Pattern.matches(
                             ".*build.*", e.builder.plans.get(0).block.name
                         ) && e.tile.block() !== Blocks.air && e.breaking
                     ) {
                         val player = e.builder.player
-                        Log.info("${player.name()} buildselect event thread")
 
                         val data = PluginData[player.uuid()]
                         if (data != null) {

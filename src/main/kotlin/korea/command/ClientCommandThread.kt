@@ -3,7 +3,6 @@ package korea.command
 import arc.Core
 import arc.math.Mathf
 import arc.struct.Seq
-import arc.util.async.Threads.sleep
 import korea.Main.Companion.pluginRoot
 import korea.PlayerData
 import korea.PluginData
@@ -11,13 +10,13 @@ import korea.PluginData.isVoting
 import korea.PluginData.votingClass
 import korea.PluginData.votingPlayer
 import korea.PluginData.votingType
+import korea.command.ClientCommand.Command.*
+import korea.data.PlayerCore
+import korea.data.auth.Discord
 import korea.eof.constructFinish
 import korea.eof.infoMessage
 import korea.eof.sendMessage
 import korea.eof.setPosition
-import korea.command.ClientCommand.Command.*
-import korea.data.PlayerCore
-import korea.data.auth.Discord
 import korea.event.feature.RainbowName
 import korea.event.feature.Vote
 import korea.event.feature.VoteType
@@ -43,8 +42,8 @@ import kotlin.random.Random
 
 
 
-class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc){
-    fun run() {
+class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc): Thread(){
+    override fun run() {
         val uuid = player.uuid()
         try {
             if (Permissions.check(player, type.name.toLowerCase())) {
@@ -100,17 +99,27 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     Spawn -> {
                         val type = arg[0]
                         val name = arg[1]
-                        val parameter = arg[2].toInt()
+                        val parameter = if (arg.size == 3) arg[2].toIntOrNull() else 1
 
                         when {
                             type.equals("unit", true) -> {
                                 val unit = Vars.content.units().find { unitType: UnitType -> unitType.name == name }
                                 if (unit != null) {
-                                    for (a in 0..parameter) {
-                                        val baseUnit = unit.create(player.team())
-                                        baseUnit.set(player.x, player.y)
-                                        baseUnit.add()
+                                    if (parameter != null) {
+                                        for (a in 1..parameter) {
+                                            val baseUnit = unit.create(player.team())
+                                            baseUnit.set(player.x, player.y)
+                                            baseUnit.add()
+                                        }
+                                    } else {
+                                        sendMessage(player, "스폰할 유닛/건물 개수 값은 반드시 숫자이어야 합니다!")
                                     }
+                                } else {
+                                    val names = StringBuilder()
+                                    Vars.content.units().each {
+                                        names.append("${it.name}, ")
+                                    }
+                                    sendMessage(player, "사용 가능한 유닛 이름: ${names.dropLast(2)}")
                                 }
                             }
                             type.equals("block", true) -> {
@@ -118,7 +127,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     player.tileOn(),
                                     Vars.content.blocks().find { b: Block -> b.name == name },
                                     player.unit(),
-                                    parameter.toByte(),
+                                    parameter?.toByte() ?: 0,
                                     player.team(),
                                     null
                                 )

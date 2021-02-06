@@ -5,7 +5,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 object Event {
-    val service: ExecutorService = Executors.newFixedThreadPool(6)
+    val service: ExecutorService = Executors.newCachedThreadPool()
+
     fun register(){
         // 플레이어가 블록에 대해 어떠한 설정을 했을 때 작동
         Events.on(ConfigEvent::class.java){
