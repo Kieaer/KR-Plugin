@@ -106,10 +106,14 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 val unit = Vars.content.units().find { unitType: UnitType -> unitType.name == name }
                                 if (unit != null) {
                                     if (parameter != null) {
-                                        for (a in 1..parameter) {
-                                            val baseUnit = unit.create(player.team())
-                                            baseUnit.set(player.x, player.y)
-                                            baseUnit.add()
+                                        if (name != "block") {
+                                            for (a in 1..parameter) {
+                                                val baseUnit = unit.create(player.team())
+                                                baseUnit.set(player.x, player.y)
+                                                baseUnit.add()
+                                            }
+                                        } else {
+                                            sendMessage(player, "block 는 유닛이 아닙니다! 스폰할 생각 하지 마세요.")
                                         }
                                     } else {
                                         sendMessage(player, "스폰할 유닛/건물 개수 값은 반드시 숫자이어야 합니다!")
@@ -416,11 +420,18 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         }
                     }
                     Status -> {
+                        val tps = when {
+                            Core.graphics.framesPerSecond > 58 -> "[green]"
+                            Core.graphics.framesPerSecond < 56 -> "[yellow]"
+                            Core.graphics.framesPerSecond < 55 -> "[red]"
+                            else -> ""
+                        }
+
                         val message = """
                     [#2B60DE]== 서버 통계 =========================[]
-                    TPS: ${Core.graphics.framesPerSecond}/60
-                    메모리: ${Core.app.javaHeap / 1024 / 1024}
-                    밴당한 인원: ${netServer.admins.banned.size + netServer.admins.bannedIPs.size}
+                    TPS: $tps${Core.graphics.framesPerSecond}/60[white]
+                    메모리: ${Core.app.javaHeap / 1024 / 1024}MB
+                    밴당한 인원: ${PluginData.banned.size}
                     총 접속인원: ${PluginData.totalConnected}
                     서버 총 온라인 시간: ${LongToTime()[PluginData.totalUptime]}
                     맵 플레이 시간: ${LongToTime()[PluginData.worldTime]}

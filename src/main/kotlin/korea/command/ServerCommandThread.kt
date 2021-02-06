@@ -1,3 +1,21 @@
 package korea.command
 
-class ServerCommandThread
+import arc.util.Log
+import korea.PluginData
+import korea.command.ServerCommand.Command.Unban
+
+class ServerCommandThread(private val type: ServerCommand.Command, private val arg: Array<String>): Thread(){
+    override fun run() {
+        when (type) {
+            Unban -> {
+                val find = PluginData.banned.find { it.address == arg[0] || it.uuid == arg[0]}
+                if (find != null){
+                    PluginData.banned.remove { it.address == arg[0] || it.uuid == arg[0] }
+                    Log.info("Unbanned.")
+                } else {
+                    Log.err("That IP/ID is not banned!")
+                }
+            }
+        }
+    }
+}

@@ -23,6 +23,14 @@ object Event {
             service.submit(EventThread(EventThread.EventTypes.Gameover, it))
         }
 
+        Events.on(WorldLoadEvent::class.java){
+            service.submit(EventThread(EventThread.EventTypes.WorldLoad, it))
+        }
+
+        Events.on(PlayerConnect::class.java){
+            service.submit(EventThread(EventThread.EventTypes.PlayerConnect, it))
+        }
+
         // 플레이어가 아이템을 특정 블록에다 직접 가져다 놓았을 때 작동
         Events.on(DepositEvent::class.java){
             service.submit(EventThread(EventThread.EventTypes.Deposit, it))

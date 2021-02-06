@@ -3,13 +3,16 @@ package korea.event
 import korea.Main.Companion.pluginRoot
 import korea.PluginData
 import korea.command.Permissions
+import korea.command.ServerCommand
 import korea.core.Log
 import korea.data.Config
 import korea.data.Config.AuthType.*
 import korea.data.PlayerCore
+import korea.eof.connect
 import korea.eof.sendMessage
 import korea.external.IpAddressMatcher
 import mindustry.Vars
+import mindustry.Vars.netServer
 import mindustry.content.Blocks
 import mindustry.game.EventType.*
 import mindustry.game.Team
@@ -78,7 +81,16 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
-                    if (Vars.netServer.admins.findByName(e.player.name).size != 1) {
+                    for (a in PluginData.banned){
+                        if (a.uuid == e.player.uuid() || a.address == e.player.con().address){
+                            connect(e.player, "mindustry.ru", 6567)
+                            return
+                        } else {
+                            println("not same ${a.uuid} == ${e.player.uuid()}")
+                        }
+                    }
+
+                    if (netServer.admins.findByName(e.player.name).size != 1) {
                         Call.kick(e.player.con, "사용할 수 없는 계정입니다")
                     } else {
                         val ip = e.player.con.address
@@ -103,7 +115,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val uuid = e.player.uuid()
 
                     // 접속 인원 카운트
-                    PluginData.totalConnected = PluginData.totalConnected++
+                    PluginData.totalConnected++
 
                     // 계정 인증 전까지 관리자 상태 해제
                     e.player.admin(false)
@@ -243,18 +255,32 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.PlayerBan -> {
                     val e = event as PlayerBanEvent
+                    connect(e.player, "mindustry.ru", 6567)
+                    PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid()))
+                    netServer.admins.unbanPlayerID(e.player.uuid())
                 }
                 EventTypes.PlayerIpBan -> {
                     val e = event as PlayerIpBanEvent
+                    val uuid = netServer.admins.findByIP(e.ip)
+                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none"))
+                    netServer.admins.unbanPlayerIP(e.ip)
                 }
                 EventTypes.PlayerUnban -> {
                     val e = event as PlayerUnbanEvent
+                    if(ServerCommand.isUnBan){
+                        PluginData.banned.remove { e.player.uuid() == it.uuid }
+                    }
+                    netServer.admins.unbanPlayerID(e.player.uuid())
                 }
                 EventTypes.PlayerIpUnban -> {
                     val e = event as PlayerIpUnbanEvent
+                    if(ServerCommand.isUnBan){
+                        PluginData.banned.remove { e.ip == it.address }
+                    }
+                    netServer.admins.unbanPlayerIP(e.ip)
                 }
                 EventTypes.ServerLoaded -> {
-                    val e = event as ServerLoadEvent
+
                 }
             }
         } catch (e: Exception) {

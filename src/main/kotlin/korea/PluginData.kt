@@ -7,6 +7,7 @@ import korea.event.feature.VoteType
 import korea.form.Config
 import mindustry.gen.Nulls
 import mindustry.gen.Playerc
+import org.hjson.JsonArray
 import org.hjson.JsonObject
 import java.security.SecureRandom
 import kotlin.reflect.full.declaredMemberProperties
@@ -19,6 +20,7 @@ object PluginData : Config() {
     var totalConnected: Int = 0
     var totalUptime: Long = 0L
     var worldTime: Long = 0L
+    var banned = Seq<Banned>()
 
     var votingClass: Vote? = null
     var isVoting: Boolean = false
@@ -38,6 +40,17 @@ object PluginData : Config() {
         json.add("totalConnected", totalConnected)
         json.add("totalUptime", totalUptime)
 
+        val banlist = JsonArray()
+        banned.forEach {
+            val j = JsonObject()
+            j.add("name", it.name)
+            j.add("address", it.address)
+            j.add("uuid", it.uuid)
+            banlist.add(j)
+        }
+
+        json.add("banned", banlist)
+
         pluginRoot.child("data/PluginData.obj").writeString(json.toString())
     }
 
@@ -47,6 +60,13 @@ object PluginData : Config() {
             if (json != null) {
                 totalConnected = json.asObject().getInt("totalConnected", totalConnected)
                 totalUptime = json.asObject().getLong("totalUptime", totalUptime)
+
+                val arr = json.asObject().get("banned").asArray()
+                for (a in arr){
+                    val obj = a.asObject()
+                    banned.add(Banned(obj.get("name").asString(), obj.get("address").asString(), obj.get("uuid").asString()))
+                }
+
                 Log.system("플러그인 데이터 로드됨!")
             }
         }
@@ -68,4 +88,6 @@ object PluginData : Config() {
             pluginRoot.child("data").mkdirs()
         }
     }
+
+    class Banned(val name: String, val address: String, val uuid: String)
 }
