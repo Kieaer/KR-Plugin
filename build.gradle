@@ -50,4 +50,13 @@ wrapper {
     gradleVersion = '6.7.1'
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
 [compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
