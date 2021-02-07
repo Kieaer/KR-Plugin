@@ -10,7 +10,6 @@ import korea.data.Config.AuthType.*
 import korea.data.PlayerCore
 import korea.eof.connect
 import korea.eof.sendMessage
-import korea.external.IpAddressMatcher
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.content.Blocks
@@ -84,13 +83,12 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     for (a in PluginData.banned){
                         if (a.uuid == e.player.uuid() || a.address == e.player.con().address){
                             connect(e.player, "mindustry.ru", 6567)
+                            Log.info("${e.player.name} 유저는 밴을 당했으므로 ru 서버로 이동 시킵니다.")
                             return
-                        } else {
-                            println("not same ${a.uuid} == ${e.player.uuid()}")
                         }
                     }
 
-                    if (netServer.admins.findByName(e.player.name).size != 1) {
+                    /*if (netServer.admins.findByName(e.player.name).size != 1) {
                         Call.kick(e.player.con, "사용할 수 없는 계정입니다")
                     } else {
                         val ip = e.player.con.address
@@ -105,7 +103,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
                 EventTypes.Deposit -> {
 
@@ -238,10 +236,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.BuildSelect -> {
                     val e = event as BuildSelectEvent
-                    if (e.builder.plans().size != 0 && !Pattern.matches(
-                            ".*build.*", e.builder.plans.get(0).block.name
-                        ) && e.tile.block() !== Blocks.air && e.breaking
-                    ) {
+                    if (e.breaking && e.builder != null && e.builder.buildPlan() != null && e.builder.isPlayer) {
                         val player = e.builder.player
 
                         val data = PluginData[player.uuid()]

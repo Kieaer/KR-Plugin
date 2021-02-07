@@ -156,7 +156,8 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                         val mode = EqualsIgnoreCase(VoteType.values(), arg[0], VoteType.None)
                                         if (mode != VoteType.None) {
                                             isVoting = true
-                                            Vote(player, mode, if (arg.size == 2) arg[1] else "").start()
+                                            votingClass = Vote(player, mode, if (arg.size == 2) arg[1] else "")
+                                            votingClass!!.start()
                                         } else {
                                             sendMessage(player, "${arg[0]} 모드를 찾을 수 없습니다")
                                         }

@@ -25,11 +25,11 @@ Some sources may apply to Essentials.
   - [ ] Move the server methods
     - [ ] Player unit position
     - [ ] Click/Touch
-- [ ] Better performance than Essentials plugin
-  - [ ] Multi-threading
-    - [ ] Events
-    - [ ] Command triggers
-    - [ ] Time triggers
+- [x] Better performance than Essentials plugin
+  - [x] Multi-threading
+    - [x] Events
+    - [x] Command triggers
+    - [x] Time triggers
 - [ ] Donate (It will be used to maintain translate language services.)
   - [ ] Make donate page (Web)
 - [ ] Ranking system (include Anti-grief and personality evaluation)
