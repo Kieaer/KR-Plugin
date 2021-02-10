@@ -76,7 +76,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.WorldLoad -> {
                     PluginData.worldTime = 0L
-                    PluginData.playerData.clear()
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
@@ -258,14 +257,17 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val e = event as PlayerIpBanEvent
                     val uuid = netServer.admins.findByIP(e.ip)
                     PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none"))
-                    netServer.admins.unbanPlayerIP(e.ip)
+                    netServer.admins.bannedIPs.remove(e.ip, false)
+                    netServer.admins.save()
                 }
                 EventTypes.PlayerUnban -> {
                     val e = event as PlayerUnbanEvent
-                    if(ServerCommand.isUnBan){
-                        PluginData.banned.remove { e.player.uuid() == it.uuid }
+                    if (e.player != null) {
+                        if (ServerCommand.isUnBan) {
+                            PluginData.banned.remove { e.player.uuid() == it.uuid }
+                        }
+                        netServer.admins.unbanPlayerID(e.player.uuid())
                     }
-                    netServer.admins.unbanPlayerID(e.player.uuid())
                 }
                 EventTypes.PlayerIpUnban -> {
                     val e = event as PlayerIpUnbanEvent
