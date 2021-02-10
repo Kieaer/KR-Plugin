@@ -6,6 +6,6 @@ import mindustry.gen.Playerc
 
 class infoMessage(val player: Playerc, val msg: String) {
     init{
-        Core.app.post{ Call.infoMessage(msg)}
+        Core.app.post{ Call.infoMessage(player.con(), msg)}
     }
 }
