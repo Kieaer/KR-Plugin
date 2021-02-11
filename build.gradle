@@ -1,38 +1,38 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.4.30'
+    id "org.jetbrains.kotlin.jvm" version "1.4.30"
 }
 
 repositories {
     mavenCentral()
     jcenter()
-    maven { url 'https://www.jitpack.io' }
+    maven { url "https://www.jitpack.io" }
 }
 
 dependencies {
     // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.30"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.30"
 
     // Mindustry sources
-    compileOnly 'com.github.Anuken.Arc:arc-core:+'
-    compileOnly 'com.github.Anuken.Mindustry:core:+'
+    compileOnly "com.github.Anuken.Arc:arc-core:124.1"
+    compileOnly "com.github.Anuken.Mindustry:core:ea2b57ec4b"
 
     // Json library
-    implementation 'com.github.PersonTheCat:hjson-java:master'
+    implementation "com.github.PersonTheCat:hjson-java:master"
 
     // Discord
-    implementation 'com.mewna:catnip:master-SNAPSHOT'
+    implementation "com.mewna:catnip:master-SNAPSHOT"
 
     // E-mail
-    implementation 'org.simplejavamail:simple-java-mail:+'
+    implementation "org.simplejavamail:simple-java-mail:+"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test:1.4.30"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.4.30"
-    testImplementation 'com.github.Anuken.arc:arc-core:+'
-    testImplementation 'com.github.Anuken.Mindustry:core:+'
-    testImplementation 'com.github.Anuken.Mindustry:server:+'
-    testImplementation 'com.github.Anuken.arc:backend-headless:+'
-    testImplementation 'com.github.javafaker:javafaker:+'
+    testImplementation "com.github.Anuken.arc:arc-core:124.1"
+    testImplementation "com.github.Anuken.Mindustry:core:ea2b57ec4b"
+    testImplementation "com.github.Anuken.Mindustry:server:ea2b57ec4b"
+    testImplementation "com.github.Anuken.arc:backend-headless:124.1"
+    testImplementation "com.github.javafaker:javafaker:+"
 }
 
 jar {
@@ -47,16 +47,7 @@ compileKotlin {
 }
 
 wrapper {
-    gradleVersion = '6.7.1'
+    gradleVersion = "6.7.1"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-[compileJava,compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava,compileTestJava]*.options*.encoding = "UTF-8"
