@@ -1,5 +1,5 @@
 package korea
-import PermissionFileRead
+import korea.core.PermissionFileRead
 import korea.Main.Companion.isDispose
 import korea.PluginData.playerData
 import korea.event.feature.AutoRollback

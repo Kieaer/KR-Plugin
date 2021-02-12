@@ -1,5 +1,6 @@
 package korea.event
 
+import arc.Core
 import korea.Main.Companion.pluginRoot
 import korea.PluginData
 import korea.command.Permissions
@@ -18,7 +19,6 @@ import mindustry.game.Team
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.net.Administration
-import java.util.regex.Pattern
 
 class EventThread(private val type: EventTypes, private val event: Any) : Thread() {
     override fun run() {
@@ -211,25 +211,13 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.BlockBuildEnd -> {
                     val e = event as BlockBuildEndEvent
-                    val player = e.unit.player
 
-                    if (player != null) {
-                        if (e.breaking && player.unit() != null && player.unit()
-                                .buildPlan() != null && !Pattern.matches(
-                                ".*build.*", player.unit().buildPlan().block.name
-                            ) && e.tile.block() !== Blocks.air && e.breaking
-                        ) {
-
-                            val data = PluginData[player.uuid()]
-                            if (data != null) {
-                                data.breakCount++
-                            }
-                        } else {
-                        }
-
+                    if(e.unit.isPlayer) {
+                        val player = e.unit.player
                         val data = PluginData[player.uuid()]
-                        if (data != null) {
-                            data.placeCount++
+
+                        if (player != null && data != null) {
+                            if (e.breaking && player.unit() != null && player.unit().buildPlan() != null && e.tile.block() !== Blocks.air) data.breakCount++
                         }
                     }
                 }
@@ -251,14 +239,13 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val e = event as PlayerBanEvent
                     connect(e.player, "mindustry.ru", 6567)
                     PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid()))
-                    netServer.admins.unbanPlayerID(e.player.uuid())
+                    Core.app.post {netServer.admins.unbanPlayerID(e.player.uuid())}
                 }
                 EventTypes.PlayerIpBan -> {
                     val e = event as PlayerIpBanEvent
                     val uuid = netServer.admins.findByIP(e.ip)
                     PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none"))
-                    netServer.admins.bannedIPs.remove(e.ip, false)
-                    netServer.admins.save()
+                    Core.app.post {netServer.admins.unbanPlayerIP(e.ip)}
                 }
                 EventTypes.PlayerUnban -> {
                     val e = event as PlayerUnbanEvent
@@ -266,7 +253,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                         if (ServerCommand.isUnBan) {
                             PluginData.banned.remove { e.player.uuid() == it.uuid }
                         }
-                        netServer.admins.unbanPlayerID(e.player.uuid())
+                        Core.app.post {netServer.admins.unbanPlayerID(e.player.uuid())}
                     }
                 }
                 EventTypes.PlayerIpUnban -> {
@@ -274,7 +261,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     if(ServerCommand.isUnBan){
                         PluginData.banned.remove { e.ip == it.address }
                     }
-                    netServer.admins.unbanPlayerIP(e.ip)
+                        Core.app.post {netServer.admins.unbanPlayerIP(e.ip)}
                 }
                 EventTypes.ServerLoaded -> {
 

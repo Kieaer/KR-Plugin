@@ -135,7 +135,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
         }
     }
 
-    private fun finish(){
+    fun finish(){
         try {
             if (voted.size >= require) {
                 when (type) {
@@ -150,6 +150,9 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                     }
                     Gameover -> {
                         sendMessage("항복 투표가 통과 되었습니다!")
+                        Vars.state.serverPaused = true
+                        sleep(20000)
+                        sendMessage("20초동안 구경할 수 있는 시간을 드리겠습니다.")
                         Events.fire(EventType.GameOverEvent(Team.crux))
                     }
                     Skipwave -> {
@@ -171,6 +174,8 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
             }
             isVoting = false
             Events.remove(EventType.PlayerChatEvent::class.java) { listener }
+
+            votingType = None
         } catch (e: Throwable){
             e.printStackTrace()
         }

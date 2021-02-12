@@ -1,10 +1,9 @@
-
-import korea.Main.Companion.isDispose
+package korea.core
 import arc.util.async.Threads.sleep
-import korea.command.Permissions
 import korea.Main
-import korea.core.Log
+import korea.Main.Companion.isDispose
 import korea.PluginData
+import korea.command.Permissions
 import mindustry.gen.Groups
 import java.io.IOException
 import java.nio.file.*
@@ -30,7 +29,7 @@ object PermissionFileRead : Runnable{
                         if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                             Permissions.load()
                             tried = !tried
-                            Log.info("Permission 파일 업데이트됨")
+                            Log.info("$paths 파일 업데이트됨")
 
                             for(a in Groups.player){
                                 val data = PluginData[a.uuid()]
@@ -74,7 +73,8 @@ object PermissionFileRead : Runnable{
         try {
             watchService = FileSystems.getDefault().newWatchService()
             path = Paths.get(Main.pluginRoot.absolutePath())
-            path.register(watchService,
+            path.register(
+                watchService,
                     StandardWatchEventKinds.ENTRY_CREATE,
                     StandardWatchEventKinds.ENTRY_DELETE,
                     StandardWatchEventKinds.ENTRY_MODIFY,
