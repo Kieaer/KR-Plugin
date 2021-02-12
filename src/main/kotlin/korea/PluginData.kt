@@ -21,10 +21,11 @@ object PluginData : Config() {
     var totalUptime: Long = 0L
     var worldTime: Long = 0L
     var banned = Seq<Banned>()
+    var computeTime: Long = 0L
 
     var votingClass: Vote? = null
     var isVoting: Boolean = false
-    var votingType: VoteType? = null
+    var votingType: VoteType = VoteType.None
     var votingPlayer: Playerc = Nulls.player
 
     operator fun get(uuid: String): PlayerData? {

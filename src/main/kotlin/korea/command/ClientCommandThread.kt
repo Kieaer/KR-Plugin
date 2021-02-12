@@ -6,6 +6,7 @@ import arc.struct.Seq
 import korea.Main.Companion.pluginRoot
 import korea.PlayerData
 import korea.PluginData
+import korea.PluginData.computeTime
 import korea.PluginData.isVoting
 import korea.PluginData.playerData
 import korea.PluginData.votingClass
@@ -46,56 +47,59 @@ import kotlin.random.Random
 class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc): Thread(){
     override fun run() {
         val uuid = player.uuid()
+        val sendMessage = sendMessage(player)
+
         try {
             if (playerData.contains{e -> e.uuid == uuid} && Permissions.check(player, type.name.toLowerCase())) {
                 when (type) {
                     Login -> {
                         when {
                             playerData.find { e -> e.uuid == player.uuid() } != null -> {
-                                sendMessage(player, "이미 로그인 된 상태입니다")
+                                sendMessage["이미 로그인 된 상태입니다"]
                             }
                             PlayerCore.login(arg[0], arg[1]) -> {
                                 PlayerCore.load(player)
-                                sendMessage(player, "로그인 성공")
+                                sendMessage["로그인 성공"]
                             }
                             else -> {
-                                sendMessage(player, "로그인 실패")
+                                sendMessage["로그인 실패"]
                             }
                         }
                     }
                     Register -> {
-                        val id = arg[0]
-                        val pw = arg[1]
-                        val pw2 = arg[2]
+                        val pw = arg[0]
+                        if (arg.size != 1){
+                            sendMessage["아직도 /register <아아디> <비밀번호> <비밀번호 재입력> 을 쓰시나요?\n" +
+                                    "이제는 그냥 /register <비밀번호> 를 입력하시면 됩니다.\n" +
+                                    "비밀번호 정할때 구글이나 네이버에서 회원가입할때 비밀번호를 a123b 이라고 할때, 그 누구도 [scarlet]<[]a123b[scarlet]>[] 이라고 치진 않잖아요?\n" +
+                                    "진짜로 비밀번호 칠때 [scarlet]<[]a123b[scarlet]>[] 처럼 친다면, 이후에도 비밀번호를 [scarlet]<[]a123b[scarlet]>[] 으로 하게 될껍니다.\n" +
+                                    "남들은 그냥 손쉽게 치는데 자기 혼자만 [scarlet]<[] 하고 [scarlet]>[] 쓰니 불편하겠죠?"]
+                        }
 
                         // 비밀번호 패턴 확인
-                        if (pw != pw2) {
-                            sendMessage(player, "비밀번호 2번 입력하는 값이 일치하지 않습니다")
-                        } else {
-                            val result = RegularExpression.check(pw, "", id, true)
+                        val result = RegularExpression.check(pw, "", player.name(), true)
 
-                            if (result == "passed") {
-                                val data = netServer.admins.findByName(uuid).first() // TODO country 만들기
-                                PlayerCore.register(
-                                    player.name(),
-                                    uuid,
-                                    data.timesKicked.toLong(),
-                                    data.timesJoined.toLong(),
-                                    System.currentTimeMillis(),
-                                    System.currentTimeMillis(),
-                                    "none",
-                                    0L,
-                                    Permissions.defaultGroup,
-                                    JsonObject(),
-                                    id,
-                                    pw
-                                )
-                                sendMessage(player, "계정 등록 성공")
-                                PlayerCore.load(player)
-                            } else {
-                                sendMessage(player, result)
-                                sendMessage(player, "계정 등록 실패")
-                            }
+                        if (result == "passed") {
+                            val data = netServer.admins.findByName(uuid).first() // TODO country 만들기
+                            PlayerCore.register(
+                                name = player.name(),
+                                uuid = uuid,
+                                kickCount = data.timesKicked.toLong(),
+                                joinCount = data.timesJoined.toLong(),
+                                joinDate = System.currentTimeMillis(),
+                                lastDate = System.currentTimeMillis(),
+                                country = "none",
+                                rank = 0L,
+                                permission = Permissions.defaultGroup,
+                                json = JsonObject(),
+                                id = player.name(),
+                                pw = pw
+                            )
+                            sendMessage["계정 등록 성공"]
+                            PlayerCore.load(player)
+                        } else {
+                            sendMessage[result]
+                            sendMessage["계정 등록 실패"]
                         }
                     }
                     Spawn -> {
@@ -115,27 +119,27 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                                 baseUnit.add()
                                             }
                                         } else {
-                                            sendMessage(player, "block 는 유닛이 아닙니다! 스폰할 생각 하지 마세요.")
+                                            sendMessage["block 는 유닛이 아닙니다! 스폰할 생각 하지 마세요."]
                                         }
                                     } else {
-                                        sendMessage(player, "스폰할 유닛/건물 개수 값은 반드시 숫자이어야 합니다!")
+                                        sendMessage["스폰할 유닛/건물 개수 값은 반드시 숫자이어야 합니다!"]
                                     }
                                 } else {
                                     val names = StringBuilder()
                                     Vars.content.units().each {
                                         names.append("${it.name}, ")
                                     }
-                                    sendMessage(player, "사용 가능한 유닛 이름: ${names.dropLast(2)}")
+                                    sendMessage["사용 가능한 유닛 이름: ${names.dropLast(2)}"]
                                 }
                             }
                             type.equals("block", true) -> {
                                 constructFinish(
-                                    player.tileOn(),
-                                    Vars.content.blocks().find { b: Block -> b.name == name },
-                                    player.unit(),
-                                    parameter?.toByte() ?: 0,
-                                    player.team(),
-                                    null
+                                    tile = player.tileOn(),
+                                    block = Vars.content.blocks().find { b: Block -> b.name == name },
+                                    builder = player.unit(),
+                                    rotation = parameter?.toByte() ?: 0,
+                                    team = player.team(),
+                                    config = null
                                 )
                             }
                             else -> { // TODO 명령어 예외 만들기
@@ -147,8 +151,8 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         try {
                             if (!isVoting) {
                                 if (arg.isEmpty()) {
-                                    sendMessage(player, "사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]")
-                                    sendMessage(player, "자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요.")
+                                    sendMessage["사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]"]
+                                    sendMessage["자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요."]
                                 } else {
                                     val mode = EqualsIgnoreCase(VoteType.values(), arg[0], VoteType.None)
                                     if (mode != VoteType.None) {
@@ -156,17 +160,17 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                         votingClass = Vote(player, mode, if (arg.size == 2) arg[1] else "")
                                         votingClass?.start()
                                     } else {
-                                        sendMessage(player, "${arg[0]} 모드를 찾을 수 없습니다")
+                                        sendMessage["${arg[0]} 모드를 찾을 수 없습니다"]
                                     }
                                 }
                             } else {
                                 if (arg[0].equals("kill", true) && player.admin()) {
                                     if (isVoting) {
                                         votingClass?.isInterrupt = true
-                                        sendMessage(player, "투표 취소됨")
+                                        sendMessage["투표 취소됨"]
                                     }
                                 } else {
-                                    sendMessage(player, "${votingPlayer.name()} 이 시작한 ${votingType.name} 의 투표가 이미 진행 중입니다")
+                                    sendMessage["${votingPlayer.name()} 이 시작한 ${votingType.name} 의 투표가 이미 진행 중입니다"]
                                 }
                             }
                         } catch (e: Throwable) {
@@ -179,10 +183,10 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             if (!data.json.has("rainbow")) {
                                 data.json.add("rainbow", true)
                                 RainbowName.targets.add(player)
-                                sendMessage(player, "무지개 닉네임이 설정 되었습니다")
+                                sendMessage["무지개 닉네임이 설정 되었습니다"]
                             } else {
                                 data.json.remove("rainbow")
-                                sendMessage(player, "무지개 닉네임이 해제 되었습니다")
+                                sendMessage["무지개 닉네임이 해제 되었습니다"]
                             }
                         }
                     }
@@ -194,7 +198,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             if (target != null) {
                                 target.unit().kill()
                             } else {
-                                sendMessage(player, "목표를 찾을 수 없습니다")
+                                sendMessage["목표를 찾을 수 없습니다"]
                             }
                         }
                     }
@@ -219,17 +223,17 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                         if (data != null) {
                             val message = """
-                        [green]이름[white]: ${NetClient.colorizeName(target.id(), target.name())}
-                        [green]블럭 설치개수[white]: ${data.placeCount}
-                        [green]블럭 파괴개수[white]: ${data.breakCount}
-                        [green]레벨[white]: ${data.level}
-                        [green]경험치: ${data.exp}
-                        [green]최초 접속일[white]: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date(data.joinDate))}
-                        [green]플레이 시간[white]: ${LongToTime()[data.playTime]}
-                        [green]공격 맵 클리어[white]: ${data.attackWinner}
-                        [green]PvP 승리[white]: ${data.pvpWinner}
-                        [green]PvP 패배[white]: ${data.pvpLoser}
-                    """.trimIndent()
+                                [green]이름[white]: ${NetClient.colorizeName(target.id(), target.name())}
+                                [green]블럭 설치개수[white]: ${data.placeCount}
+                                [green]블럭 파괴개수[white]: ${data.breakCount}
+                                [green]레벨[white]: ${data.level}
+                                [green]경험치: ${data.exp}
+                                [green]최초 접속일[white]: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date(data.joinDate))}
+                                [green]플레이 시간[white]: ${LongToTime()[data.playTime]}
+                                [green]공격 맵 클리어[white]: ${data.attackWinner}
+                                [green]PvP 승리[white]: ${data.pvpWinner}
+                                [green]PvP 패배[white]: ${data.pvpLoser}
+                                """
                             infoMessage(player, message)
                         }
                     }
@@ -241,7 +245,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val pages = if (buffer > 1.0) buffer - 1 else 0
 
                         if (pages < page) {
-                            sendMessage(player, "[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다")
+                            sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
                         } else {
                             message.append("[green]==[white] 서버 맵 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
 
@@ -254,14 +258,14 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     } v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n"
                                 )
                             }
-                            sendMessage(player, message.toString().dropLast(1))
+                            sendMessage[message.toString().dropLast(1)]
                         }
                     }
                     Motd -> {
                         if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
-                            sendMessage(player, Administration.Config.motd.string())
+                            sendMessage[Administration.Config.motd.string()]
                         } else {
-                            sendMessage(player, pluginRoot.child("motd/motd.txt").readString("UTF-8"))
+                            sendMessage[pluginRoot.child("motd/motd.txt").readString("UTF-8")]
                         }
                     }
                     Players -> {
@@ -272,7 +276,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val pages = if (buffer > 1.0) buffer - 1 else 0
 
                         if (pages < page) {
-                            sendMessage(player, "[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다")
+                            sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
                         } else {
                             message.append("[green]==[white] 현재 서버 플레이어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
 
@@ -289,124 +293,131 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 )
                             }
 
-                            sendMessage(player, message.toString().dropLast(2))
+                            sendMessage[message.toString().dropLast(2)]
                         }
                     }
                     Router -> {
-                        val zero = arrayOf(
+                        val zero = arrayOf("""
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [stat][#404040]
+                            [stat][#404040][]
+                            [#404040][stat]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [stat][#404040][][#404040]
+                            """.trimIndent(),
                             """
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [stat][#404040]
-                    [stat][#404040][]
-                    [#404040][stat]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [stat][#404040][][#404040]
-                    """.trimIndent(), """
-                    [stat][#404040][]
-                    [stat][#404040]
-                    [stat][#404040][]
-                    [#404040][stat]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [stat][#404040]
-                    [stat][#404040][][#404040][]
-                    """.trimIndent(), """
-                    [stat][#404040][][#404040]
-                    [stat][#404040][]
-                    [#404040][stat]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [stat][#404040]
-                    [stat][#404040][]
-                    [#404040][stat][][stat]
-                    """.trimIndent(), """
-                    [stat][#404040][][#404040][]
-                    [#404040][stat]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [stat][#404040]
-                    [stat][#404040][]
-                    [#404040][stat]
-                    [stat][#404040][]
-                    """.trimIndent(), """
-                    [#404040][stat][][stat]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [stat][#404040]
-                    [stat][#404040][]
-                    [#404040][stat]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    """.trimIndent()
-                        )
-                        val loop = arrayOf(
+                            [stat][#404040][]
+                            [stat][#404040]
+                            [stat][#404040][]
+                            [#404040][stat]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [stat][#404040]
+                            [stat][#404040][][#404040][]
+                            """.trimIndent(),
                             """
-                    [#6B6B6B][stat][#6B6B6B]
-                    [stat][#404040][]
-                    [stat][#404040]
-                    [stat][#404040][]
-                    [#404040][]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [#6B6B6B][stat][#404040][][#6B6B6B]
-                    """.trimIndent(), """
-                    [#6B6B6B][stat][#6B6B6B]
-                    [#6B6B6B][stat][#404040][][#6B6B6B]
-                    [stat][#404040][]
-                    [#404040][]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [#6B6B6B][stat][#404040][][#6B6B6B]
-                    [#6B6B6B][stat][#6B6B6B]
-                    """.trimIndent(), """
-                    [#6B6B6B][#585858][stat][][#6B6B6B]
-                    [#6B6B6B][#828282][stat][#404040][][][#6B6B6B]
-                    [#585858][stat][#404040][][#585858]
-                    [stat][#404040][]
-                    [stat][#404040][]
-                    [#585858][stat][#404040][][#585858]
-                    [#6B6B6B][stat][#404040][][#828282][#6B6B6B]
-                    [#6B6B6B][#585858][stat][][#6B6B6B]
-                    """.trimIndent(), """
-                    [#6B6B6B][#585858][#6B6B6B]
-                    [#6B6B6B][#828282][stat][][#6B6B6B]
-                    [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
-                    [#585858][stat][#404040][][#585858]
-                    [#585858][stat][#404040][][#585858]
-                    [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
-                    [#6B6B6B][stat][][#828282][#6B6B6B]
-                    [#6B6B6B][#585858][#6B6B6B]
-                    """.trimIndent(), """
-                    [#6B6B6B][#585858][#6B6B6B]
-                    [#6B6B6B][#828282][#6B6B6B]
-                    [#585858][#6B6B6B][stat][][#828282][#585858]
-                    [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
-                    [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
-                    [#585858][#6B6B6B][stat][][#828282][#585858]
-                    [#6B6B6B][#828282][#6B6B6B]
-                    [#6B6B6B][#585858][#6B6B6B]
-                    """.trimIndent(), """
-                    [#6B6B6B][#585858][#6B6B6B]
-                    [#6B6B6B][#828282][#6B6B6B]
-                    [#585858][#6B6B6B][#828282][#585858]
-                    [#585858][#6B6B6B][stat][#6B6B6B][#828282][#585858]
-                    [#585858][#6B6B6B][stat][#6B6B6B][#828282][#585858]
-                    [#585858][#6B6B6B][#828282][#585858]
-                    [#6B6B6B][#828282][#6B6B6B]
-                    [#6B6B6B][#585858][#6B6B6B]
-                    """.trimIndent(), """
-                    [#6B6B6B][#585858][#6B6B6B]
-                    [#6B6B6B][#828282][#6B6B6B]
-                    [#585858][#6B6B6B][#828282][#585858]
-                    [#585858][#6B6B6B][#828282][#6B6B6B][#828282][#585858]
-                    [#585858][#6B6B6B][#828282][#6B6B6B][#828282][#585858]
-                    [#585858][#6B6B6B][#828282][#585858]
-                    [#6B6B6B][#828282][#6B6B6B]
-                    [#6B6B6B][#585858][#6B6B6B]
-                    """.trimIndent()
-                        )
+                            [stat][#404040][][#404040]
+                            [stat][#404040][]
+                            [#404040][stat]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [stat][#404040]
+                            [stat][#404040][]
+                            [#404040][stat][][stat]
+                            """.trimIndent(),
+                            """
+                            [stat][#404040][][#404040][]
+                            [#404040][stat]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [stat][#404040]
+                            [stat][#404040][]
+                            [#404040][stat]
+                            [stat][#404040][]
+                            """.trimIndent(),
+                            """
+                            [#404040][stat][][stat]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [stat][#404040]
+                            [stat][#404040][]
+                            [#404040][stat]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            """.trimIndent()
+                            )
+                        val loop = arrayOf("""
+                            [#6B6B6B][stat][#6B6B6B]
+                            [stat][#404040][]
+                            [stat][#404040]
+                            [stat][#404040][]
+                            [#404040][]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [#6B6B6B][stat][#404040][][#6B6B6B]
+                            """.trimIndent(),
+                            """
+                            [#6B6B6B][stat][#6B6B6B]
+                            [#6B6B6B][stat][#404040][][#6B6B6B]
+                            [stat][#404040][]
+                            [#404040][]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [#6B6B6B][stat][#404040][][#6B6B6B]
+                            [#6B6B6B][stat][#6B6B6B]
+                            """.trimIndent(),
+                            """
+                            [#6B6B6B][#585858][stat][][#6B6B6B]
+                            [#6B6B6B][#828282][stat][#404040][][][#6B6B6B]
+                            [#585858][stat][#404040][][#585858]
+                            [stat][#404040][]
+                            [stat][#404040][]
+                            [#585858][stat][#404040][][#585858]
+                            [#6B6B6B][stat][#404040][][#828282][#6B6B6B]
+                            [#6B6B6B][#585858][stat][][#6B6B6B]
+                            """.trimIndent(),
+                            """
+                            [#6B6B6B][#585858][#6B6B6B]
+                            [#6B6B6B][#828282][stat][][#6B6B6B]
+                            [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
+                            [#585858][stat][#404040][][#585858]
+                            [#585858][stat][#404040][][#585858]
+                            [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
+                            [#6B6B6B][stat][][#828282][#6B6B6B]
+                            [#6B6B6B][#585858][#6B6B6B]
+                            """.trimIndent(),
+                            """
+                            [#6B6B6B][#585858][#6B6B6B]
+                            [#6B6B6B][#828282][#6B6B6B]
+                            [#585858][#6B6B6B][stat][][#828282][#585858]
+                            [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
+                            [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
+                            [#585858][#6B6B6B][stat][][#828282][#585858]
+                            [#6B6B6B][#828282][#6B6B6B]
+                            [#6B6B6B][#585858][#6B6B6B]
+                            """.trimIndent(),
+                            """
+                            [#6B6B6B][#585858][#6B6B6B]
+                            [#6B6B6B][#828282][#6B6B6B]
+                            [#585858][#6B6B6B][#828282][#585858]
+                            [#585858][#6B6B6B][stat][#6B6B6B][#828282][#585858]
+                            [#585858][#6B6B6B][stat][#6B6B6B][#828282][#585858]
+                            [#585858][#6B6B6B][#828282][#585858]
+                            [#6B6B6B][#828282][#6B6B6B]
+                            [#6B6B6B][#585858][#6B6B6B]
+                            """.trimIndent(),
+                            """
+                            [#6B6B6B][#585858][#6B6B6B]
+                            [#6B6B6B][#828282][#6B6B6B]
+                            [#585858][#6B6B6B][#828282][#585858]
+                            [#585858][#6B6B6B][#828282][#6B6B6B][#828282][#585858]
+                            [#585858][#6B6B6B][#828282][#6B6B6B][#828282][#585858]
+                            [#585858][#6B6B6B][#828282][#585858]
+                            [#6B6B6B][#828282][#6B6B6B]
+                            [#6B6B6B][#585858][#6B6B6B]
+                            """.trimIndent())
                         while (!player.isNull) {
                             for (d in loop) {
                                 player.name(d)
@@ -431,16 +442,25 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             else -> ""
                         }
 
+                        val computeResult = (System.nanoTime() - computeTime) / 1000000
+                        val computeTps = when {
+                            computeResult >= 19 -> "[red]"
+                            computeResult >= 18 -> "[yellow]"
+                            computeResult <= 17 -> "[green]"
+                            else -> ""
+                        }
+
                         val message = """
-                    [#2B60DE]== 서버 통계 =========================[]
-                    TPS: $tps${Core.graphics.framesPerSecond}/60[white]
-                    메모리: ${Core.app.javaHeap / 1024 / 1024}MB
-                    밴당한 인원: ${PluginData.banned.size}
-                    총 접속인원: ${PluginData.totalConnected}
-                    서버 총 온라인 시간: ${LongToTime()[PluginData.totalUptime]}
-                    맵 플레이 시간: ${LongToTime()[PluginData.worldTime]}
-                """.trimIndent()
-                        sendMessage(player, message)
+                            [#2B60DE]== 서버 통계 =========================[]
+                            TPS: $tps${Core.graphics.framesPerSecond}[white]/60
+                            서버 CPU 연산 시간: $computeTps${computeResult}ms[white]/16ms
+                            사용중인 메모리: ${Core.app.javaHeap / 1024 / 1024}MB
+                            밴당한 인원: ${PluginData.banned.size}
+                            총 접속인원: ${PluginData.totalConnected}
+                            서버 총 온라인 시간: ${LongToTime()[PluginData.totalUptime]}
+                            맵 플레이 시간: ${LongToTime()[PluginData.worldTime]}
+                            """.trimIndent()
+                        sendMessage[message]
                     }
                     Team -> {
                         val team = mindustry.game.Team.all.find { e -> e.name == arg[0] }
@@ -450,13 +470,13 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 if (target != null) {
                                     target.team(team)
                                 } else {
-                                    sendMessage(player, "${arg[1]} 플레이어를 찾을 수 없습니다")
+                                    sendMessage["${arg[1]} 플레이어를 찾을 수 없습니다"]
                                 }
                             } else {
                                 player.team(team)
                             }
                         } else {
-                            sendMessage(player, "${arg[0]} 팀을 찾을 수 없습니다")
+                            sendMessage["${arg[0]} 팀을 찾을 수 없습니다"]
                         }
                     }
                     Ban -> {
@@ -474,9 +494,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                                 if (target != null) {
                                     setPosition(player, target.x, target.y)
-                                    sendMessage(player, "${target.name()} 에게로 이동했습니다.")
+                                    sendMessage["${target.name()} 에게로 이동했습니다."]
                                 } else {
-                                    sendMessage(player, "${arg[0]} 플레이어를 찾을 수 없습니다")
+                                    sendMessage["${arg[0]} 플레이어를 찾을 수 없습니다"]
                                 }
                             }
                             2 -> {
@@ -494,9 +514,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     }
                                     if (other != null) {
                                         setPosition(target, other.x, other.y)
-                                        sendMessage(player, "${target.name()} 님을 ${other.name()} 에게로 이동했습니다.")
+                                        sendMessage["${target.name()} 님을 ${other.name()} 에게로 이동했습니다."]
                                     } else {
-                                        sendMessage(player, "${arg[1]} 플레이어를 찾을 수 없습니다")
+                                        sendMessage["${arg[1]} 플레이어를 찾을 수 없습니다"]
                                     }
                                 } else {
                                     try {
@@ -506,9 +526,9 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                         player.unit().set(tileX, tileY)
                                         player.snapSync()
                                     } catch (_: NumberFormatException) {
-                                        sendMessage(player, "잘못된 명령어 입니다")
+                                        sendMessage["잘못된 명령어 입니다"]
                                     }
-                                    sendMessage(player, "${arg[0]} 플레이어를 찾을 수 없습니다")
+                                    sendMessage["${arg[0]} 플레이어를 찾을 수 없습니다"]
                                 }
                             }
                         }
@@ -543,7 +563,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val pages = if (buffer > 1.0) buffer - 1 else 0
 
                         if (pages < page) {
-                            sendMessage(player, "[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다")
+                            sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
                         } else {
                             message.append("[green]==[white] 사용 가능한 명령어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
                         }
@@ -552,13 +572,13 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             message.append(commands.get(a))
                         }
 
-                        sendMessage(player, message.toString())
+                        sendMessage[message.toString()]
                     }
                     ClientCommand.Command.Discord -> {
                         val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
                         Discord.pin.put(pin, player.uuid())
-                        sendMessage(player, "Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요")
-                        sendMessage(player, "PIN 번호: $pin")
+                        sendMessage["Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요"]
+                        sendMessage["PIN 번호: $pin"]
                     }
                 }
             }

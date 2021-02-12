@@ -3,6 +3,7 @@ import arc.ApplicationListener
 import arc.Core
 import arc.files.Fi
 import arc.util.CommandHandler
+import korea.PluginData.computeTime
 import korea.PluginData.playerData
 import korea.command.ClientCommand
 import korea.command.Permissions
@@ -60,6 +61,17 @@ class Main : Plugin() {
         Threads
 
         Core.app.addListener(object : ApplicationListener {
+            var tick = 0
+
+            override fun init() {
+                computeTime = System.nanoTime()
+            }
+
+            override fun update() {
+                computeTime = System.nanoTime()
+                tick++
+            }
+
             override fun dispose() {
                 isDispose = true
 

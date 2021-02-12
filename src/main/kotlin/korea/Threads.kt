@@ -1,7 +1,7 @@
 package korea
-import korea.core.PermissionFileRead
 import korea.Main.Companion.isDispose
 import korea.PluginData.playerData
+import korea.core.PermissionFileRead
 import korea.event.feature.AutoRollback
 import korea.event.feature.RainbowName
 import mindustry.Vars
