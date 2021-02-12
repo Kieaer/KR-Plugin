@@ -24,7 +24,7 @@ object ClientCommand {
         handler.register("login", "<id> <password>", "Log in to player's account") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Login, arg, player))
         }
-        handler.register("register", "<new_password>", "Register an account on the server") { arg: Array<String>, player: Playerc ->
+        handler.register("register", "[new_password]", "Register an account on the server") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Register, arg, player))
         }
         handler.register("spawn", "<unit/block> <name> [amount/rotation]", "Spawn any block/units") { arg: Array<String>, player: Playerc ->

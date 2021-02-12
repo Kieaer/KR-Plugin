@@ -67,14 +67,16 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         }
                     }
                     Register -> {
-                        val pw = arg[0]
                         if (arg.size != 1){
                             sendMessage["아직도 /register <아아디> <비밀번호> <비밀번호 재입력> 을 쓰시나요?\n" +
                                     "이제는 그냥 /register <비밀번호> 를 입력하시면 됩니다.\n" +
                                     "비밀번호 정할때 구글이나 네이버에서 회원가입할때 비밀번호를 a123b 이라고 할때, 그 누구도 [scarlet]<[]a123b[scarlet]>[] 이라고 치진 않잖아요?\n" +
                                     "진짜로 비밀번호 칠때 [scarlet]<[]a123b[scarlet]>[] 처럼 친다면, 이후에도 비밀번호를 [scarlet]<[]a123b[scarlet]>[] 으로 하게 될껍니다.\n" +
                                     "남들은 그냥 손쉽게 치는데 자기 혼자만 [scarlet]<[] 하고 [scarlet]>[] 쓰니 불편하겠죠?"]
+                            return
                         }
+
+                        val pw = arg[0]
 
                         // 비밀번호 패턴 확인
                         val result = RegularExpression.check(pw, "", player.name(), true)
