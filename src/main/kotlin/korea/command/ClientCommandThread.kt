@@ -19,6 +19,7 @@ import korea.eof.constructFinish
 import korea.eof.infoMessage
 import korea.eof.sendMessage
 import korea.eof.setPosition
+import korea.event.Exp
 import korea.event.feature.RainbowName
 import korea.event.feature.Vote
 import korea.event.feature.VoteType
@@ -50,7 +51,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
         val sendMessage = sendMessage(player)
 
         try {
-            if (playerData.contains{e -> e.uuid == uuid} && Permissions.check(player, type.name.toLowerCase())) {
+            if (Permissions.check(player, type.name.toLowerCase())) {
                 when (type) {
                     Login -> {
                         when {
@@ -229,13 +230,13 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 [green]블럭 설치개수[white]: ${data.placeCount}
                                 [green]블럭 파괴개수[white]: ${data.breakCount}
                                 [green]레벨[white]: ${data.level}
-                                [green]경험치: ${data.exp}
+                                [green]경험치: ${Exp[data]}
                                 [green]최초 접속일[white]: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date(data.joinDate))}
                                 [green]플레이 시간[white]: ${LongToTime()[data.playTime]}
                                 [green]공격 맵 클리어[white]: ${data.attackWinner}
                                 [green]PvP 승리[white]: ${data.pvpWinner}
                                 [green]PvP 패배[white]: ${data.pvpLoser}
-                                """
+                                """.trimIndent()
                             infoMessage(player, message)
                         }
                     }

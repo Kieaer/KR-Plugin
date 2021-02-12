@@ -28,10 +28,10 @@ object Config : DataConfig() {
     var authType = AuthType.Password
 
     /** Discord 서버 토큰 */
-    var discordServerToken = 0L
+    var discordServerToken = ""
 
     /** Discord 채널 토큰 */
-    var discordChannelToken = 0L
+    var discordChannelToken = ""
 
     /** Discord 봇 토큰 */
     var discordBotToken = ""
@@ -96,8 +96,8 @@ object Config : DataConfig() {
         debug = data.getBoolean("debug", debug)
         kickAFK = data.getLong("kickAFK", kickAFK)
         authType = EqualsIgnoreCase(AuthType.values(), "authType", authType)
-        discordServerToken = data.getLong("discordServerToken", discordServerToken)
-        discordChannelToken = data.getLong("discordChannelToken", discordChannelToken)
+        discordServerToken = data.get("discordServerToken").asString()
+        discordChannelToken = data.get("discordChannelToken").asString()
         discordBotToken = data.getString("discordBotToken", discordBotToken)
         enableVote = data.getBoolean("enableVote", enableVote)
         networkMode = EqualsIgnoreCase(NetworkMode.values(), "networkMode", networkMode)

@@ -59,8 +59,7 @@ class Main : Plugin() {
 
         // 스레드 시작
         Threads
-
-        Core.app.addListener(object : ApplicationListener {
+                Core.app.addListener(object : ApplicationListener {
             var tick = 0
 
             override fun init() {
@@ -99,7 +98,12 @@ class Main : Plugin() {
         // 비 로그인 유저 통제
         Vars.netServer.admins.addActionFilter { e ->
             if (e.player == null) return@addActionFilter true
-            return@addActionFilter playerData.find { d -> e.player.uuid() == d.uuid } != null
+            return@addActionFilter if(playerData.find { d -> e.player.uuid() == d.uuid } == null){
+                e.player.sendMessage("이 서버는 계정 등록을 하지 않으면 플레이 하실 수 없습니다!\n먼저 [green]/register[] 명령어를 사용 해 보세요.")
+                false
+            } else {
+                true
+            }
         }
 
         Log.system("플러그인 로드 완료!")

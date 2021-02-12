@@ -26,10 +26,10 @@ class PlayerData {
     var joinCount: Long = 0L
 
     /** 플레이어 레벨 */
-    var level: Long = 0L
+    var level: Int = 0
 
     /** 플레이어 경험치 */
-    var exp: Long = 0L
+    var exp: Int = 0
 
     /** 최초 접속일 */
     var joinDate: Long = 0L
@@ -79,7 +79,7 @@ class PlayerData {
     /** json 데이터 */
     var json: JsonObject = JsonObject()
 
-    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Long, exp: Long, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long, json: JsonObject, id: String, pw: String){
+    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Int, exp: Int, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long, json: JsonObject, id: String, pw: String){
         this.name = name
         this.uuid = uuid
         this.admin = admin

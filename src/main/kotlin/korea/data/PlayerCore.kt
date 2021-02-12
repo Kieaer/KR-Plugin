@@ -88,8 +88,8 @@ object PlayerCore {
                 rs.getLong("breakCount"),
                 rs.getLong("kickCount"),
                 rs.getLong("joinCount"),
-                rs.getLong("level"),
-                rs.getLong("exp"),
+                rs.getInt("level"),
+                rs.getInt("exp"),
                 rs.getLong("joinDate"),
                 rs.getLong("lastDate"),
                 rs.getLong("playTime"),
@@ -119,6 +119,11 @@ object PlayerCore {
             Permissions.createNewData(data)
         }
 
+        // Discord 인증 확인
+        if(data.json.has("discord")){
+            Permissions.userData.get(data.uuid).asObject().set("chatFormat", "[#738ADB]\uE80D[] ${Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")}")
+        }
+
         // 고정닉 설정
         val perms = Permissions.userData.get(data.uuid).asObject()
         player.name(perms.getString("name", player.name()))
@@ -144,8 +149,8 @@ object PlayerCore {
         sql.setLong(5, data.breakCount)
         sql.setLong(6, data.kickCount)
         sql.setLong(7, data.joinCount)
-        sql.setLong(8, data.level)
-        sql.setLong(9, data.exp)
+        sql.setInt(8, data.level)
+        sql.setInt(9, data.exp)
         sql.setLong(10, data.lastDate)
         sql.setLong(11, data.playTime)
         sql.setLong(12, data.attackWinner)
