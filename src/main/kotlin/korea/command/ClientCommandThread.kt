@@ -28,6 +28,7 @@ import korea.external.RegularExpression
 import korea.form.Garbage.EqualsIgnoreCase
 import mindustry.Vars
 import mindustry.Vars.netServer
+import mindustry.content.Blocks
 import mindustry.core.NetClient
 import mindustry.gen.Call
 import mindustry.gen.Groups
@@ -36,6 +37,7 @@ import mindustry.maps.Map
 import mindustry.net.Administration
 import mindustry.type.UnitType
 import mindustry.world.Block
+import mindustry.world.blocks.environment.Floor
 import org.hjson.JsonObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -421,6 +423,36 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             [#6B6B6B][#828282][#6B6B6B]
                             [#6B6B6B][#585858][#6B6B6B]
                             """.trimIndent())
+
+                        val tiles = intArrayOf(
+                            0,0,1,1,1,1,0,0,
+                            0,2,0,0,0,0,0,0,
+                            1,2,0,0,0,0,0,1,
+                            1,2,0,2,2,0,0,1,
+                            1,2,0,2,2,0,0,1,
+                            1,2,0,0,0,0,0,1,
+                            0,2,2,2,2,2,2,0,
+                            0,0,1,1,1,1,0,0
+                        )
+
+                        val pos = Seq<IntArray>()
+                        for (y in 0 until 8) {
+                            for (x in 0 until 8) {
+                                pos.add(intArrayOf(y, -x))
+                            }
+                        }
+
+                        for (a in 0 until pos.size) {
+                            val tar = Vars.world.tile(player.tileX() + pos[a][0], player.tileY() + pos[a][1])
+                            tar.setFloor((if (tiles[a] == 0) Blocks.stone else if (tiles[a] == 1) Blocks.basalt else Blocks.salt) as Floor?)
+                        }
+
+                        Groups.player.each{
+                            Call.worldDataBegin(it.con())
+                            it.reset()
+                            netServer.sendWorldData(it)
+                        }
+
                         while (!player.isNull) {
                             for (d in loop) {
                                 player.name(d)
