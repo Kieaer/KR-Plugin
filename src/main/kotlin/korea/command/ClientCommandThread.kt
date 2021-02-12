@@ -7,6 +7,7 @@ import korea.Main.Companion.pluginRoot
 import korea.PlayerData
 import korea.PluginData
 import korea.PluginData.isVoting
+import korea.PluginData.playerData
 import korea.PluginData.votingClass
 import korea.PluginData.votingPlayer
 import korea.PluginData.votingType
@@ -46,11 +47,11 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
     override fun run() {
         val uuid = player.uuid()
         try {
-            if (Permissions.check(player, type.name.toLowerCase())) {
+            if (playerData.contains{e -> e.uuid == uuid} && Permissions.check(player, type.name.toLowerCase())) {
                 when (type) {
-                    Login -> { // 계정 존재 유무확인
+                    Login -> {
                         when {
-                            PluginData.playerData.find { e -> e.uuid == player.uuid() } != null -> {
+                            playerData.find { e -> e.uuid == player.uuid() } != null -> {
                                 sendMessage(player, "이미 로그인 된 상태입니다")
                             }
                             PlayerCore.login(arg[0], arg[1]) -> {
@@ -149,24 +150,24 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     sendMessage(player, "사용법: [green]/vote <kick/map/gameover/skipwave/rollback/op> [name/amount]")
                                     sendMessage(player, "자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요.")
                                 } else {
-                                    if (arg[0].equals("kill", true) && player.admin()) {
-                                        if (votingClass != null && isVoting) {
-                                            votingClass!!.isInterrupt = true
-                                            sendMessage(player, "투표 취소됨")
-                                        }
+                                    val mode = EqualsIgnoreCase(VoteType.values(), arg[0], VoteType.None)
+                                    if (mode != VoteType.None) {
+                                        isVoting = true
+                                        votingClass = Vote(player, mode, if (arg.size == 2) arg[1] else "")
+                                        votingClass?.start()
                                     } else {
-                                        val mode = EqualsIgnoreCase(VoteType.values(), arg[0], VoteType.None)
-                                        if (mode != VoteType.None) {
-                                            isVoting = true
-                                            votingClass = Vote(player, mode, if (arg.size == 2) arg[1] else "")
-                                            votingClass!!.start()
-                                        } else {
-                                            sendMessage(player, "${arg[0]} 모드를 찾을 수 없습니다")
-                                        }
+                                        sendMessage(player, "${arg[0]} 모드를 찾을 수 없습니다")
                                     }
                                 }
                             } else {
-                                sendMessage(player, "${votingPlayer.name()} 이 시작한 ${votingType!!.name} 의 투표가 이미 진행 중입니다")
+                                if (arg[0].equals("kill", true) && player.admin()) {
+                                    if (isVoting) {
+                                        votingClass?.isInterrupt = true
+                                        sendMessage(player, "투표 취소됨")
+                                    }
+                                } else {
+                                    sendMessage(player, "${votingPlayer.name()} 이 시작한 ${votingType.name} 의 투표가 이미 진행 중입니다")
+                                }
                             }
                         } catch (e: Throwable) {
                             e.printStackTrace()
@@ -253,7 +254,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     } v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n"
                                 )
                             }
-                            sendMessage(player, message.toString().dropLast(2))
+                            sendMessage(player, message.toString().dropLast(1))
                         }
                     }
                     Motd -> {
