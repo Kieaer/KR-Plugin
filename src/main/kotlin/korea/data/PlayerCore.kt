@@ -125,11 +125,6 @@ object PlayerCore {
             Permissions.createNewData(data)
         }
 
-        // Discord 인증 확인
-        if(data.json.has("discord")){
-            Permissions.userData.get(data.uuid).asObject().set("chatFormat", "[#738ADB]\uE80D[] ${Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")}")
-        }
-
         // 고정닉 설정
         val perms = Permissions.userData.get(data.uuid).asObject()
         player.name(perms.getString("name", player.name()))

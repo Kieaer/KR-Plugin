@@ -193,7 +193,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                                     sendMessage(
                                         Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")
                                             .replace(
-                                                "%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}"
+                                                "%1", "${if(data.json.has("discord")) "[#738ADB][]" else ""}[#${e.player.color.toString().toUpperCase()}]${e.player.name}"
                                             ).replace("%2", e.message)
                                     )
                                 } else {
