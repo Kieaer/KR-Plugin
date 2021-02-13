@@ -65,8 +65,11 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             }
 
                             PlayerCore.login(arg[0], hashed) -> {
-                                PlayerCore.load(player)
-                                sendMessage["로그인 성공"]
+                                if(PlayerCore.load(player)) {
+                                    sendMessage["로그인 성공"]
+                                } else {
+                                    sendMessage["잘못된 경로로 접근했습니다! /register 명령어부터 사용 해 주세요."]
+                                }
                             }
                             else -> {
                                 sendMessage["로그인 실패"]
@@ -86,16 +89,14 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         val pw = arg[0]
 
                         // 비밀번호 패턴 확인
-                        val result = RegularExpression.check(pw, "", player.name(), true)
                         val hashed = BCrypt.hashpw(arg[0], BCrypt.gensalt(11))
-
-                        if (result == "passed") {
+                        if (RegularExpression.check(pw)) {
                             val data = netServer.admins.findByName(uuid).first() // TODO country 만들기
-                            PlayerCore.register(
+                            val request = PlayerCore.register(
                                 name = player.name(),
                                 uuid = uuid,
-                                kickCount = data.timesKicked.toLong(),
-                                joinCount = data.timesJoined.toLong(),
+                                kickCount = data.timesKicked,
+                                joinCount = data.timesJoined,
                                 joinDate = System.currentTimeMillis(),
                                 lastDate = System.currentTimeMillis(),
                                 country = "none",
@@ -105,11 +106,14 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 id = player.name(),
                                 pw = hashed
                             )
-                            sendMessage["계정 등록 성공"]
-                            PlayerCore.load(player)
+                            if(request){
+                                sendMessage["계정 등록 성공"]
+                                PlayerCore.load(player)
+                            } else {
+                                sendMessage["이미 이 기기에 등록된 계정이 존재하거나, 서버 오류에 의해 계정 등록에 실패했습니다."]
+                            }
                         } else {
-                            sendMessage[result]
-                            sendMessage["계정 등록 실패"]
+                            sendMessage["비밀번호는 최소한 6자리 이상과 영문/숫자를 포함해야 합니다!"]
                         }
                     }
                     Spawn -> {

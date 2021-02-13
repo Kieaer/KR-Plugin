@@ -111,9 +111,9 @@ object DB {
         val fields = PlayerData::class.declaredMemberProperties
         for (a in fields){
             when (a.returnType.toString()){
-                "kotlin.Long", "kotlin.Int" -> sql.append("\"${a.name}\" BIGINT,")
-                "kotlin.String" -> sql.append("\"${a.name}\" VARCHAR(255),")
-                "kotlin.Boolean" -> sql.append("\"${a.name}\" BOOLEAN,")
+                "kotlin.Long", "kotlin.Int" -> sql.append("\"${a.name}\" BIGINT NULL,")
+                "kotlin.String" -> sql.append("\"${a.name}\" VARCHAR(255) NULL,")
+                "kotlin.Boolean" -> sql.append("\"${a.name}\" BOOLEAN NULL,")
             }
         }
         sql.append("\"json\" CLOB")

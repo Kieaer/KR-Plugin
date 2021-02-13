@@ -14,8 +14,8 @@ object PlayerCore {
     fun register(
         name: String,
         uuid: String,
-        kickCount: Long,
-        joinCount: Long,
+        kickCount: Int,
+        joinCount: Int,
         joinDate: Long,
         lastDate: Long,
         country: String,
@@ -25,6 +25,12 @@ object PlayerCore {
         id: String,
         pw: String
     ) : Boolean{
+        val duplicate = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
+        duplicate.setString(1, uuid)
+        if (duplicate.executeQuery().next()){
+            return false
+        }
+
         val sql = DB.database.prepareStatement(("INSERT INTO players (" +
                 "\"name\",\"uuid\",\"admin\",\"placeCount\",\"breakCount\",\"kickCount\",\"joinCount\",\"level\",\"exp\",\"joinDate\",\"lastDate\",\"playTime\",\"attackWinner\",\"pvpWinner\",\"pvpLoser\",\"rainbowName\",\"isMute\",\"isLogged\",\"country\",\"rank\", \"permission\", \"json\", \"id\", \"pw\"" +
                 ") VALUES (${"?,".repeat(PluginData.playerDataFieldSize)}").dropLast(1)+")")
@@ -33,16 +39,16 @@ object PlayerCore {
         sql.setBoolean(3, false) // admin
         sql.setLong(4, 0L) // placeCount
         sql.setLong(5, 0L) // breakCount
-        sql.setLong(6, kickCount)
-        sql.setLong(7, joinCount)
+        sql.setInt(6, kickCount)
+        sql.setInt(7, joinCount)
         sql.setLong(8, 1L) // Level
         sql.setLong(9, 0L) // Exp
         sql.setLong(10, joinDate)
         sql.setLong(11, lastDate)
         sql.setLong(12, 0L) // time
-        sql.setLong(13, 0L) // attackWinner
-        sql.setLong(14, 0L) // pvpWinner
-        sql.setLong(15, 0L) // pvpPloser
+        sql.setInt(13, 0) // attackWinner
+        sql.setInt(14, 0) // pvpWinner
+        sql.setInt(15, 0) // pvpPloser
         sql.setBoolean(16, false) // rainbowName
         sql.setBoolean(17, false) // isMute
         sql.setBoolean(18, false) // isLogged
@@ -117,8 +123,9 @@ object PlayerCore {
         return data
     }
 
-    fun load(player: Playerc){
+    fun load(player: Playerc) : Boolean{
         val data = getData(player)
+        if (data.afkTime == null) return false
 
         // 권한 파일 생성
         if(Permissions.userData.find { e -> e.name == player.uuid() } == null) {
@@ -134,6 +141,7 @@ object PlayerCore {
         data.lastDate = System.currentTimeMillis()
 
         playerData.add(data)
+        return true
     }
 
     fun save(uuid: String): Boolean{
@@ -160,7 +168,7 @@ object PlayerCore {
         sql.setBoolean(15, data.rainbowName)
         sql.setBoolean(16, data.isMute)
         sql.setBoolean(17, data.isLogged)
-        sql.setLong(18, data.afkTime)
+        sql.setLong(18, data.afkTime!!)
         sql.setString(19, data.country)
         sql.setLong(20, data.rank)
         sql.setString(21, data.permission)
