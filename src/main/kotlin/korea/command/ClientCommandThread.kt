@@ -39,6 +39,7 @@ import mindustry.type.UnitType
 import mindustry.world.Block
 import mindustry.world.blocks.environment.Floor
 import org.hjson.JsonObject
+import org.mindrot.jbcrypt.BCrypt
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
@@ -56,11 +57,14 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
             if (Permissions.check(player, type.name.toLowerCase())) {
                 when (type) {
                     Login -> {
+                        val hashed = BCrypt.hashpw(arg[1], BCrypt.gensalt(11))
+
                         when {
                             playerData.find { e -> e.uuid == player.uuid() } != null -> {
                                 sendMessage["이미 로그인 된 상태입니다"]
                             }
-                            PlayerCore.login(arg[0], arg[1]) -> {
+
+                            PlayerCore.login(arg[0], hashed) -> {
                                 PlayerCore.load(player)
                                 sendMessage["로그인 성공"]
                             }
@@ -83,6 +87,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                         // 비밀번호 패턴 확인
                         val result = RegularExpression.check(pw, "", player.name(), true)
+                        val hashed = BCrypt.hashpw(arg[0], BCrypt.gensalt(11))
 
                         if (result == "passed") {
                             val data = netServer.admins.findByName(uuid).first() // TODO country 만들기
@@ -98,7 +103,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 permission = Permissions.defaultGroup,
                                 json = JsonObject(),
                                 id = player.name(),
-                                pw = pw
+                                pw = hashed
                             )
                             sendMessage["계정 등록 성공"]
                             PlayerCore.load(player)

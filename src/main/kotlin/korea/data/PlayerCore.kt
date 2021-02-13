@@ -7,6 +7,7 @@ import korea.command.Permissions
 import mindustry.gen.Playerc
 import org.hjson.JsonObject
 import org.hjson.Stringify
+import org.mindrot.jbcrypt.BCrypt
 import java.sql.SQLException
 
 object PlayerCore {
@@ -61,10 +62,15 @@ object PlayerCore {
     }
 
     fun login(id: String, pw: String) : Boolean{
-        val sql = DB.database.prepareStatement("SELECT \"uuid\" FROM players WHERE \"id\"=? and \"pw\"=?")
+        val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"id\"=? and \"pw\"=?")
         sql.setString(1, id)
         sql.setString(2, pw)
-        return sql.executeQuery().next()
+        val result = sql.executeQuery()
+        return if(result.next()){
+            BCrypt.checkpw(pw, result.getString("pw"))
+        } else {
+            false
+        }
     }
 
     fun check(uuid: String) : Boolean{
