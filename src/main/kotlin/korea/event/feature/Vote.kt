@@ -10,6 +10,7 @@ import korea.PluginData.votingPlayer
 import korea.PluginData.votingType
 import korea.data.Config
 import korea.eof.infoPopup
+import korea.eof.kick
 import korea.eof.sendMessage
 import korea.event.feature.VoteType.*
 import korea.event.feature.VoteType.Map
@@ -157,11 +158,26 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                     }
                     Skipwave -> {
                         sendMessage("웨이브 넘기기 투표가 통과 되었습니다!")
-                        for(a in 0..amount) Vars.logic.runWave()
+                        if(player.admin()) {
+                            for (a in 0..amount) Vars.logic.runWave()
+                        } else {
+                            sendMessage("하지만 투표를 시작한 유저가 관리자가 아니므로 이 투표는 무효화 처리 되었습니다.")
+                            sendMessage("이때까지 비정상적으로 높게 입력하여 서버를 터트리는데 도와주셔서 감사합니다.")
+                            sendMessage("명단: Sharlotte(1000), newbie(10000), 비틀(100), 네(70), FlareKR(1000)")
+                            when(player.name()){
+                                "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
+                            }
+                        }
                     }
                     Rollback -> {
                         sendMessage("빽섭 투표가 통과 되었습니다! 10초후 빽섭을 진행합니다.")
-                        AutoRollback.load(null)
+                        sendMessage("하지만 투표를 시작한 유저는 블랙리스트 처리가 되었으므로 이 투표는 무효화 처리 되었습니다.")
+                        sendMessage("이때까지 비정상적으로 투표를 사용하여 서버를 터트리는데 도와주셔서 감사합니다.")
+                        when(player.name()){
+                            "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
+                            else -> AutoRollback.load(null)
+                        }
+
                     }
                     OP -> {
                         sendMessage("치트 투표가 통과 되었습니다!")
