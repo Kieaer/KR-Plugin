@@ -8,13 +8,16 @@ object RegularExpression {
         }
         var containsChar = false
         var containsDigit = false
+        var has = false
         for (c in password.toCharArray()) {
             if (Character.isLetter(c)) {
                 containsChar = true
             } else if (Character.isDigit(c)) {
                 containsDigit = true
+            } else if (c.toString() == "<" || c.toString() == ">"){
+                has = true
             }
-            if (containsChar && containsDigit) {
+            if (containsChar && containsDigit && !has) {
                 return true
             }
         }
