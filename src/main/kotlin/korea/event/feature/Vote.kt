@@ -48,8 +48,14 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                     target = Groups.player.find{e -> e.name.equals(arg[0], true)}
                     if (!target.isNull){
                         sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")
+                        if(target.admin()){
+                            sendMessage("하지만 ${target.name()} 유저는 서버 관리자입니다.\n이걸 노리고 투표를 시작한 ${player.name()} 유저는 제정신이 아닌 것 같군요.\n잠시 나갔다 오세요.")
+                            sleep(1500)
+                            kick(player, "관리자를 대상으로 투표하는 행위는 금지되어 있습니다. 3분간 강퇴 처리.")
+                            isInterrupt = true
+                        }
                     } else {
-                        player.sendMessage("${arg[0]} 유저를 찾을 수 없습니다!")
+                        sendMessage(player,"${arg[0]} 유저를 찾을 수 없습니다!")
                         isInterrupt = true
                     }
                 }
@@ -63,7 +69,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                 if (world != null){
                     sendMessage("${player.name()} 에 의해 ${world!!.name()} 맵으로 가기 위한 투표가 시작 되었습니다.")
                 } else {
-                    player.sendMessage("${arg[0]} 맵을 찾을 수 없습니다!")
+                    sendMessage(player,"${arg[0]} 맵을 찾을 수 없습니다!")
                     isInterrupt = true
                 }
             }
@@ -75,7 +81,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                     amount = arg[0].toInt()
                     sendMessage("${player.name()} 에 의해 $amount 웨이브 건너뛰기 투표가 시작 되었습니다!")
                 } catch (e: NumberFormatException){
-                    player.sendMessage("넘길 웨이브 숫자를 입력하셔야 합니다!")
+                    sendMessage(player,"넘길 웨이브 숫자를 입력하셔야 합니다!")
                     isInterrupt = true
                 }
             }
