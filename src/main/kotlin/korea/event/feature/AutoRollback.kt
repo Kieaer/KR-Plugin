@@ -55,6 +55,7 @@ object AutoRollback {
                 Vars.logic.play()
             } catch (t: Throwable) {
                 t.printStackTrace()
+                sendMessage("[scarlet][CRITICAL] ${t.cause.toString()}")
             }
             if (Vars.state.`is`(GameState.State.playing) && !isVote) sendMessage("[green]빽섭 완료.")
             isVote = false

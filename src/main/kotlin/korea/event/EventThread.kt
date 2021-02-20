@@ -126,8 +126,11 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
 
                     // 자동 로그인
                     if (PlayerCore.check(uuid)) {
-                        PlayerCore.load(e.player)
-                        sendMessage(e.player, "자동 로그인이 되었습니다!")
+                        if(PlayerCore.load(e.player)) {
+                            sendMessage(e.player, "자동 로그인이 되었습니다!")
+                        } else {
+                            sendMessage(e.player, "잘못된 경로로 접근된 계정입니다! 서버 관리자에게 문의하세요.")
+                        }
                     } else {
                         val message: String
                         when (Config.authType) {
@@ -137,7 +140,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                             Password -> {
                                 message = """
                                 계정에 로그인 할려면 채팅창을 열고 [green]/login <ID> <비밀번호>[] 를 입력하세요.
-                                계정이 없다면 [green]/register <새 ID> <새 비밀번호> <비밀번호 재입력>[] 을 입력하세요.
+                                계정이 없다면 [green]/register <새 비밀번호>[] 을 입력하세요.
                             """.trimIndent()
                             }
                             Discord -> {
@@ -191,9 +194,9 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                             } else {
                                 if (Permissions.userData.has(data.uuid)) {
                                     sendMessage(
-                                        Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")
+                                        (if(data.json.has("discord")) "[#738ADB][] " else "") + Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")
                                             .replace(
-                                                "%1", "${if(data.json.has("discord")) "[#738ADB][]" else ""}[#${e.player.color.toString().toUpperCase()}]${e.player.name}"
+                                                "%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}"
                                             ).replace("%2", e.message)
                                     )
                                 } else {

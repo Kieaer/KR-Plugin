@@ -59,7 +59,7 @@ class PlayerData {
     var isLogged: Boolean = false
 
     /** 잠수 시간 확인 */
-    var afkTime: Long? = null
+    var afkTime: Long = 0L
 
     /** 플레이어 언어 */
     var country: String = Locale.getDefault().toLanguageTag()

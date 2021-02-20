@@ -68,18 +68,18 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 if(PlayerCore.load(player)) {
                                     sendMessage["로그인 성공"]
                                 } else {
-                                    sendMessage["잘못된 경로로 접근했습니다! /register 명령어부터 사용 해 주세요."]
+                                    sendMessage["[scarlet]잘못된 경로로 접근했습니다! /register 명령어부터 사용 해 주세요."]
                                 }
                             }
                             else -> {
-                                sendMessage["로그인 실패"]
+                                sendMessage["[scarlet]없는 계정이거나 아이디 또는 비밀번호가 틀립니다."]
                             }
                         }
                     }
                     Register -> {
                         if (arg.size != 1){
                             sendMessage["아직도 /register <아아디> <비밀번호> <비밀번호 재입력> 을 쓰시나요?\n" +
-                                    "이제는 그냥 /register <비밀번호> 를 입력하시면 됩니다.\n" +
+                                    "이제는 그냥 /register <비밀번호> 를 입력하시면 됩니다.\n\n" +
                                     "비밀번호 정할때 구글이나 네이버에서 회원가입할때 비밀번호를 a123b 이라고 할때, 그 누구도 [scarlet]<[]a123b[scarlet]>[] 이라고 치진 않잖아요?\n" +
                                     "진짜로 비밀번호 칠때 [scarlet]<[]a123b[scarlet]>[] 처럼 친다면, 이후에도 비밀번호를 [scarlet]<[]a123b[scarlet]>[] 으로 하게 될껍니다.\n" +
                                     "남들은 그냥 손쉽게 치는데 자기 혼자만 [scarlet]<[] 하고 [scarlet]>[] 쓰니 불편하겠죠?"]
@@ -108,12 +108,17 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             )
                             if(request){
                                 sendMessage["계정 등록 성공"]
-                                PlayerCore.load(player)
+                                if(PlayerCore.load(player)) {
+                                    sendMessage["로그인 성공"]
+                                } else {
+                                    sendMessage["[scarlet]자동 로그인 실패! 서버 관리자에게 문의하세요."]
+                                }
                             } else {
-                                sendMessage["이미 이 기기에 등록된 계정이 존재하거나, 서버 오류에 의해 계정 등록에 실패했습니다."]
+                                sendMessage["[scarlet]이미 이 기기에 등록된 계정이 존재하거나, 서버 오류에 의해 계정 등록에 실패했습니다."]
                             }
                         } else {
-                            sendMessage["비밀번호는 최소한 6자리 이상과 영문/숫자를 포함해야 합니다!"]
+                            sendMessage["[scarlet]비밀번호는 최소한 6자리 이상과 영문/숫자를 포함해야 합니다!\n" +
+                                    "[scarlet]제발 [green]<[] 하고 [green]>[] 를 넣지 마세요."]
                         }
                     }
                     Spawn -> {
@@ -241,7 +246,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 [green]블럭 설치개수[white]: ${data.placeCount}
                                 [green]블럭 파괴개수[white]: ${data.breakCount}
                                 [green]레벨[white]: ${data.level}
-                                [green]경험치: ${Exp[data]}
+                                [green]경험치[white]: ${Exp[data]}
                                 [green]최초 접속일[white]: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(Date(data.joinDate))}
                                 [green]플레이 시간[white]: ${LongToTime()[data.playTime]}
                                 [green]공격 맵 클리어[white]: ${data.attackWinner}

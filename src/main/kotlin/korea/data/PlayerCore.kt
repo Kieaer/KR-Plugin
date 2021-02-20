@@ -59,7 +59,7 @@ object PlayerCore {
         sql.setString(23, id)
         sql.setString(24, pw)
         return try{
-            sql.execute()
+            sql.executeUpdate() > 0
         } catch (e: SQLException){
             e.printStackTrace()
             false
@@ -125,7 +125,7 @@ object PlayerCore {
 
     fun load(player: Playerc) : Boolean{
         val data = getData(player)
-        if (data.afkTime == null) return false
+        if (data.name == "") return false
 
         // 권한 파일 생성
         if(Permissions.userData.find { e -> e.name == player.uuid() } == null) {
@@ -168,7 +168,7 @@ object PlayerCore {
         sql.setBoolean(15, data.rainbowName)
         sql.setBoolean(16, data.isMute)
         sql.setBoolean(17, data.isLogged)
-        sql.setLong(18, data.afkTime!!)
+        sql.setLong(18, 0L)
         sql.setString(19, data.country)
         sql.setLong(20, data.rank)
         sql.setString(21, data.permission)

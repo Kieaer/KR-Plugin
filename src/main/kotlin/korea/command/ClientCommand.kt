@@ -24,7 +24,7 @@ object ClientCommand {
         handler.register("login", "<닉네임> <비밀번호>", "플레이어의 계정에 로그인 합니다.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Login, arg, player))
         }
-        handler.register("register", "[새 비밀번호] [제발좀] [비밀번호만 치세요]", "서버에 계정을 등록합니다.") { arg: Array<String>, player: Playerc ->
+        handler.register("register", "[새_비밀번호] [제발좀] [비밀번호만_치세요]", "서버에 계정을 등록합니다.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Register, arg, player))
         }
         handler.register("spawn", "<unit/block> <이름> [개수/방향]", "블록이나 유닛을 스폰합니다.") { arg: Array<String>, player: Playerc ->
@@ -36,19 +36,19 @@ object ClientCommand {
         handler.register("rainbow", "움직이는 무지개 닉 기능을 켜고 끕니다.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Rainbow, arg, player))
         }
-        handler.register("kill", "[player_name]", "자폭하거나, 아니면 다른 유저의 유닛을 터트리거나.") { arg: Array<String>, player: Playerc ->
+        handler.register("kill", "[플레이어_이름]", "자폭하거나, 아니면 다른 유저의 유닛을 터트리거나.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Kill, arg, player))
         }
-        handler.register("info", "[player_name]", "서버가 저장하고 있는 플레이어의 정보를 확인합니다.") { arg: Array<String>, player: Playerc ->
+        handler.register("info", "[플레이어_이름]", "서버가 저장하고 있는 플레이어의 정보를 확인합니다.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Info, arg, player))
         }
-        handler.register("maps", "[page]", "서버에 있는 맵 목록들을 확인합니다.") { arg: Array<String>, player: Playerc ->
+        handler.register("maps", "[페이지]", "서버에 있는 맵 목록들을 확인합니다.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Maps, arg, player))
         }
         handler.register("motd", "서버 메세지를 확인합니다.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Motd, arg, player))
         }
-        handler.register("players", "[page]", "현재 서버에 접속해있는 유저들의 이름이나 ID를 확인합니다.") { arg: Array<String>, player: Playerc ->
+        handler.register("players", "[페이지]", "현재 서버에 접속해있는 유저들의 이름이나 ID를 확인합니다.") { arg: Array<String>, player: Playerc ->
             service.submit(ClientCommandThread(Command.Players, arg, player))
         }
         handler.register("router", "네. 이것은 분배기 입니다. 무려 움직이기까지 하죠!") { arg: Array<String>, player: Playerc ->
