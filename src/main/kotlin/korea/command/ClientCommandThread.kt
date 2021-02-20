@@ -597,31 +597,41 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         }
                     }
                     Help -> {
-                        val message = StringBuilder()
-                        val page = if (arg.isNotEmpty()) arg[0].toInt() else 0
-
-                        val commands = Seq<String>()
-                        for (a in 0 until netServer.clientCommands.commandList.size) {
-                            val command = netServer.clientCommands.commandList[a]
-                            if (Permissions.check(player, command.text)) {
-                                commands.add("[orange] /${command.text} [white]${command.paramText} [lightgray]- ${command.description}\n")
+                        if (arg.isNotEmpty() && arg[0].toIntOrNull() == null){
+                            try {
+                                valueOf(arg[0])
+                                sendMessage[valueOf(arg[0]).toString()]
+                            } catch (e: Exception){
+                                sendMessage["명령어의 첫 글자를 대문자로 해 보세요."]
+                                e.printStackTrace()
                             }
-                        }
-
-                        val buffer = Mathf.ceil(commands.size.toFloat() / 6)
-                        val pages = if (buffer > 1.0) buffer - 1 else 0
-
-                        if (pages < page) {
-                            sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
                         } else {
-                            message.append("[green]==[white] 사용 가능한 명령어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
-                        }
+                            val message = StringBuilder()
+                            val page = if (arg.isNotEmpty()) arg[0].toInt() else 0
 
-                        for (a in 6 * page until (6 * (page + 1)).coerceAtMost(commands.size)) {
-                            message.append(commands.get(a))
-                        }
+                            val commands = Seq<String>()
+                            for (a in 0 until netServer.clientCommands.commandList.size) {
+                                val command = netServer.clientCommands.commandList[a]
+                                if (Permissions.check(player, command.text)) {
+                                    commands.add("[orange] /${command.text} [white]${command.paramText} [lightgray]- ${command.description}\n")
+                                }
+                            }
 
-                        sendMessage[message.toString()]
+                            val buffer = Mathf.ceil(commands.size.toFloat() / 6)
+                            val pages = if (buffer > 1.0) buffer - 1 else 0
+
+                            if (pages < page) {
+                                sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
+                            } else {
+                                message.append("[green]==[white] 사용 가능한 명령어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
+                            }
+
+                            for (a in 6 * page until (6 * (page + 1)).coerceAtMost(commands.size)) {
+                                message.append(commands.get(a))
+                            }
+
+                            sendMessage[message.toString()]
+                        }
                     }
                     ClientCommand.Command.Discord -> {
                         val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
