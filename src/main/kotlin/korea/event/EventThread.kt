@@ -11,6 +11,7 @@ import korea.data.Config.AuthType.*
 import korea.data.PlayerCore
 import korea.eof.connect
 import korea.eof.sendMessage
+import korea.exceptions.ErrorReport
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.content.Blocks
@@ -236,7 +237,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     }
                 }
                 EventTypes.UnitDestroy -> {
-                    val e = event as UnitDestroyEvent
+                    //val e = event as UnitDestroyEvent
                 }
                 EventTypes.PlayerBan -> {
                     val e = event as PlayerBanEvent
@@ -271,7 +272,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            ErrorReport(e)
         }
     }
 

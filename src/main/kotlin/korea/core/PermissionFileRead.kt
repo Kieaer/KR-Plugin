@@ -4,6 +4,7 @@ import korea.Main
 import korea.Main.Companion.isDispose
 import korea.PluginData
 import korea.command.Permissions
+import korea.exceptions.ErrorReport
 import mindustry.gen.Groups
 import java.io.IOException
 import java.nio.file.*
@@ -59,7 +60,7 @@ object PermissionFileRead : Runnable{
                         watchService!!.close()
                         break
                     } catch (e: IOException) {
-                        e.printStackTrace()
+                        ErrorReport(e)
                     }
                 }
             } catch (e: InterruptedException) {
@@ -80,7 +81,7 @@ object PermissionFileRead : Runnable{
                     StandardWatchEventKinds.ENTRY_MODIFY,
                     StandardWatchEventKinds.OVERFLOW)
         } catch (e: Exception) {
-            e.printStackTrace()
+            ErrorReport(e)
         }
     }
 }

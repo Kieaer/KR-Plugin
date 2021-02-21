@@ -23,6 +23,7 @@ import korea.event.Exp
 import korea.event.feature.RainbowName
 import korea.event.feature.Vote
 import korea.event.feature.VoteType
+import korea.exceptions.ErrorReport
 import korea.external.LongToTime
 import korea.external.RegularExpression
 import korea.form.Garbage.EqualsIgnoreCase
@@ -196,8 +197,8 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     sendMessage["${votingPlayer.name()} 이 시작한 ${votingType.name} 의 투표가 이미 진행 중입니다"]
                                 }
                             }
-                        } catch (e: Throwable) {
-                            e.printStackTrace()
+                        } catch (e: Exception) {
+                            ErrorReport(e)
                         }
                     }
                     Rainbow -> {
@@ -644,7 +645,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                 }
             }
         } catch (e: Exception){
-            e.printStackTrace()
+            ErrorReport(e)
         }
     }
 }

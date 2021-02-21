@@ -14,6 +14,7 @@ import korea.eof.kick
 import korea.eof.sendMessage
 import korea.event.feature.VoteType.*
 import korea.event.feature.VoteType.Map
+import korea.exceptions.ErrorReport
 import mindustry.Vars
 import mindustry.Vars.maps
 import mindustry.game.EventType
@@ -198,8 +199,8 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
             Events.remove(EventType.PlayerChatEvent::class.java) { listener }
 
             votingType = None
-        } catch (e: Throwable){
-            e.printStackTrace()
+        } catch (e: Exception){
+            ErrorReport(e)
         }
     }
 }

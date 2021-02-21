@@ -5,6 +5,7 @@ import korea.core.PermissionFileRead
 import korea.eof.sendMessage
 import korea.event.feature.AutoRollback
 import korea.event.feature.RainbowName
+import korea.exceptions.ErrorReport
 import mindustry.Vars
 import mindustry.core.GameState
 import mindustry.io.SaveIO
@@ -80,8 +81,8 @@ object Threads {
                     next++
                     if (next > messages.size) next = 0
                 }
-            } catch (e: Throwable) {
-                e.printStackTrace()
+            } catch (e: Exception) {
+                ErrorReport(e)
             }
         }
     }

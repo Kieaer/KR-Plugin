@@ -1,6 +1,7 @@
 package korea.core
 
 import korea.Main.Companion.pluginRoot
+import korea.exceptions.ErrorReport
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -33,7 +34,7 @@ object Log {
         arc.util.Log.debug("$tag$message", parameter)
     }
 
-    fun write(type: LogType, value: String, vararg params: String?) {
+    fun write(type: LogType, value: String) {
         service.submit(Thread {
             val date = DateTimeFormatter.ofPattern("yyyy-MM-dd HH_mm_ss").format(LocalDateTime.now())
 
@@ -59,7 +60,7 @@ object Log {
                     }
                     Files.move(new, old)
                 } catch (e: IOException) {
-                    e.printStackTrace()
+                    ErrorReport(e)
                 }
                 log = null
             }
@@ -69,6 +70,6 @@ object Log {
     }
 
     enum class LogType {
-        PlayerJoin, PlayerLeave, Activity, Chat, Command;
+        PlayerJoin, PlayerLeave, Activity, Chat, Command, Error;
     }
 }

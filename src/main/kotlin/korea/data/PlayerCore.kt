@@ -4,6 +4,7 @@ import korea.PlayerData
 import korea.PluginData
 import korea.PluginData.playerData
 import korea.command.Permissions
+import korea.exceptions.ErrorReport
 import mindustry.gen.Playerc
 import org.hjson.JsonObject
 import org.hjson.Stringify
@@ -61,7 +62,7 @@ object PlayerCore {
         return try{
             sql.executeUpdate() > 0
         } catch (e: SQLException){
-            e.printStackTrace()
+            ErrorReport(e)
             false
         }
 

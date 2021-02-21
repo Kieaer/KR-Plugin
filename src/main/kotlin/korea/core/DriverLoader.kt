@@ -1,7 +1,8 @@
 package korea.core
 
-import korea.Main.Companion.pluginRoot
 import arc.Core
+import korea.Main.Companion.pluginRoot
+import korea.exceptions.ErrorReport
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -39,12 +40,12 @@ class DriverLoader : Driver {
             val driver = Class.forName("org.h2.Driver", true, cla).getDeclaredConstructor().newInstance() as Driver
             DriverManager.registerDriver(DriverLoader(driver))
             h2 = cla
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             if (!tried) {
                 tried = true
                 download()
             } else {
-                e.printStackTrace()
+                ErrorReport(e)
                 Core.app.exit()
             }
         }
@@ -55,8 +56,8 @@ class DriverLoader : Driver {
             pluginRoot.child("Driver/h2.jar").writeString("")
             download(pluginRoot.child("Driver/h2.jar").file(), URL("https://repo1.maven.org/maven2/com/h2database/h2/1.4.200/h2-1.4.200.jar"))
             init()
-        } catch (e: Throwable) {
-            e.printStackTrace()
+        } catch (e: Exception) {
+            ErrorReport(e)
         }
     }
 
@@ -109,7 +110,7 @@ class DriverLoader : Driver {
             }
             `is`.close()
             outputStream.close()
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
         }
     }
 

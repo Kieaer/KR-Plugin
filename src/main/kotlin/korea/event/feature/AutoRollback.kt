@@ -53,7 +53,7 @@ object AutoRollback {
                 }
                 Vars.state.serverPaused = false
                 Vars.logic.play()
-            } catch (t: Throwable) {
+            } catch (t: Exception) {
                 t.printStackTrace()
                 sendMessage("[scarlet][CRITICAL] ${t.cause.toString()}")
             }

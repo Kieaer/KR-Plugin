@@ -5,6 +5,7 @@ import korea.PlayerData
 import korea.PluginData
 import korea.core.DriverLoader.Companion.h2
 import korea.core.Log
+import korea.exceptions.ErrorReport
 import java.sql.Connection
 import java.sql.DriverManager
 import kotlin.reflect.full.declaredMemberProperties
@@ -52,8 +53,8 @@ object DB {
                     }
                     Log.system("DB 주소: jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}")
                 }
-            } catch (e: Throwable) {
-                e.printStackTrace()
+            } catch (e: Exception) {
+                ErrorReport(e)
             }
             database = DriverManager.getConnection("jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}/player", "", "")
         } else {
