@@ -186,6 +186,10 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 if (arg[0].equals("kill", true) && player.admin()) {
                                     if (isVoting) {
                                         votingClass?.isInterrupt = true
+                                        sleep(1000)
+                                        if(votingType != VoteType.None){
+                                            votingClass!!.finish()
+                                        }
                                         sendMessage["투표 취소됨"]
                                     }
                                 } else {
