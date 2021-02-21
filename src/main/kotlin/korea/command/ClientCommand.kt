@@ -82,7 +82,7 @@ object ClientCommand {
             override fun toString(): String {
                 return """
                     명령어: [green]/login <닉네임> <비밀번호>[]
-                    [yellow]사용 예시: /login Asaka qwerty123
+                    [yellow]사용 예시: /login Asaka qwerty123[]
                     
                     이 명령어를 사용하여 기존에 생성했던 계정으로 로그인합니다.
                     기기를 옮겨가며 계정에 데이터를 쌓고 싶을때 유용합니다.
@@ -92,7 +92,7 @@ object ClientCommand {
             override fun toString(): String {
                 return """
                     명령어: [green]/register <비밀번호>[]
-                    [yellow]사용 예시: /register qwerty123
+                    [yellow]사용 예시: /register qwerty123[]
                     
                     이 명령어를 사용하여 서버에 계정을 등록합니다.
                     비밀번호는 반드시 최소 6자 이상에 영문, 숫자를 포함해야 하며, 꺽쇄 ([scarlet]<[], [scarlet]>[]) 를 사용할 수 없습니다.

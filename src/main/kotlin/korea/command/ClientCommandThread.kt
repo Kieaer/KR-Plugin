@@ -597,13 +597,11 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         }
                     }
                     Help -> {
-                        if (arg.isNotEmpty() && arg[0].toIntOrNull() == null){
+                        if (arg.isNotEmpty() && arg[0].toIntOrNull() == null ) {
                             try {
-                                valueOf(arg[0])
-                                sendMessage[valueOf(arg[0]).toString()]
+                                sendMessage[valueOf(arg[0].capitalize()).toString()]
                             } catch (e: Exception){
-                                sendMessage["명령어의 첫 글자를 대문자로 해 보세요."]
-                                e.printStackTrace()
+                                sendMessage["${arg[0]} 명령어를 찾을 수 없습니다!"]
                             }
                         } else {
                             val message = StringBuilder()
