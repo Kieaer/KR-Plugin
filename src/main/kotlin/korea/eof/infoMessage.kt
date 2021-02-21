@@ -4,8 +4,12 @@ import arc.Core
 import mindustry.gen.Call
 import mindustry.gen.Playerc
 
-class infoMessage(val player: Playerc, val msg: String) {
+class infoMessage(val player: Playerc, val msg: String?) {
     init{
-        Core.app.post{ Call.infoMessage(player.con(), msg)}
+        if (msg == null){
+            throw Exception("Message is NULL!")
+        } else {
+            Core.app.post { Call.infoMessage(player.con(), msg) }
+        }
     }
 }

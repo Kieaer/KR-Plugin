@@ -8,15 +8,23 @@ import mindustry.gen.Playerc
 class sendMessage {
     var player: Playerc = Nulls.player
 
-    constructor(player: Playerc, msg: String) {
+    constructor(player: Playerc, msg: String?) {
         Core.app.post {
-            player.sendMessage(msg)
+            if (msg == null){
+                throw Exception("Message is NULL!")
+            } else {
+                player.sendMessage(msg)
+            }
         }
     }
 
-    constructor(msg: String){
+    constructor(msg: String?){
         Core.app.post{
-            Call.sendMessage(msg)
+            if (msg == null){
+                throw Exception("Message is NULL!")
+            } else {
+                Call.sendMessage(msg)
+            }
         }
     }
 
@@ -24,9 +32,13 @@ class sendMessage {
         this.player = player
     }
 
-    operator fun get(msg: String){
+    operator fun get(msg: String?){
         Core.app.post {
-            player.sendMessage(msg)
+            if (msg == null){
+                throw Exception("Message is NULL!")
+            } else {
+                player.sendMessage(msg)
+            }
         }
     }
 }
