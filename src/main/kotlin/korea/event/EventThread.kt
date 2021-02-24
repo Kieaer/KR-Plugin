@@ -20,6 +20,7 @@ import mindustry.game.Team
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.net.Administration
+import mindustry.net.Administration.PlayerInfo
 
 class EventThread(private val type: EventTypes, private val event: Any) : Thread() {
     override fun run() {
@@ -243,13 +244,25 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val e = event as PlayerBanEvent
                     connect(e.player, "mindustry.ru", 6567)
                     PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid()))
-                    Core.app.post {netServer.admins.unbanPlayerID(e.player.uuid())}
+                    Core.app.post {
+                        val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
+                        if(info.banned) {
+                            info.banned = false
+                            netServer.admins.bannedIPs.removeAll(info.ips, false)
+                        }
+                    }
                 }
                 EventTypes.PlayerIpBan -> {
                     val e = event as PlayerIpBanEvent
                     val uuid = netServer.admins.findByIP(e.ip)
                     PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none"))
-                    Core.app.post {netServer.admins.unbanPlayerIP(e.ip)}
+                    Core.app.post {
+                        if (netServer.admins.bannedIPs.contains(e.ip, false)) {
+                            netServer.admins.findByIP(e.ip).banned = false
+                            netServer.admins.bannedIPs.remove(e.ip, false)
+                            netServer.admins.save()
+                        }
+                    }
                 }
                 EventTypes.PlayerUnban -> {
                     val e = event as PlayerUnbanEvent
@@ -257,7 +270,13 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                         if (ServerCommand.isUnBan) {
                             PluginData.banned.remove { e.player.uuid() == it.uuid }
                         }
-                        Core.app.post {netServer.admins.unbanPlayerID(e.player.uuid())}
+                        Core.app.post {
+                            val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
+                            if(info.banned) {
+                                info.banned = false
+                                netServer.admins.bannedIPs.removeAll(info.ips, false)
+                            }
+                        }
                     }
                 }
                 EventTypes.PlayerIpUnban -> {
@@ -265,7 +284,13 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     if(ServerCommand.isUnBan){
                         PluginData.banned.remove { e.ip == it.address }
                     }
-                        Core.app.post {netServer.admins.unbanPlayerIP(e.ip)}
+                    Core.app.post {
+                        if (netServer.admins.bannedIPs.contains(e.ip, false)) {
+                            netServer.admins.findByIP(e.ip).banned = false
+                            netServer.admins.bannedIPs.remove(e.ip, false)
+                            netServer.admins.save()
+                        }
+                    }
                 }
                 EventTypes.ServerLoaded -> {
 
