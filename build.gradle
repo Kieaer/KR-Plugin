@@ -47,6 +47,7 @@ jar {
 
 compileKotlin {
     kotlinOptions.jvmTarget = 14
+    kotlinOptions.useIR = true
 }
 
 wrapper {
