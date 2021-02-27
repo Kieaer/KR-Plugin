@@ -8,6 +8,7 @@ import korea.PluginData
 import korea.core.Log
 import korea.data.Config
 import org.hjson.JsonObject
+import java.lang.Exception
 
 object Discord {
     val pin: ObjectMap<Long, String> = ObjectMap()
@@ -59,7 +60,7 @@ object Discord {
                                         } else {
                                             msg.channel().sendMessage("알 수 없는 플레이어 입니다!")
                                         }
-                                    } catch (e: NumberFormatException) {
+                                    } catch (e: Exception) {
                                         msg.channel().sendMessage("올바른 PIN 번호가 아닙니다!")
                                         msg.channel().sendMessage("사용법: ``!auth <PIN 번호>``")
                                     }
