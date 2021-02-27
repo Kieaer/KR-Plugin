@@ -15,6 +15,7 @@ import korea.core.PluginUpdater
 import korea.data.Config
 import korea.data.DB
 import korea.data.auth.Discord
+import korea.eof.sendMessage
 import korea.event.Event
 import mindustry.Vars
 import mindustry.mod.Plugin
@@ -99,7 +100,7 @@ class Main : Plugin() {
         Vars.netServer.admins.addActionFilter { e ->
             if (e.player == null) return@addActionFilter true
             return@addActionFilter if(playerData.find { d -> e.player.uuid() == d.uuid } == null){
-                e.player.sendMessage("이 서버는 계정 등록을 하지 않으면 플레이 하실 수 없습니다!\n먼저 [green]/register[] 명령어를 사용 해 보세요.")
+                sendMessage(e.player,"이 서버는 계정 등록을 하지 않으면 플레이 하실 수 없습니다!\n먼저 [green]/register[] 명령어를 사용 해 보세요.")
                 false
             } else {
                 true

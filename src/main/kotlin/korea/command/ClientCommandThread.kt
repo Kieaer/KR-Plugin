@@ -466,10 +466,12 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             tar.setFloor((if (tiles[a] == 0) Blocks.stone else if (tiles[a] == 1) Blocks.basalt else Blocks.salt) as Floor?)
                         }
 
-                        Groups.player.each{
-                            Call.worldDataBegin(it.con())
-                            it.reset()
-                            netServer.sendWorldData(it)
+                        Core.app.post {
+                            Groups.player.each {
+                                Call.worldDataBegin(it.con())
+                                it.reset()
+                                netServer.sendWorldData(it)
+                            }
                         }
 
                         while (!player.isNull) {
@@ -576,9 +578,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                     try {
                                         val tileX = arg[0].toFloat()
                                         val tileY = arg[1].toFloat()
-                                        Call.setPosition(player.con(), tileX * 8, tileY * 8)
-                                        player.unit().set(tileX, tileY)
-                                        player.snapSync()
+                                        setPosition(player, tileX * 8, tileY * 8)
                                     } catch (_: NumberFormatException) {
                                         sendMessage["잘못된 명령어 입니다"]
                                     }

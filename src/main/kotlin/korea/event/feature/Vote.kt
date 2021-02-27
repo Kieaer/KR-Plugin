@@ -149,7 +149,7 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                 when (type) {
                     Kick -> {
                         sendMessage("강퇴 투표가 통과 되었습니다!")
-                        Call.kick(target.con(), Packets.KickReason.vote)
+                        kick(target, Packets.KickReason.vote)
                     }
                     Map -> {
                         sendMessage("맵 투표가 통과 되었습니다!")
@@ -159,32 +159,36 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                     Gameover -> {
                         sendMessage("항복 투표가 통과 되었습니다!")
                         Vars.state.serverPaused = true
+                        sendMessage("20초동안 구경할 수 있는 시간!")
                         sleep(20000)
-                        sendMessage("20초동안 구경할 수 있는 시간을 드리겠습니다.")
                         Events.fire(EventType.GameOverEvent(Team.crux))
                     }
                     Skipwave -> {
                         sendMessage("웨이브 넘기기 투표가 통과 되었습니다!")
-                        if(player.admin()) {
-                            for (a in 0..amount) Vars.logic.runWave()
-                        } else {
-                            sendMessage("하지만 투표를 시작한 유저가 관리자가 아니므로 이 투표는 무효화 처리 되었습니다.")
-                            sendMessage("이때까지 비정상적으로 높게 입력하여 서버를 터트리는데 도와주셔서 감사합니다.")
-                            sendMessage("명단: Sharlotte(1000), newbie(10000), 비틀(100), 네(70), FlareKR(1000)")
-                            when(player.name()){
-                                "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
+                        when(player.name()){
+                            "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> {
+                                sendMessage("하지만 투표를 시작한 유저가 관리자가 아니므로 이 투표는 무효화 처리 되었습니다.")
+                                sendMessage("이때까지 비정상적으로 높게 입력하여 서버를 터트리는데 도와주셔서 감사합니다.")
+                                sendMessage("명단: Sharlotte(1000), newbie(10000), 비틀(100), 네(70), FlareKR(1000)")
+
+                                kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
+                            }
+                            else -> {
+                                for (a in 0..amount) Vars.logic.runWave()
                             }
                         }
                     }
                     Rollback -> {
-                        sendMessage("빽섭 투표가 통과 되었습니다! 10초후 빽섭을 진행합니다.")
-                        sendMessage("하지만 투표를 시작한 유저는 블랙리스트 처리가 되었으므로 이 투표는 무효화 처리 되었습니다.")
-                        sendMessage("이때까지 비정상적으로 투표를 사용하여 서버를 터트리는데 도와주셔서 감사합니다.")
                         when(player.name()){
-                            "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
+                            "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> {
+                                sendMessage("빽섭 투표가 통과 되었습니다! 10초후 빽섭을 진행합니다.")
+                                sendMessage("하지만 투표를 시작한 유저는 블랙리스트 처리가 되었으므로 이 투표는 무효화 처리 되었습니다.")
+                                sendMessage("이때까지 비정상적으로 투표를 사용하여 서버를 터트리는데 도와주셔서 감사합니다.")
+
+                                kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
+                            }
                             else -> AutoRollback.load(null)
                         }
-
                     }
                     OP -> {
                         sendMessage("치트 투표가 통과 되었습니다!")
