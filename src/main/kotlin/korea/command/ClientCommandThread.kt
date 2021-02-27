@@ -3,6 +3,7 @@ package korea.command
 import arc.Core
 import arc.math.Mathf
 import arc.struct.Seq
+import arc.util.async.Threads.sleep
 import korea.Main.Companion.pluginRoot
 import korea.PlayerData
 import korea.PluginData
@@ -49,8 +50,8 @@ import kotlin.random.Random
 
 
 
-class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc): Thread(){
-    override fun run() {
+class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc){
+    fun run(){
         val uuid = player.uuid()
         val sendMessage = sendMessage(player)
 

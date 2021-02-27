@@ -11,8 +11,6 @@ import java.util.concurrent.Executors
 
 
 object ClientCommand {
-    val service: ExecutorService = Executors.newCachedThreadPool()
-
     fun register(handler: CommandHandler){
         handler.removeCommand("help")
 
@@ -22,58 +20,58 @@ object ClientCommand {
         }
 
         handler.register("login", "<닉네임> <비밀번호>", "플레이어의 계정에 로그인 합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Login, arg, player))
+            ClientCommandThread(Command.Login, arg, player).run()
         }
         handler.register("register", "[새_비밀번호] [제발좀] [비밀번호만_치세요]", "서버에 계정을 등록합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Register, arg, player))
+            ClientCommandThread(Command.Register, arg, player).run()
         }
         handler.register("spawn", "<unit/block> <이름> [개수/방향]", "블록이나 유닛을 스폰합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Spawn, arg, player))
+            ClientCommandThread(Command.Spawn, arg, player).run()
         }
         handler.register("vote", "<kick/map/gameover/skipwave/rollback/op> [플레이어_이름/방향]", "투표기능.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Vote, arg, player))
+            ClientCommandThread(Command.Vote, arg, player).run()
         }
         handler.register("rainbow", "움직이는 무지개 닉 기능을 켜고 끕니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Rainbow, arg, player))
+            ClientCommandThread(Command.Rainbow, arg, player).run()
         }
         handler.register("kill", "[플레이어_이름]", "자폭하거나, 아니면 다른 유저의 유닛을 터트리거나.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Kill, arg, player))
+            ClientCommandThread(Command.Kill, arg, player).run()
         }
         handler.register("info", "[플레이어_이름]", "서버가 저장하고 있는 플레이어의 정보를 확인합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Info, arg, player))
+            ClientCommandThread(Command.Info, arg, player).run()
         }
         handler.register("maps", "[페이지]", "서버에 있는 맵 목록들을 확인합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Maps, arg, player))
+            ClientCommandThread(Command.Maps, arg, player).run()
         }
         handler.register("motd", "서버 메세지를 확인합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Motd, arg, player))
+            ClientCommandThread(Command.Motd, arg, player).run()
         }
         handler.register("players", "[페이지]", "현재 서버에 접속해있는 유저들의 이름이나 ID를 확인합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Players, arg, player))
+            ClientCommandThread(Command.Players, arg, player).run()
         }
         handler.register("router", "네. 이것은 분배기 입니다. 무려 움직이기까지 하죠!") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Router, arg, player))
+            ClientCommandThread(Command.Router, arg, player).run()
         }
         handler.register("status", "실시간 서버 통계를 확인합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Status, arg, player))
+            ClientCommandThread(Command.Status, arg, player).run()
         }
         handler.register("team", "<derelict/sharded/crux/green/purple/blue> [플레이어_이름]", "자신 또는 다른 유저들의 팀을 변경합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Team, arg, player))
+            ClientCommandThread(Command.Team, arg, player).run()
         }
         handler.register("ban", "<플레이어_이름> [time]", "일정시간 밴을 먹이거나, 영구밴을 먹입니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Ban, arg, player))
+            ClientCommandThread(Command.Ban, arg, player).run()
         }
         handler.register("tp", "<플레이어_이름/tileX> [목표_플레이어_이름/tileY]", "특정 플레이어에게로 이동하거나, 타일 위치로 이동할 수 있습니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Tp, arg, player))
+            ClientCommandThread(Command.Tp, arg, player).run()
         }
         handler.register("mute", "<플레이어_이름>", "플레이어의 채팅을 금지 시킵니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Mute, arg, player))
+            ClientCommandThread(Command.Mute, arg, player).run()
         }
         handler.register("help", "[페이지]", "플레이어별로 사용 가능한 모든 명령어를 확인합니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Help, arg, player))
+            ClientCommandThread(Command.Help, arg, player).run()
         }
         handler.register("discord", "Discord 인증을 통해 더 많은 기능을 사용할 수 있습니다.") { arg: Array<String>, player: Playerc ->
-            service.submit(ClientCommandThread(Command.Discord, arg, player))
+            ClientCommandThread(Command.Discord, arg, player).run()
         }
     }
 

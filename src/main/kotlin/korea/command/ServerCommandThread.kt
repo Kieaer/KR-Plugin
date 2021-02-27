@@ -5,8 +5,8 @@ import korea.PluginData
 import korea.command.ServerCommand.Command.Unban
 import mindustry.Vars
 
-class ServerCommandThread(private val type: ServerCommand.Command, private val arg: Array<String>): Thread(){
-    override fun run() {
+class ServerCommandThread(private val type: ServerCommand.Command, private val arg: Array<String>){
+    fun run() {
         when (type) {
             Unban -> {
                 Vars.netServer.admins.unbanPlayerIP(arg[0]) || Vars.netServer.admins.unbanPlayerID(arg[0])

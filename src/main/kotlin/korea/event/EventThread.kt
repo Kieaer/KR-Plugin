@@ -24,8 +24,8 @@ import mindustry.gen.Groups
 import mindustry.net.Administration
 import mindustry.net.Administration.PlayerInfo
 
-class EventThread(private val type: EventTypes, private val event: Any) : Thread() {
-    override fun run() {
+class EventThread(private val type: EventTypes, private val event: Any) {
+    fun run() {
         try {
             when (type) {
                 EventTypes.Config -> {

@@ -76,11 +76,7 @@ class Main : Plugin() {
                 isDispose = true
 
                 DB.shutdownServer()
-                Event.service.shutdown()
-                ClientCommand.service.shutdown()
-                ServerCommand.service.shutdown()
                 Threads.worker.shutdown()
-                Threads.timer.cancel()
                 PluginData.save()
                 Discord.stop()
                 Permissions.save()
