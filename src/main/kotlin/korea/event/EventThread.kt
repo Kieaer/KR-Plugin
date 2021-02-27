@@ -10,12 +10,14 @@ import korea.data.Config
 import korea.data.Config.AuthType.*
 import korea.data.PlayerCore
 import korea.eof.connect
+import korea.eof.infoMessage
 import korea.eof.sendMessage
 import korea.exceptions.ErrorReport
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.content.Blocks
 import mindustry.game.EventType.*
+import mindustry.game.Gamemode
 import mindustry.game.Team
 import mindustry.gen.Call
 import mindustry.gen.Groups
@@ -78,6 +80,15 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                 }
                 EventTypes.WorldLoad -> {
                     PluginData.worldTime = 0L
+
+                    /*Groups.player.forEach {p -> p.reset()}
+                    Vars.logic.reset()
+
+                    Vars.world.loadMap(Vars.state.map, Vars.state.map.applyRules(Vars.state.map.rules().mode()));
+                    Vars.state.rules = Vars.state.map.applyRules(Vars.state.map.rules());
+                    Vars.logic.play();
+
+                    Log.info("Gamemode: ${Vars.state.map.rules().mode().toString()}, 파일명: ${Vars.state.map.name()}")*/
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
@@ -117,13 +128,13 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     PluginData.totalConnected++
 
                     // 계정 인증 전까지 관리자 상태 해제
-                    e.player.admin(false)
+                    e.player.admin = false
 
                     // motd 표시
                     if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
-                        Call.infoMessage(e.player.con, Administration.Config.motd.string())
+                        infoMessage(e.player, Administration.Config.motd.string())
                     } else {
-                        Call.infoMessage(e.player.con, pluginRoot.child("motd/motd.txt").readString("UTF-8"))
+                        infoMessage(e.player, pluginRoot.child("motd/motd.txt").readString("UTF-8"))
                     }
 
                     // 자동 로그인
@@ -180,11 +191,7 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                     val type = if (data == null) "[비 로그인] " else if (data.isMute) "[묵언] " else ""
 
                     if (!e.message.startsWith("/")) {
-                        if (data == null) Call.sendMessage(
-                            "[#${
-                                e.player.color.toString().toUpperCase()
-                            }]${e.player.name} [orange]> [white] ${e.message}"
-                        )
+                        if (data == null) sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")
 
                         // 채팅 내용을 기록에 저장
                         Log.info("$type${e.player.name}: ${e.message}")
@@ -260,7 +267,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                         if (netServer.admins.bannedIPs.contains(e.ip, false)) {
                             netServer.admins.findByIP(e.ip).banned = false
                             netServer.admins.bannedIPs.remove(e.ip, false)
-                            netServer.admins.save()
                         }
                     }
                 }
@@ -288,7 +294,6 @@ class EventThread(private val type: EventTypes, private val event: Any) : Thread
                         if (netServer.admins.bannedIPs.contains(e.ip, false)) {
                             netServer.admins.findByIP(e.ip).banned = false
                             netServer.admins.bannedIPs.remove(e.ip, false)
-                            netServer.admins.save()
                         }
                     }
                 }
