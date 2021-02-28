@@ -70,10 +70,12 @@ object Discord {
                             }
                             // Console commands
                             equals("") -> {
-
+                            }
+                            contains("!") -> {
+                                msg.channel().sendMessage("알 수 없는 명령어 입니다!")
                             }
                             else -> {
-                                msg.channel().sendMessage("알 수 없는 명령어 입니다!")
+
                             }
                         }
                     }
