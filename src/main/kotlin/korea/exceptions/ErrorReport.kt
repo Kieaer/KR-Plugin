@@ -2,7 +2,7 @@ package korea.exceptions
 
 import korea.core.Log
 
-class ErrorReport(e: Exception) {
+class ErrorReport(e: Throwable) {
     init {
         val sb = StringBuilder()
 
