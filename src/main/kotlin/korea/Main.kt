@@ -3,6 +3,7 @@ import arc.ApplicationListener
 import arc.Core
 import arc.files.Fi
 import arc.util.CommandHandler
+import korea.PluginData.blacklist
 import korea.PluginData.computeTime
 import korea.PluginData.playerData
 import korea.command.ClientCommand
@@ -95,12 +96,20 @@ class Main : Plugin() {
         // 비 로그인 유저 통제
         Vars.netServer.admins.addActionFilter { e ->
             if (e.player == null) return@addActionFilter true
-            return@addActionFilter if(playerData.find { d -> e.player.uuid() == d.uuid } == null){
-                sendMessage(e.player,"이 서버는 계정 등록을 하지 않으면 플레이 하실 수 없습니다!\n먼저 [green]/register[] 명령어를 사용 해 보세요.")
-                false
-            } else {
-                true
+            for (a in blacklist){
+                if (a.contains(e.player.name, true)){
+                    return@addActionFilter false
+                }
             }
+
+            val data = playerData.find { d -> e.player.uuid() == d.uuid }
+            if (data == null) {
+                sendMessage(e.player, "이 서버는 계정 등록을 하지 않으면 플레이 하실 수 없습니다!\n먼저 [green]/register[] 명령어를 사용 해 보세요.")
+                return@addActionFilter false
+            } else if (!data.json.has("discord")){
+                sendMessage(e.player, "Discord 인증이 되어있지 않은 계정입니다.\n[green]/motd[] 명령어로 서버 주소를 확인하고, [green]/discord[] 명령어로 인증을 합니다.")
+                return@addActionFilter false
+            } else data.json.has("discord")
         }
 
         Log.system("플러그인 로드 완료!")

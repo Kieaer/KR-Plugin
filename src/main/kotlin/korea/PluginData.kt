@@ -22,6 +22,7 @@ object PluginData : Config() {
     var worldTime: Long = 0L
     var banned = Seq<Banned>()
     var computeTime: Long = 0L
+    var blacklist = Seq<String>()
 
     var votingClass: Vote? = null
     var isVoting: Boolean = false
@@ -65,7 +66,7 @@ object PluginData : Config() {
                 val arr = json.asObject().get("banned").asArray()
                 for (a in arr){
                     val obj = a.asObject()
-                    banned.add(Banned(obj.get("name").asString(), obj.get("address").asString(), obj.get("uuid").asString()))
+                    banned.add(Banned(obj.get("name").asString(), obj.get("address").asString(), obj.get("uuid").asString(), obj.get("json").asString()))
                 }
 
                 Log.system("플러그인 데이터 로드됨!")
@@ -90,5 +91,5 @@ object PluginData : Config() {
         }
     }
 
-    class Banned(val name: String, val address: String, val uuid: String)
+    class Banned(val name: String, val address: String, val uuid: String, val json: String)
 }

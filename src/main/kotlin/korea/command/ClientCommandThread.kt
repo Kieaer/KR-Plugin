@@ -14,6 +14,7 @@ import korea.PluginData.votingClass
 import korea.PluginData.votingPlayer
 import korea.PluginData.votingType
 import korea.command.ClientCommand.Command.*
+import korea.data.Config
 import korea.data.PlayerCore
 import korea.data.auth.Discord
 import korea.eof.constructFinish
@@ -79,7 +80,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         }
                     }
                     Register -> {
-                        if (arg.size != 1){
+                        if(arg.size != 1) {
                             sendMessage["아직도 /register <아아디> <비밀번호> <비밀번호 재입력> 을 쓰시나요?\n" +
                                     "이제는 그냥 /register <비밀번호> 를 입력하시면 됩니다.\n\n" +
                                     "비밀번호 정할때 구글이나 네이버에서 회원가입할때 비밀번호를 a123b 이라고 할때, 그 누구도 [scarlet]<[]a123b[scarlet]>[] 이라고 치진 않잖아요?\n" +
@@ -92,7 +93,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
 
                         // 비밀번호 패턴 확인
                         val hashed = BCrypt.hashpw(arg[0], BCrypt.gensalt(11))
-                        if (RegularExpression.check(pw)) {
+                        if(RegularExpression.check(pw)) {
                             val data = netServer.admins.findByName(uuid).first() // TODO country 만들기
                             val request = PlayerCore.register(
                                 name = player.name(),
@@ -107,8 +108,8 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                                 json = JsonObject(),
                                 id = player.name(),
                                 pw = hashed
-                            )
-                            if(request){
+                                                             )
+                            if(request) {
                                 sendMessage["계정 등록 성공"]
                                 if(PlayerCore.load(player)) {
                                     sendMessage["로그인 성공"]
@@ -638,10 +639,21 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         }
                     }
                     ClientCommand.Command.Discord -> {
-                        val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
-                        Discord.pin.put(pin, player.uuid())
-                        sendMessage["Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요"]
-                        sendMessage["PIN 번호: $pin"]
+                        val data = PluginData[uuid]
+                        if(data != null) {
+                            if(!data.json.has("discord")) {
+                                if(Discord.pin.containsValue(player.uuid(), false)){
+                                    sendMessage["PIN 번호: ${Discord.pin.find {e -> e.value.equals(player.uuid())}?.key}"]
+                                } else {
+                                    val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
+                                    Discord.pin.put(pin, player.uuid())
+                                    sendMessage["Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요"]
+                                    sendMessage["PIN 번호: $pin"]
+                                }
+                            } else {
+                                sendMessage["이미 인증된 계정입니다."]
+                            }
+                        }
                     }
                 }
             }

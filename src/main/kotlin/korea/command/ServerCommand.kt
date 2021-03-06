@@ -13,9 +13,12 @@ object ServerCommand {
         handler.register("unban", "<ip/ID>", "Completely unban a person by IP or ID.") { arg: Array<String> ->
             ServerCommandThread(Command.Unban, arg).run()
         }
+        handler.register("blacklist","<add/remove> [name]"){
+            ServerCommandThread(Command.Blacklist, it).run()
+        }
     }
 
     enum class Command{
-        Unban
+        Unban, Blacklist
     }
 }

@@ -2,6 +2,7 @@ package korea.command
 
 import arc.util.Log
 import korea.PluginData
+import korea.command.ServerCommand.Command.Blacklist
 import korea.command.ServerCommand.Command.Unban
 import mindustry.Vars
 
@@ -18,6 +19,10 @@ class ServerCommandThread(private val type: ServerCommand.Command, private val a
                 } else {
                     Log.err("That IP/ID is not banned!")
                 }
+            }
+            Blacklist -> {
+                PluginData.blacklist.add(arg[0])
+                Log.info("${arg[0]} 을 블랙리스트에 추가함")
             }
         }
     }

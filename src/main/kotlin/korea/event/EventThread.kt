@@ -2,6 +2,7 @@ package korea.event
 
 import arc.Core
 import korea.Main.Companion.pluginRoot
+import korea.PlayerData
 import korea.PluginData
 import korea.command.Permissions
 import korea.command.ServerCommand
@@ -23,6 +24,7 @@ import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.net.Administration
 import mindustry.net.Administration.PlayerInfo
+import org.hjson.JsonObject
 
 class EventThread(private val type: EventTypes, private val event: Any) {
     fun run() {
@@ -203,7 +205,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                             } else {
                                 if (Permissions.userData.has(data.uuid)) {
                                     sendMessage(
-                                        (if(data.json.has("discord")) "[#738ADB][] " else "") + Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")
+                                        (if(data.json.has("discord") && Config.authType != Discord) "[#738ADB][] " else "") + Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")
                                             .replace(
                                                 "%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}"
                                             ).replace("%2", e.message)
@@ -250,7 +252,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerBan -> {
                     val e = event as PlayerBanEvent
                     connect(e.player, "mindustry.ru", 6567)
-                    PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid()))
+                    PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid(), if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]?.json.toString() else JsonObject().toString()))
                     Core.app.post {
                         val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
                         if(info.banned) {
@@ -262,7 +264,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerIpBan -> {
                     val e = event as PlayerIpBanEvent
                     val uuid = netServer.admins.findByIP(e.ip)
-                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none"))
+                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none", if(PluginData[uuid.id] != null) PluginData[uuid.id]?.json.toString() else JsonObject().toString()))
                     Core.app.post {
                         if (netServer.admins.bannedIPs.contains(e.ip, false)) {
                             netServer.admins.findByIP(e.ip).banned = false

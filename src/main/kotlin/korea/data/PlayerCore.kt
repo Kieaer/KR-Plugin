@@ -1,5 +1,6 @@
 package korea.data
 
+import arc.struct.Seq
 import korea.PlayerData
 import korea.PluginData
 import korea.PluginData.playerData
@@ -84,6 +85,44 @@ object PlayerCore {
         val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
         sql.setString(1, uuid)
         return sql.executeQuery().next()
+    }
+
+    fun getAllData() :Seq<PlayerData> {
+        val result = Seq<PlayerData>()
+
+        val sql = DB.database.prepareStatement("SELECT * FROM players")
+        val rs = sql.executeQuery()
+        if(rs.next()){
+            result.add(PlayerData(
+                rs.getString("name"),
+                rs.getString("uuid"),
+                rs.getBoolean("admin"),
+                rs.getLong("placeCount"),
+                rs.getLong("breakCount"),
+                rs.getLong("kickCount"),
+                rs.getLong("joinCount"),
+                rs.getInt("level"),
+                rs.getInt("exp"),
+                rs.getLong("joinDate"),
+                rs.getLong("lastDate"),
+                rs.getLong("playTime"),
+                rs.getLong("attackWinner"),
+                rs.getLong("pvpWinner"),
+                rs.getLong("pvpLoser"),
+                rs.getBoolean("rainbowName"),
+                rs.getBoolean("isMute"),
+                rs.getBoolean("isLogged"),
+                rs.getLong("afkTime"),
+                rs.getString("country"),
+                rs.getLong("rank"),
+                JsonObject.readJSON(rs.getString("json")).asObject(),
+                rs.getString("id"),
+                rs.getString("pw")
+                                 )
+                      )
+        }
+
+        return result
     }
 
     private fun getData(player: Playerc) : PlayerData {
