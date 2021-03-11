@@ -5,6 +5,7 @@ import arc.util.async.Threads.sleep
 import com.mewna.catnip.Catnip
 import com.mewna.catnip.entity.message.Message
 import com.mewna.catnip.shard.DiscordEvent
+import korea.PlayerData
 import korea.PluginData
 import korea.PluginData.banned
 import korea.core.Log
@@ -16,7 +17,7 @@ import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 object Discord {
-    val pin: ObjectMap<Long, String> = ObjectMap()
+    val pin: JsonObject = JsonObject()
     private lateinit var catnip: Catnip
 
     init {
@@ -78,7 +79,13 @@ object Discord {
                                         }
 
                                         if (!isMatch) {
-                                            val data = PluginData[pin.get(arg[0].toLong())]
+                                            var data: PlayerData? = null
+                                            for (a in pin){
+                                                if(a.value.asString() == arg[0]){
+                                                    data = PluginData[a.name]
+                                                }
+                                            }
+
                                             if(data != null) {
                                                 val info = JsonObject()
                                                 info.add("name", msg.author().username())
@@ -91,9 +98,9 @@ object Discord {
                                                         sleep(5000)
                                                         m.delete()
                                                     }
-                                                PluginData[pin.remove(arg[0].toLong())]
+                                                PluginData[pin.remove(arg[0]).asString()]
                                             } else {
-                                                msg.channel().sendMessage("${msg.author().username()} -> 알 수 없는 플레이어 입니다!").subscribe {m:Message ->
+                                                msg.channel().sendMessage("${msg.author().username()} -> 등록되지 않은 계정입니다!").subscribe {m:Message ->
                                                     sleep(5000)
                                                     m.delete()
                                                 }
