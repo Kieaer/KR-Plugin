@@ -8,23 +8,18 @@ import korea.Main.Companion.pluginRoot
 import korea.PlayerData
 import korea.PluginData
 import korea.PluginData.computeTime
-import korea.PluginData.isVoting
 import korea.PluginData.playerData
-import korea.PluginData.votingClass
-import korea.PluginData.votingPlayer
-import korea.PluginData.votingType
+import korea.command.ClientCommand.Command
 import korea.command.ClientCommand.Command.*
 import korea.data.Config
 import korea.data.PlayerCore
 import korea.data.auth.Discord
-import korea.eof.constructFinish
-import korea.eof.infoMessage
-import korea.eof.sendMessage
-import korea.eof.setPosition
+import korea.eof.*
 import korea.event.Exp
 import korea.event.feature.RainbowName
 import korea.event.feature.Vote
 import korea.event.feature.VoteType
+import korea.event.feature.VoteType.*
 import korea.exceptions.ErrorReport
 import korea.external.LongToTime
 import korea.external.RegularExpression
@@ -51,7 +46,7 @@ import kotlin.random.Random
 
 
 
-class ClientCommandThread(private val type: ClientCommand.Command, private val arg: Array<String>, private val player: Playerc){
+class ClientCommandThread(private val type: Command, private val arg: Array<String>, private val player: Playerc){
     fun run(){
         val uuid = player.uuid()
         val sendMessage = sendMessage(player)
@@ -545,7 +540,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                         when (arg.size) {
                             1 -> {
                                 target = if (arg[0].toIntOrNull() != null) {
-                                    Groups.player.getByID(arg[0].toInt())
+                                    Groups.player.find { e -> e.id == arg[0].toInt() }
                                 } else {
                                     Groups.player.find { e -> e.name().contains(arg[0]) }
                                 }
@@ -559,14 +554,14 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             }
                             2 -> {
                                 target = if (arg[0].toIntOrNull() != null) {
-                                    Groups.player.getByID(arg[0].toInt())
+                                    Groups.player.find { e -> e.id == arg[0].toInt() }
                                 } else {
                                     Groups.player.find { e -> e.name().contains(arg[0]) }
                                 }
 
                                 if (target != null) {
                                     val other = if (arg[1].toIntOrNull() != null) {
-                                        Groups.player.getByID(arg[1].toInt())
+                                        Groups.player.find { e -> e.id == arg[1].toInt() }
                                     } else {
                                         Groups.player.find { e -> e.name().contains(arg[1]) }
                                     }
@@ -606,7 +601,7 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                     Help -> {
                         if (arg.isNotEmpty() && arg[0].toIntOrNull() == null ) {
                             try {
-                                sendMessage[valueOf(arg[0].capitalize()).toString()]
+                                sendMessage[Command.valueOf(arg[0].capitalize()).toString()]
                             } catch (e: Exception){
                                 sendMessage["${arg[0]} 명령어를 찾을 수 없습니다!"]
                             }
@@ -638,15 +633,15 @@ class ClientCommandThread(private val type: ClientCommand.Command, private val a
                             sendMessage[message.toString()]
                         }
                     }
-                    ClientCommand.Command.Discord -> {
+                    Command.Discord -> {
                         val data = PluginData[uuid]
                         if(data != null) {
                             if(!data.json.has("discord")) {
-                                if(Discord.pin.containsValue(player.uuid(), false)){
-                                    sendMessage["PIN 번호: ${Discord.pin.find {e -> e.value.equals(player.uuid())}?.key}"]
+                                if(Discord.pin.has(player.uuid())){
+                                    sendMessage["PIN 번호: ${Discord.pin.get(player.uuid()).asString()}"]
                                 } else {
                                     val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
-                                    Discord.pin.put(pin, player.uuid())
+                                    Discord.pin.add(player.uuid(), pin)
                                     sendMessage["Discord 채널 내에서 !auth 명령어와 함께 이 PIN 번호를 입력하세요"]
                                     sendMessage["PIN 번호: $pin"]
                                 }
