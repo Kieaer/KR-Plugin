@@ -10,11 +10,11 @@ class kick {
         if (reason == null){
             throw Exception("Reason is NULL!")
         } else {
-            Core.app.post { Call.kick(player.con(), reason) }
+            Core.app.post { player.kick(reason) }
         }
     }
 
     constructor(player: Playerc, reason: Packets.KickReason){
-        Core.app.post { Call.kick(player.con(), reason) }
+        Core.app.post { player.kick(reason) }
     }
 }
