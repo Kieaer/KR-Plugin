@@ -1,16 +1,13 @@
 package korea.exceptions
 
 import korea.core.Log
+import java.io.PrintWriter
+import java.io.StringWriter
 
 class ErrorReport(e: Throwable) {
     init {
-        val sb = StringBuilder()
-
-        sb.append(e.toString()).append("\n")
-        val element = e.stackTrace
-        for (error in element) sb.append("\tat ").append(error.toString()).append("\n")
-        sb.append("==================================================")
-
-        Log.write(Log.LogType.Error, sb.toString())
+        Log.err("오류 기록됨.")
+        val error = StringWriter().also { e.printStackTrace(PrintWriter(it)) }.toString().trim()
+        Log.write(Log.LogType.Error, "$error\n==================================================\n")
     }
 }
