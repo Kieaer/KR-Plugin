@@ -536,7 +536,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         TODO()
                     }
                     Tp -> {
-                        val target: Playerc
+                        val target: Playerc?
                         when (arg.size) {
                             1 -> {
                                 target = if (arg[0].toIntOrNull() != null) {
@@ -638,7 +638,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         if(data != null) {
                             if(!data.json.has("discord")) {
                                 if(Discord.pin.has(player.uuid())){
-                                    sendMessage["PIN 번호: ${Discord.pin.get(player.uuid()).asString()}"]
+                                    sendMessage["PIN 번호: ${Discord.pin.get(player.uuid()).asLong()}"]
                                 } else {
                                     val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
                                     Discord.pin.add(player.uuid(), pin)

@@ -81,7 +81,7 @@ object Discord {
                                         if (!isMatch) {
                                             var data: PlayerData? = null
                                             for (a in pin){
-                                                if(a.value.asString() == arg[0]){
+                                                if(a.value.asLong() == arg[0].toLong()){
                                                     data = PluginData[a.name]
                                                 }
                                             }
