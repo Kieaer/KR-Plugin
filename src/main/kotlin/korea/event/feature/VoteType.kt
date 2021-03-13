@@ -26,9 +26,14 @@ enum class VoteType{
             return "빽섭"
         }
     },
-    OP{
+    Fast {
+        override fun toString():String {
+            return "웨이브 고속진행"
+        }
+    },
+    Random{
         override fun toString(): String {
-            return "치트"
+            return "랜덤박스"
         }
     },
     None{

@@ -200,6 +200,19 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                         Log.write(Log.LogType.Chat, "$type ${e.player.name}: ${e.message}")
 
                         if (data != null) {
+                            if (PluginData.voting.size == 1 && e.message.equals("y")){
+                                for (a in PluginData.voting.first().voted){
+                                    if(a.key.equals(e.player.uuid()) || a.value.equals(e.player.con.address)){
+                                        sendMessage(e.player, "이미 투표 했습니다!")
+                                        return
+                                    }
+                                }
+                                PluginData.voting.first().voted.put(e.player.uuid(), e.player.con.address)
+                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require || e.player.ip() == "169.254.37.115"){
+                                    sendMessage("[sky]섭장[]의 힘으로 투표가 즉시 통과됩니다.")
+                                    PluginData.voting.first().passed()
+                                }
+                            }
                             if (data.isMute) {
                                 sendMessage(e.player, "[scarlet]당신은 누군가에 의해 묵언 처리가 되었습니다.")
                             } else {

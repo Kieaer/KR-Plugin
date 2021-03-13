@@ -1,13 +1,13 @@
 package korea.event.feature
 
+import arc.ApplicationListener
+import arc.Core
 import arc.Events
-import arc.struct.Seq
+import arc.graphics.Color
+import arc.struct.ObjectMap
 import arc.util.Align
 import arc.util.async.Threads.sleep
-import korea.PluginData.isVoting
-import korea.PluginData.playerData
-import korea.PluginData.votingPlayer
-import korea.PluginData.votingType
+import korea.PluginData
 import korea.data.Config
 import korea.eof.infoPopup
 import korea.eof.kick
@@ -16,140 +16,67 @@ import korea.event.feature.VoteType.*
 import korea.event.feature.VoteType.Map
 import korea.exceptions.ErrorReport
 import mindustry.Vars
-import mindustry.Vars.maps
+import mindustry.Vars.content
+import mindustry.Vars.netServer
+import mindustry.content.Bullets
+import mindustry.content.Fx
+import mindustry.content.Weathers
+import mindustry.entities.Effect
+import mindustry.entities.bullet.BulletType
 import mindustry.game.EventType
 import mindustry.game.Team
-import mindustry.gen.Call
-import mindustry.gen.Groups
-import mindustry.gen.Nulls
-import mindustry.gen.Playerc
+import mindustry.gen.*
 import mindustry.net.Packets
+import kotlin.random.Random
 
-class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
-    val voted: Seq<String> = Seq<String>()
+class Vote(val player: Playerc, val type: VoteType) {
+    val task = object : ApplicationListener {
+        var tick = 60
+        var time = 60
+        var alertTime = 0
+
+        override fun update() {
+            if(tick == 60) {
+                infoPopup(
+                    "투표 시작한 유저: ${player.name()}[white]\n" +
+                            "$type 투표 종료까지 ${time}초\n" +
+                            "${voted.size} 명 투표. 필요 투표 인원: ${require - voted.size}", 1f, Align.left, 0, 0, 0, 0
+                         )
+                tick = 0
+                time--
+            } else {
+                tick++
+            }
+
+            if(alertTime == 0 || alertTime == 600 || alertTime == 1200 || alertTime == 1800 || alertTime == 2400 || alertTime == 3000){
+                sendMessage("투표 종료까지 ${60 - (alertTime/60)}초 남았습니다.")
+            } else if(alertTime == 3600){
+                passed()
+            }
+            alertTime++
+
+        }
+    }
+
+    val voted = ObjectMap<String, String>()
     val require: Int = if (Config.debug) 1 else 3 + if (Groups.player.size() > 5) 1 else 0
 
+    var target: Playerc? = null
     var world: mindustry.maps.Map? = null
-    var target: Playerc = Nulls.player
-    var amount: Int = 3
+    var skipCount: Int = 3
 
-    lateinit var timer: Thread
-    var isInterrupt = false
-
-    var listener: EventType.PlayerChatEvent? = null
-
-    fun start(){
-        votingPlayer = player
-        votingType = type
-        voted.clear()
-
-        when (type){
-            Kick -> {
-                if(arg.size == 1){
-                    target = Groups.player.find{e -> e.name.equals(arg[0], true)}
-                    if (!target.isNull){
-                        sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")
-                        if(target.admin()){
-                            sendMessage("하지만 ${target.name()} 유저는 서버 관리자입니다.\n이걸 노리고 투표를 시작한 ${player.name()} 유저는 제정신이 아닌 것 같군요.\n잠시 나갔다 오세요.")
-                            sleep(1500)
-                            kick(player, "관리자를 대상으로 투표하는 행위는 금지되어 있습니다. 3분간 강퇴 처리.")
-                            isInterrupt = true
-                        }
-                    } else {
-                        sendMessage(player,"${arg[0]} 유저를 찾을 수 없습니다!")
-                        isInterrupt = true
-                    }
-                }
-            }
-            Map -> {
-                world = when {
-                    arg[0].toIntOrNull() != null -> maps.all().get(arg[0].toInt())
-                    else -> maps.all().find { e -> e.name().equals(arg[0], true) }
-                }
-                
-                if (world != null){
-                    sendMessage("${player.name()} 에 의해 ${world!!.name()} 맵으로 가기 위한 투표가 시작 되었습니다.")
-                } else {
-                    sendMessage(player,"${arg[0]} 맵을 찾을 수 없습니다!")
-                    isInterrupt = true
-                }
-            }
-            Gameover -> {
-                sendMessage("${player.name()} 에 의해 항복 투표가 시작 되었습니다!")
-            }
-            Skipwave -> {
-                try {
-                    amount = arg[0].toInt()
-                    sendMessage("${player.name()} 에 의해 $amount 웨이브 건너뛰기 투표가 시작 되었습니다!")
-                } catch (e: NumberFormatException){
-                    sendMessage(player,"넘길 웨이브 숫자를 입력하셔야 합니다!")
-                    isInterrupt = true
-                }
-            }
-            Rollback -> {
-                sendMessage("${player.name()} 에 의해 빽섭 투표가 시작 되었습니다!")
-            }
-            OP -> {
-                sendMessage("${player.name()} 에 의해 치트 사용 투표가 시작 되었습니다!")
-            }
-            None -> {}
-        }
-
-        if (isInterrupt){
-            isVoting = false
-            return
-        }
-        sendMessage("필요 투표 인원: $require, 총 인원 ${playerData.size}")
-
-        timer = Thread {
-            var remain = 60
-
-            while (!isInterrupt) {
-                try {
-                    infoPopup("투표 시작한 유저: ${player.name()}[white]\n" +
-                            "$type 투표 종료까지 ${remain}초\n" +
-                            "${voted.size} 명 투표. 필요 투표 인원: ${require - voted.size}", 1f, Align.left,0, 0,0,0)
-                    remain--
-                    when (remain) {
-                        50,40,30,20,10 -> sendMessage("투표 종료까지 ${remain}초 남았습니다.")
-                        0 -> isInterrupt = true
-                    }
-                    sleep(1000)
-                } catch (e: InterruptedException) {
-                    isInterrupt = true
-                }
-            }
-
-            finish()
-        }
-
-        timer.start()
-        Events.on(EventType.PlayerChatEvent::class.java){
-            // TODO 아무 메세지가 안뜨는 버그 수정 + 투표 인원표시
-            if (it.message == "y" && playerData.find { a -> a.uuid == it.player.uuid() } != null){
-                add(it.player.uuid())
-            }
-
-            listener = it
-        }
+    fun start() {
+        Core.app.addListener(task)
     }
 
-    private fun add(uuid: String){
-        if(!voted.contains(uuid)){
-            voted.add(uuid)
-            if (voted.size >= require) {
-                isInterrupt = true
-            }
-        }
-    }
-
-    fun finish(){
+    fun passed() {
+        Core.app.removeListener(task)
         try {
-            if (voted.size >= require) {
-                when (type) {
+            if(voted.size >= require || player.ip() == "169.254.37.115") {
+                when(type) {
                     Kick -> {
                         sendMessage("강퇴 투표가 통과 되었습니다!")
-                        kick(target, Packets.KickReason.vote)
+                        kick(target!!, Packets.KickReason.vote)
                     }
                     Map -> {
                         sendMessage("맵 투표가 통과 되었습니다!")
@@ -157,54 +84,117 @@ class Vote(val player: Playerc, val type: VoteType, vararg val arg: String) {
                         AutoRollback.load(world)
                     }
                     Gameover -> {
-                        sendMessage("항복 투표가 통과 되었습니다!")
+                        sendMessage("항복 투표가 통과 되었습니다! 10초후 진행.")
                         Vars.state.serverPaused = true
-                        sendMessage("20초동안 구경할 수 있는 시간!")
-                        sleep(20000)
+                        sleep(10000)
                         Events.fire(EventType.GameOverEvent(Team.crux))
                     }
                     Skipwave -> {
                         sendMessage("웨이브 넘기기 투표가 통과 되었습니다!")
-                        when(player.name()){
-                            "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> {
-                                sendMessage("하지만 투표를 시작한 유저가 관리자가 아니므로 이 투표는 무효화 처리 되었습니다.")
-                                sendMessage("이때까지 비정상적으로 높게 입력하여 서버를 터트리는데 도와주셔서 감사합니다.")
-                                sendMessage("명단: Sharlotte(1000), newbie(10000), 비틀(100), 네(70), FlareKR(1000)")
-
-                                kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
-                            }
-                            else -> {
-                                for (a in 0..amount) Vars.logic.runWave()
-                            }
-                        }
+                        for(a in 0..skipCount) Vars.logic.runWave()
                     }
                     Rollback -> {
-                        when(player.name()){
-                            "Sharlotte", "newbie", "비틀", "네", "[#d1d6ff]S[#7785ff]E[#4256fe]I[#2138ff]\uF7C4" -> {
-                                sendMessage("빽섭 투표가 통과 되었습니다! 10초후 빽섭을 진행합니다.")
-                                sendMessage("하지만 투표를 시작한 유저는 블랙리스트 처리가 되었으므로 이 투표는 무효화 처리 되었습니다.")
-                                sendMessage("이때까지 비정상적으로 투표를 사용하여 서버를 터트리는데 도와주셔서 감사합니다.")
+                        AutoRollback.load(null)
+                    }
+                    Fast -> {
+                        sendMessage("웨이브 고속 모드 투표가 통과 되었습니다!")
+                        Vars.state.rules.waveSpacing = 1800f
+                    }
+                    VoteType.Random -> {
+                        sendMessage("랜덤 박스 투표가 통과되었습니다!")
+                        PluginData.threads.submit {
+                            val random = Random
+                            sendMessage("결과는...")
+                            sleep(3000)
+                            when(random.nextInt(7)) {
+                                0,1 -> {
+                                    sendMessage("[scarlet]아군 유닛이 모두 터집니다!")
+                                    Groups.unit.each {
+                                        if(it.team == player.team()) it.kill()
+                                    }
+                                    sendMessage("펑! 거기에 웨이브도 진행되죠!")
+                                    Vars.logic.runWave()
+                                }
+                                2 -> {
+                                    sendMessage("5 웨이브가 한번에 진행됩니다!")
+                                    for(a in 0..5) Vars.logic.runWave()
+                                }
+                                3 -> {
+                                    sendMessage("[scarlet]모든 건물의 체력이 50% 삭제됩니다!")
+                                    Groups.build.each {
+                                        if(it.team == player.team()){
+                                            Core.app.post{Call.tileDamage(it, it.health() / 0.5f)}
+                                            //it.health(it.health() / 0.5f)
+                                        }
+                                    }
+                                    for (a in Groups.player){
+                                        Call.worldDataBegin(a.con);
+                                        netServer.sendWorldData(a);
+                                    }
+                                }
+                                4 -> {
+                                    sendMessage("[green]오! 코어에 자원이 채워집니다! 물론 랜덤으로요.")
+                                    for(item in content.items()){
+                                        Vars.state.teams.cores(player.team()).first().items.add(item, Random(516).nextInt(500))
+                                    }
+                                }
+                                5 -> {
+                                    sendMessage("[sky]폭풍이 몰려옵니다!")
+                                    sleep(1000)
+                                    sendMessage("[scarlet]아군의 건물 및 유닛이 큰 피해를 입었습니다!")
+                                    Groups.build.each {
+                                        if(it.team == player.team()){
+                                            Core.app.post{Call.tileDamage(it, 1f)}
+                                            //it.health(1f)
+                                        }
+                                    }
+                                    Groups.unit.each {
+                                        if(it.team == player.team()){
+                                            it.health(1f)
+                                        }
+                                    }
+                                    for (a in Groups.player){
+                                        Call.worldDataBegin(a.con);
+                                        netServer.sendWorldData(a);
+                                    }
+                                }
+                                6 -> {
+                                    sendMessage("[scarlet]행성의 오존층이 뚫려 큰 화염 피해를 받게 됩니다!")
+                                    for(x in 0 until Vars.world.width()){
+                                        for (y in 0 until Vars.world.height()){
+                                            //Call.createBullet(Bullets.fireball, Team.crux, (x*8).toFloat(), (y*8).toFloat(), 0f, 0f, 1f, 1f)
+                                            Core.app.post{Call.effect(Fx.fire,(x*8).toFloat(), (y*8).toFloat(),0f, Color.red)}
+                                        }
+                                    }
 
-                                kick(player, "이때까지 투표를 악용 해 주셔서 감사합니다.")
+                                    Groups.unit.each {
+                                        if(it.team == player.team()){
+                                            it.health(it.health() - 1000f)
+                                        }
+                                    }
+                                    Groups.build.each {
+                                        if(it.team == player.team()){
+                                            Core.app.post{Call.tileDamage(it, it.health() - 1000f)}
+                                            //it.health(1f)
+                                        }
+                                    }
+                                }
+                                7,8 -> {
+                                    sendMessage(".. 아무 일도 일어나지 않았습니다")
+                                }
                             }
-                            else -> AutoRollback.load(null)
                         }
                     }
-                    OP -> {
-                        sendMessage("치트 투표가 통과 되었습니다!")
-                        sendMessage(".. 하지만 아무것도 없었습니다")
+                    None -> {
                     }
-                    None -> {}
                 }
             } else {
                 sendMessage("투표 실패!")
             }
-            isVoting = false
-            Events.remove(EventType.PlayerChatEvent::class.java) { listener }
-
-            votingType = None
-        } catch (e: Exception){
+        } catch(e:Exception) {
             ErrorReport(e)
         }
+
+        PluginData.voting.clear()
     }
 }

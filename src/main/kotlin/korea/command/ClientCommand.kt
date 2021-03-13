@@ -28,7 +28,7 @@ object ClientCommand {
         handler.register("spawn", "<unit/block> <이름> [개수/방향]", "블록이나 유닛을 스폰합니다.") { arg: Array<String>, player: Playerc ->
             ClientCommandThread(Command.Spawn, arg, player).run()
         }
-        handler.register("vote", "<kick/map/gameover/skipwave/rollback/op> [플레이어_이름/방향]", "투표기능.") { arg: Array<String>, player: Playerc ->
+        handler.register("vote", "<kick/map/gameover/skipwave/rollback/random> [플레이어_이름/방향]", "투표기능.") { arg: Array<String>, player: Playerc ->
             ClientCommandThread(Command.Vote, arg, player).run()
         }
         handler.register("rainbow", "움직이는 무지개 닉 기능을 켜고 끕니다.") { arg: Array<String>, player: Playerc ->
@@ -112,13 +112,14 @@ object ClientCommand {
         }, Vote {
             override fun toString(): String {
                 return """
-                    명령어: [green]/vote <kick/map/gameover/skipwave/rollback/op> [플레이어_이름/방향]
+                    명령어: [green]/vote <kick/map/gameover/skipwave/rollback/random> [플레이어_이름/방향]
                     [sky]/vote kick VisitorPlayer[] - VisitorPlayer 라는 플레이어가 있을 경우 강퇴 투표를 시작합니다.
                     [sky]/vote map <숫자>[] - /maps 명령어를 사용하여 확인한 맵 번호를 입력하면, 해당 맵으로 이동하는 투표를 시작합니다.
                     [sky]/vote gameover[] - 앞날이 막막할 때 항복 투표를 진행합니다.
                     [sky]/vote skipwave <숫자>[] - 일정 wave 를 한꺼번에 진행합니다. 이미 높은 Wave 상태에서 입력할 경우 서버 랙 또는 한순간에 모든 것을 파멸로 이끌 수 있으니 주의하세요.
                     [sky]/vote rollback[] - 테러 복구에 유용하며, 서버가 마지막으로 저장한 시간대의 맵으로 다시 되돌립니다.
-                    [sky]/vote op[] - 아직 개발중인 명령어 입니다.
+                    [sky]/vote fast[] - 서버의 건설 수준이 높아져서 게임이 노잼화가 되었을 때 웨이브간 간격을 0초로 만들어 버립니다.
+                    [sky]/vote random[] - 랜덤 박스를 열어봅시다. 무슨 효과가 일어날까요?
                 """.trimIndent()
             }
         }, Rainbow {

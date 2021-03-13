@@ -10,6 +10,8 @@ import mindustry.gen.Playerc
 import org.hjson.JsonArray
 import org.hjson.JsonObject
 import java.security.SecureRandom
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import kotlin.reflect.full.declaredMemberProperties
 
 object PluginData : Config() {
@@ -24,10 +26,9 @@ object PluginData : Config() {
     var computeTime: Long = 0L
     var blacklist = Seq<String>()
 
-    var votingClass: Vote? = null
-    var isVoting: Boolean = false
-    var votingType: VoteType = VoteType.None
-    var votingPlayer: Playerc = Nulls.player
+    var voting = Seq<Vote>()
+
+    val threads = Executors.newCachedThreadPool()
 
     operator fun get(uuid: String): PlayerData? {
         return playerData.find { d -> uuid == d.uuid }
