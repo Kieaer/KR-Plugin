@@ -109,7 +109,11 @@ class Main : Plugin() {
             } else if (Config.authType == Config.AuthType.Discord && !data.json.has("discord")){
                 sendMessage(e.player, "Discord 인증이 되어있지 않은 계정입니다.\n[green]/motd[] 명령어로 서버 주소를 확인하고, [green]/discord[] 명령어로 인증을 합니다.")
                 return@addActionFilter false
-            } else data.json.has("discord")
+            } else if (Config.authType == Config.AuthType.Discord && data.json.has("discord")){
+                return@addActionFilter true
+            } else if (Config.authType == Config.AuthType.Password){
+                return@addActionFilter true
+            } else false
         }
 
         Log.system("플러그인 로드 완료!")

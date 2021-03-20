@@ -124,6 +124,12 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.PlayerJoin -> {
                     val e = event as PlayerJoin
+
+                    val ip = netServer.admins.findByIPs(e.player.con.address)
+                    if(ip.size > 2){
+                        sendMessage("${e.player.name} [white]의 이전 닉네임은 ${ip.first().names.first()} []입니다. [gray]디버그 용도로 만들어진 임시 알람입니다.")
+                    }
+
                     val uuid = e.player.uuid()
 
                     // 접속 인원 카운트
@@ -265,7 +271,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerBan -> {
                     val e = event as PlayerBanEvent
                     connect(e.player, "mindustry.ru", 6567)
-                    PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid(), if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]?.json.toString() else JsonObject().toString()))
+                    PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid(), if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]?.json.toString() else "\"json:\"\""))
                     Core.app.post {
                         val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
                         if(info.banned) {
@@ -277,7 +283,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerIpBan -> {
                     val e = event as PlayerIpBanEvent
                     val uuid = netServer.admins.findByIP(e.ip)
-                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none", if(PluginData[uuid.id] != null) PluginData[uuid.id]?.json.toString() else JsonObject().toString()))
+                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none", if(PluginData[uuid.id] != null) PluginData[uuid.id]?.json.toString() else "\"json:\"\""))
                     Core.app.post {
                         if (netServer.admins.bannedIPs.contains(e.ip, false)) {
                             netServer.admins.findByIP(e.ip).banned = false
