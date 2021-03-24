@@ -10,6 +10,7 @@ import mindustry.gen.Playerc
 import org.hjson.JsonArray
 import org.hjson.JsonObject
 import java.security.SecureRandom
+import java.time.LocalTime
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.reflect.full.declaredMemberProperties
@@ -27,6 +28,7 @@ object PluginData : Config() {
     var blacklist = Seq<String>()
 
     var voting = Seq<Vote>()
+    var lastVoted: LocalTime = LocalTime.now()
 
     val threads = Executors.newCachedThreadPool()
 
@@ -49,6 +51,7 @@ object PluginData : Config() {
             j.add("name", it.name)
             j.add("address", it.address)
             j.add("uuid", it.uuid)
+            j.add("json", it.json)
             banlist.add(j)
         }
 

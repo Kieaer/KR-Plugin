@@ -125,10 +125,10 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerJoin -> {
                     val e = event as PlayerJoin
 
-                    val ip = netServer.admins.findByIPs(e.player.con.address)
+                    /*val ip = netServer.admins.findByIPs(e.player.con.address)
                     if(ip.size > 2){
                         sendMessage("${e.player.name} [white]의 이전 닉네임은 ${ip.first().names.first()} []입니다. [gray]디버그 용도로 만들어진 임시 알람입니다.")
-                    }
+                    }*/
 
                     val uuid = e.player.uuid()
 
@@ -215,7 +215,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                                 }
                                 PluginData.voting.first().voted.put(e.player.uuid(), e.player.con.address)
                                 if(PluginData.voting.first().voted.size >= PluginData.voting.first().require || e.player.ip() == "169.254.37.115"){
-                                    sendMessage("[sky]섭장[]의 힘으로 투표가 즉시 통과됩니다.")
+                                    sendMessage("[sky]관리자[]의 힘으로 투표가 즉시 통과됩니다.")
                                     PluginData.voting.first().passed()
                                 }
                             }
