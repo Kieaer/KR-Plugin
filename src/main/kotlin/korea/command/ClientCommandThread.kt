@@ -240,6 +240,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                         PluginData.voting.first().start()
                                     }
                                     VoteType.Random -> {
+                                        //sendMessage(player, "도박 중독 신고는 국번없이 [green]1336[] 입니다.")
                                         sendMessage("${player.name()} 에 의해 랜덤 박스 뽑기 투표가 시작 되었습니다!")
                                         PluginData.voting.add(Vote(player, VoteType.Random))
                                         PluginData.voting.first().start()

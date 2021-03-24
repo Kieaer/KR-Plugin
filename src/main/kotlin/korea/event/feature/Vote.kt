@@ -6,6 +6,8 @@ import arc.Events
 import arc.graphics.Color
 import arc.struct.ObjectMap
 import arc.util.Align
+import arc.util.Time
+import arc.util.Time.nanosPerMilli
 import arc.util.async.Threads.sleep
 import korea.PluginData
 import korea.data.Config
@@ -27,6 +29,7 @@ import mindustry.game.EventType
 import mindustry.game.Team
 import mindustry.gen.*
 import mindustry.net.Packets
+import java.time.LocalTime
 import kotlin.random.Random
 
 class Vote(val player: Playerc, val type: VoteType) {
@@ -95,70 +98,78 @@ class Vote(val player: Playerc, val type: VoteType) {
                     }
                     Rollback -> {
                         AutoRollback.load(null)
+                        PluginData.lastVoted = LocalTime.now()
                     }
                     Fast -> {
                         sendMessage("웨이브 고속 모드 투표가 통과 되었습니다!")
                         Vars.state.rules.waveSpacing = 1800f
                     }
                     VoteType.Random -> {
-                        sendMessage("랜덤 박스 투표가 통과되었습니다!")
-                        PluginData.threads.submit {
-                            val random = Random
-                            sendMessage("결과는...")
-                            sleep(3000)
-                            when(random.nextInt(7)) {
-                                0,1 -> {
-                                    sendMessage("[scarlet]아군 유닛이 모두 터집니다!")
-                                    Groups.unit.each {
-                                        if(it.team == player.team()) it.kill()
+                        if(PluginData.lastVoted.plusMinutes(10).isBefore(LocalTime.now())){
+                            sendMessage("랜덤 박스 쿨타임이 지나지 않았습니다.")
+                        } else {
+                            PluginData.lastVoted = LocalTime.now()
+                            sendMessage("랜덤 박스 투표가 통과되었습니다!")
+                            PluginData.threads.submit {
+                                val random = Random
+                                sendMessage("결과는...")
+                                sleep(3000)
+                                when(random.nextInt(6)) {
+                                    0, 1 -> {
+                                        sendMessage("[scarlet]아군 유닛이 모두 터집니다!")
+                                        Groups.unit.each {
+                                            if(it.team == player.team()) it.kill()
+                                        }
+                                        sendMessage("펑! 거기에 웨이브도 진행되죠!")
+                                        Vars.logic.runWave()
                                     }
-                                    sendMessage("펑! 거기에 웨이브도 진행되죠!")
-                                    Vars.logic.runWave()
-                                }
-                                2 -> {
-                                    sendMessage("5 웨이브가 한번에 진행됩니다!")
-                                    for(a in 0..5) Vars.logic.runWave()
-                                }
-                                3 -> {
-                                    sendMessage("[scarlet]모든 건물의 체력이 50% 삭제됩니다!")
-                                    Groups.build.each {
-                                        if(it.team == player.team()){
-                                            Core.app.post{Call.tileDamage(it, it.health() / 0.5f)}
-                                            //it.health(it.health() / 0.5f)
+                                    2 -> {
+                                        sendMessage("5 웨이브가 한번에 진행됩니다!")
+                                        for(a in 0..5) Vars.logic.runWave()
+                                    }
+                                    3 -> {
+                                        sendMessage("[scarlet]모든 건물의 체력이 50% 삭제됩니다!")
+                                        Groups.build.each {
+                                            if(it.team == player.team()) {
+                                                Core.app.post {Call.tileDamage(it, it.health() / 0.5f)}
+                                                //it.health(it.health() / 0.5f)
+                                            }
+                                        }
+                                        for(a in Groups.player) {
+                                            Call.worldDataBegin(a.con);
+                                            netServer.sendWorldData(a);
                                         }
                                     }
-                                    for (a in Groups.player){
-                                        Call.worldDataBegin(a.con);
-                                        netServer.sendWorldData(a);
-                                    }
-                                }
-                                4 -> {
-                                    sendMessage("[green]오! 코어에 자원이 채워집니다! 물론 랜덤으로요.")
-                                    for(item in content.items()){
-                                        Vars.state.teams.cores(player.team()).first().items.add(item, Random(516).nextInt(500))
-                                    }
-                                }
-                                5 -> {
-                                    sendMessage("[sky]폭풍이 몰려옵니다!")
-                                    sleep(1000)
-                                    sendMessage("[scarlet]아군의 건물 및 유닛이 큰 피해를 입었습니다!")
-                                    Groups.build.each {
-                                        if(it.team == player.team()){
-                                            Core.app.post{Call.tileDamage(it, 1f)}
-                                            //it.health(1f)
+                                    4 -> {
+                                        sendMessage("[green]오! 코어에 자원이 채워집니다! 물론 랜덤으로요.")
+                                        for(item in content.items()) {
+                                            Vars.state.teams.cores(player.team()).first().items.add(
+                                                item,
+                                                Random(516).nextInt(500)
+                                                                                                   )
                                         }
                                     }
-                                    Groups.unit.each {
-                                        if(it.team == player.team()){
-                                            it.health(1f)
+                                    5 -> {
+                                        sendMessage("[sky]폭풍이 몰려옵니다!")
+                                        sleep(1000)
+                                        sendMessage("[scarlet]아군의 건물 및 유닛이 큰 피해를 입었습니다!")
+                                        Groups.build.each {
+                                            if(it.team == player.team()) {
+                                                Core.app.post {Call.tileDamage(it, 1f)}
+                                                //it.health(1f)
+                                            }
+                                        }
+                                        Groups.unit.each {
+                                            if(it.team == player.team()) {
+                                                it.health(1f)
+                                            }
+                                        }
+                                        for(a in Groups.player) {
+                                            Call.worldDataBegin(a.con);
+                                            netServer.sendWorldData(a);
                                         }
                                     }
-                                    for (a in Groups.player){
-                                        Call.worldDataBegin(a.con);
-                                        netServer.sendWorldData(a);
-                                    }
-                                }
-                                6 -> {
+                                    /*6 -> {
                                     sendMessage("[scarlet]행성의 오존층이 뚫려 큰 화염 피해를 받게 됩니다!")
                                     for(x in 0 until Vars.world.width()){
                                         for (y in 0 until Vars.world.height()){
@@ -178,9 +189,10 @@ class Vote(val player: Playerc, val type: VoteType) {
                                             //it.health(1f)
                                         }
                                     }
-                                }
-                                7,8 -> {
-                                    sendMessage(".. 아무 일도 일어나지 않았습니다")
+                                }*/
+                                    6, 7 -> {
+                                        sendMessage(".. 아무 일도 일어나지 않았습니다")
+                                    }
                                 }
                             }
                         }
