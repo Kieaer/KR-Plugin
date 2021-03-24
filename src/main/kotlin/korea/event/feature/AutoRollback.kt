@@ -23,9 +23,8 @@ object AutoRollback {
             players.add(p)
             p.dead()
         }
-        Vars.state.serverPaused = true
         if(map == null) {
-            sleep(10000)
+            Vars.state.serverPaused = true
         }
 
         Core.app.post{
