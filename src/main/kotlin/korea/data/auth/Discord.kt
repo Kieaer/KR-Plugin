@@ -1,5 +1,6 @@
 package korea.data.auth
 
+import arc.Events
 import arc.struct.ObjectMap
 import arc.util.async.Threads.sleep
 import com.mewna.catnip.Catnip
@@ -10,8 +11,11 @@ import korea.PluginData
 import korea.PluginData.banned
 import korea.core.Log
 import korea.data.Config
+import korea.data.DB
 import korea.data.PlayerCore
+import korea.event.EventThread
 import korea.exceptions.ErrorReport
+import mindustry.game.EventType
 import org.hjson.JsonObject
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
@@ -28,16 +32,50 @@ object Discord {
 
     fun start(){
         if(Discord::catnip.isInitialized) {
-            catnip.observable(DiscordEvent.MESSAGE_CREATE).subscribe({ msg: Message ->
-                if (msg.channelIdAsLong().toString() == Config.discordChannelToken && !msg.author().bot()) {
-                    with(msg.content()) {
-                        msg.delete()
+            val blockingChannel = catnip.cache().channel(Config.discordServerToken, Config.discordChannelToken).blockingGet().asMessageChannel()
+
+            // 플레이어가 차단되었을 때 작동
+            Events.on(EventType.PlayerBanEvent::class.java){
+                val name = it.player.name
+                val discord: Long
+
+                val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
+                sql.setString(1, it.player.uuid())
+                val rs = sql.executeQuery()
+                discord = if(rs.next()){
+                    val json = JsonObject.readJSON(rs.getString("json")).asObject()
+                    if(json.has("discord")){
+                        json.get("discord").asObject().get("id").asLong()
+                    } else {
+                        0L
+                    }
+                } else {
+                    0L
+                }
+
+                val message = """
+                    이름: $name
+                    아이디: ${catnip.cache().member(Config.discordServerToken.toLong(), discord).blockingGet().asMention()}
+                """.trimIndent()
+
+                blockingChannel.sendMessage("")
+            }
+
+            // 플레이어가 IP 차단되었을 때 작동
+            Events.on(EventType.PlayerIpBanEvent::class.java){
+                EventThread(EventThread.EventTypes.PlayerIpBan, it).run()
+            }
+
+            catnip.observable(DiscordEvent.MESSAGE_CREATE).subscribe({
+                if (it.channelIdAsLong().toString() == Config.discordChannelToken && !it.author().bot()) {
+                    with(it.content()) {
+                        it.delete()
 
                         for (a in banned){
                             val json = JsonObject.readJSON(a.json).asObject()
                             if (json.has("discord")){
-                                if(msg.author().idAsLong() == json.get("discord").asObject().get("id").asLong()){
-                                    msg.guild()?.ban(msg.author().idAsLong(), "차단된 계정", 0)
+                                if(it.author().idAsLong() == json.get("discord").asObject().get("id").asLong()){
+                                    it.guild().blockingGet().ban(it.author().idAsLong(), "차단된 계정", 0)
                                 }
                             }
                         }
@@ -45,9 +83,9 @@ object Discord {
                         when {
                             equals("!ping", true) -> {
                                 val start = System.currentTimeMillis()
-                                msg.channel().sendMessage("${msg.author().username()} -> pong!").subscribe { ping: Message ->
+                                it.reply("pong!", true).subscribe { ping: Message ->
                                     val end = System.currentTimeMillis()
-                                    ping.edit("${msg.author().username()} -> pong! (" + (end - start) + "ms 소요됨).")
+                                    ping.edit("${it.author().username()} -> pong! (" + (end - start) + "ms 소요됨).")
                                     sleep(5000)
                                     ping.delete()
                                 }
@@ -58,77 +96,86 @@ object Discord {
                                     ``!auth PIN`` 서버에 Discord 인증을 해서 서버에 특별한 효과를 추가시킵니다.
                                     ``!ping`` 그냥 봇 작동 확인하는 용도입니다.
                                 """.trimIndent()
-                                msg.channel().sendMessage(message).subscribe { m: Message ->
+                                it.reply(message, true).subscribe { m: Message ->
                                     sleep(7000)
                                     m.delete()
                                 }
                             }
                             startsWith("!auth", true) -> {
-                                val arg = msg.content().replace("!auth ", "").split(" ")
-                                if (arg.size == 1) {
-                                    try {
-                                        val buffer = PlayerCore.getAllData()
-                                        var isMatch = false
+                                if(Config.authType == Config.AuthType.Discord) {
+                                    val arg = it.content().replace("!auth ", "").split(" ")
+                                    if(arg.size == 1) {
+                                        try {
+                                            val buffer = PlayerCore.getAllData()
+                                            var isMatch = false
 
-                                        for(a in buffer){
-                                            if(a.json.has("discord")){
-                                                if (a.json.get("discord").asObject().get("id").asLong() == msg.author().idAsLong()){
-                                                    isMatch = true
-                                                }
-                                            }
-                                        }
-
-                                        if (!isMatch) {
-                                            var data: PlayerData? = null
-                                            for (a in pin){
-                                                if(a.value.asLong() == arg[0].toLong()){
-                                                    data = PluginData[a.name]
+                                            for(a in buffer) {
+                                                if(a.json.has("discord")) {
+                                                    if(a.json.get("discord").asObject().get("id")
+                                                            .asLong() == it.author().idAsLong()
+                                                    ) {
+                                                        isMatch = true
+                                                    }
                                                 }
                                             }
 
-                                            if(data != null) {
-                                                val info = JsonObject()
-                                                info.add("name", msg.author().username())
-                                                info.add("id", msg.author().idAsLong())
-                                                info.add("isAuthorized", true)
+                                            if(!isMatch) {
+                                                var data:PlayerData? = null
+                                                for(a in pin) {
+                                                    if(a.value.asLong() == arg[0].toLong()) {
+                                                        data = PluginData[a.name]
+                                                    }
+                                                }
 
-                                                data.json.add("discord", info)
-                                                msg.channel().sendMessage("${msg.author().username()} -> 성공! 서버 재접속 후에 효과가 발동됩니다.")
+                                                if(data != null) {
+                                                    val info = JsonObject()
+                                                    info.add("name", it.author().username())
+                                                    info.add("id", it.author().idAsLong())
+                                                    info.add("isAuthorized", true)
+
+                                                    data.json.add("discord", info)
+                                                    it.reply("성공! 서버 재접속 후에 효과가 발동됩니다.", true)
+                                                        .subscribe {m:Message ->
+                                                            sleep(5000)
+                                                            m.delete()
+                                                        }
+                                                    PluginData[pin.remove(arg[0]).asString()]
+                                                } else {
+                                                    it.reply("등록되지 않은 계정입니다!", true)
+                                                        .subscribe {m:Message ->
+                                                            sleep(5000)
+                                                            m.delete()
+                                                        }
+                                                }
+                                            } else {
+                                                it.reply("이미 등록된 계정입니다!", true)
                                                     .subscribe {m:Message ->
                                                         sleep(5000)
                                                         m.delete()
                                                     }
-                                                PluginData[pin.remove(arg[0]).asString()]
-                                            } else {
-                                                msg.channel().sendMessage("${msg.author().username()} -> 등록되지 않은 계정입니다!").subscribe {m:Message ->
-                                                    sleep(5000)
-                                                    m.delete()
-                                                }
                                             }
-                                        } else {
-                                            msg.channel().sendMessage("${msg.author().username()} -> 이미 등록된 계정입니다!").subscribe {m:Message ->
+                                        } catch(e:Exception) {
+                                            it.reply("올바른 PIN 번호가 아닙니다! 사용법: ``!auth <PIN 번호>``", true).subscribe {m:Message ->
                                                 sleep(5000)
                                                 m.delete()
                                             }
                                         }
-                                    } catch (e: Exception) {
-                                        msg.channel().sendMessage("${msg.author().username()} -> 올바른 PIN 번호가 아닙니다! 사용법: ``!auth <PIN 번호>``").subscribe { m: Message ->
-                                            sleep(5000)
-                                            m.delete()
-                                        }
+                                    } else {
+                                        it.reply("사용법: ``!auth <PIN 번호>``", true)
+                                            .subscribe {m:Message ->
+                                                sleep(5000)
+                                                m.delete()
+                                            }
                                     }
                                 } else {
-                                    msg.channel().sendMessage("${msg.author().username()} -> 사용법: ``!auth <PIN 번호>``").subscribe { m: Message ->
-                                        sleep(5000)
-                                        m.delete()
-                                    }
+                                    it.reply("현재 서버에 Discord 인증이 활성화 되어 있지 않습니다!", true)
                                 }
                             }
                             // Console commands
                             equals("") -> {
                             }
                             contains("!") -> {
-                                msg.channel().sendMessage("${msg.author().username()} -> 알 수 없는 명령어 입니다!").subscribe { m: Message ->
+                                it.reply("알 수 없는 명령어 입니다!", true).subscribe { m: Message ->
                                     sleep(5000)
                                     m.delete()
                                 }
