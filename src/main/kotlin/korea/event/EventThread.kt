@@ -270,14 +270,26 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.PlayerBan -> {
                     val e = event as PlayerBanEvent
-                    connect(e.player, "mindustry.ru", 6567)
-                    PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid(), if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]?.json.toString() else "\"json:\"\""))
-                    Core.app.post {
-                        val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
-                        if(info.banned) {
-                            info.banned = false
-                            netServer.admins.bannedIPs.removeAll(info.ips, false)
+                    if(e.player != null) {
+                        connect(e.player, "mindustry.ru", 6567)
+                        PluginData.banned.add(
+                            PluginData.Banned(
+                                e.player.name,
+                                e.player.con().address,
+                                e.player.uuid(),
+                                if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]?.json.toString() else "\"json:\"\""
+                            )
+                        )
+                        Core.app.post {
+                            val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
+                            if(info.banned) {
+                                info.banned = false
+                                netServer.admins.bannedIPs.removeAll(info.ips, false)
+                            }
                         }
+                    } else {
+                        //val name = netServer.admins.banned.find {it.id}
+                        sendMessage("[scarlet]누군가가 서버장에 의해 처단되었습니다.")
                     }
                 }
                 EventTypes.PlayerIpBan -> {
