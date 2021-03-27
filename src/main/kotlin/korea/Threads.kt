@@ -40,7 +40,7 @@ object Threads {
         }
 
         val minute = object: TimerTask() {
-            var next = 1
+            var next = 0
             val messages = arrayOf(
                 """
                 뉴비를 발견했다면 이거 비효율적인데 왜 짓냐, 아니 왜함? 같은 말을 던지지 말고 공격적으로 가르칠려고 하지 말고 친절하게 알려줍시다.
@@ -60,7 +60,7 @@ object Threads {
 
                         sendMessage(messages[next])
                         next++
-                        if (next > messages.size) next = 1
+                        if (next > (messages.size - 1)) next = 0
                     }
                 } catch (e: Exception) {
                     ErrorReport(e)
