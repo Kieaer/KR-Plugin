@@ -26,8 +26,6 @@ object Threads {
 
         val seconds = object: TimerTask() {
             override fun run() {
-                PluginData.save()
-
                 // 맵 플레이 시간 1초 추가
                 PluginData.worldTime = PluginData.worldTime+1000L
                 PluginData.totalUptime = PluginData.totalUptime+1000L
@@ -54,6 +52,8 @@ object Threads {
                 "이 서버는 밴을 당하면 일반적인 방법으로 유저들을 처리하지 않는답니다. 처신 잘 하시길 바랍니다.",
                 "이 서버에서는 특정 유저를 향한 욕설 및 건설 방식의 차이로 인한 채팅 분쟁의 경우 일시 추방 또는 밴 처리를 하고 있습니다.")
             override fun run() {
+                PluginData.save()
+
                 try {
                     if (Vars.state.`is`(GameState.State.playing)) {
                         SaveIO.save(AutoRollback.savePath)
