@@ -61,7 +61,7 @@ object PlayerCore {
         sql.setString(23, id)
         sql.setString(24, pw)
         return try{
-            sql.executeUpdate() > 0
+            sql.executeUpdate() != 0
         } catch (e: SQLException){
             ErrorReport(e)
             false

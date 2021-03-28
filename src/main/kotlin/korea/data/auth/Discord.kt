@@ -15,9 +15,12 @@ import korea.data.DB
 import korea.data.PlayerCore
 import korea.event.EventThread
 import korea.exceptions.ErrorReport
+import mindustry.Vars.netServer
 import mindustry.game.EventType
 import org.hjson.JsonObject
 import java.lang.Exception
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 object Discord {
@@ -32,40 +35,6 @@ object Discord {
 
     fun start(){
         if(Discord::catnip.isInitialized) {
-            val blockingChannel = catnip.cache().channel(Config.discordServerToken, Config.discordChannelToken).blockingGet().asMessageChannel()
-
-            // 플레이어가 차단되었을 때 작동
-            Events.on(EventType.PlayerBanEvent::class.java){
-                val name = it.player.name
-                val discord: Long
-
-                val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
-                sql.setString(1, it.player.uuid())
-                val rs = sql.executeQuery()
-                discord = if(rs.next()){
-                    val json = JsonObject.readJSON(rs.getString("json")).asObject()
-                    if(json.has("discord")){
-                        json.get("discord").asObject().get("id").asLong()
-                    } else {
-                        0L
-                    }
-                } else {
-                    0L
-                }
-
-                val message = """
-                    이름: $name
-                    아이디: ${catnip.cache().member(Config.discordServerToken.toLong(), discord).blockingGet().asMention()}
-                """.trimIndent()
-
-                blockingChannel.sendMessage("")
-            }
-
-            // 플레이어가 IP 차단되었을 때 작동
-            Events.on(EventType.PlayerIpBanEvent::class.java){
-                EventThread(EventThread.EventTypes.PlayerIpBan, it).run()
-            }
-
             catnip.observable(DiscordEvent.MESSAGE_CREATE).subscribe({
                 if (it.channelIdAsLong().toString() == Config.discordChannelToken && !it.author().bot()) {
                     with(it.content()) {
@@ -189,6 +158,45 @@ object Discord {
             }) { e: Throwable -> ErrorReport(e) }
 
             catnip.connect()
+
+            val blockingChannel = catnip.cache().channel(Config.discordServerToken.toLong(), 706326919972519987).blockingGet().asMessageChannel()
+
+            // 플레이어가 차단되었을 때 작동
+            Events.on(EventType.PlayerBanEvent::class.java){
+                if(it.player != null) {
+                    val name = it.player.name
+                    val discord:Long
+
+                    val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
+                    sql.setString(1, it.player.uuid())
+                    val rs = sql.executeQuery()
+                    discord = if(rs.next()) {
+                        val json = JsonObject.readJSON(rs.getString("json")).asObject()
+                        if(json.has("discord")) {
+                            json.get("discord").asObject().get("id").asLong()
+                        } else {
+                            0L
+                        }
+                    } else {
+                        0L
+                    }
+
+                    val message = """
+                        시간: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))}
+                        이름: $name
+                        아이디: ${catnip.cache().member(Config.discordServerToken.toLong(), discord).blockingGet().asMention()}
+                        IP: ${netServer.admins.findByIPs(it.player.con.address)}
+                        """.trimIndent()
+
+                    blockingChannel.sendMessage(message)
+                }
+            }
+
+            /*// 플레이어가 IP 차단되었을 때 작동
+            Events.on(EventType.PlayerIpBanEvent::class.java){
+                EventThread(EventThread.EventTypes.PlayerIpBan, it).run()
+            }*/
+
             Log.info("Discord 기능 활성화됨")
         }
     }
