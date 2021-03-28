@@ -644,8 +644,12 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         }
                     }
                     Mute -> {
-                        val name = arg[0]
-                        val target = Groups.player.find { e -> e.name() == name }
+                        val target = if (arg[0].toIntOrNull() != null) {
+                            Groups.player.find { e -> e.id == arg[0].toInt() }
+                        } else {
+                            Groups.player.find { e -> e.name().contains(arg[0]) }
+                        }
+
                         if (target != null) {
                             val data = PluginData[target.uuid()]
                             if (data!!.isMute) {
