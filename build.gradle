@@ -14,8 +14,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.31"
 
     // Mindustry sources
-    compileOnly "com.github.Anuken.Arc:arc-core:v126.1"
-    compileOnly "com.github.Anuken.Mindustry:core:v126.1"
+    compileOnly "com.github.Anuken.Arc:arc-core:v126.2"
+    compileOnly "com.github.Anuken.Mindustry:core:v126.2"
 
     // Json library
     implementation "com.github.PersonTheCat:hjson-java:master"
@@ -31,10 +31,10 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlin:kotlin-test:1.4.31"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:1.4.31"
-    testImplementation "com.github.Anuken.arc:arc-core:v126.1"
-    testImplementation "com.github.Anuken.Mindustry:core:v126.1"
-    testImplementation "com.github.Anuken.Mindustry:server:v126.1"
-    testImplementation "com.github.Anuken.arc:backend-headless:v126.1"
+    testImplementation "com.github.Anuken.arc:arc-core:v126.2"
+    testImplementation "com.github.Anuken.Mindustry:core:v126.2"
+    testImplementation "com.github.Anuken.Mindustry:server:v126.2"
+    testImplementation "com.github.Anuken.arc:backend-headless:v126.2"
     testImplementation "com.github.javafaker:javafaker:+"
 }
 
@@ -45,6 +45,7 @@ jar {
         exclude '**/META-INF/*.DSA'
         exclude '**/META-INF/*.RSA'
     }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 compileKotlin {
@@ -53,7 +54,7 @@ compileKotlin {
 }
 
 wrapper {
-    gradleVersion = "6.8.3"
+    gradleVersion = "7.0-rc-2"
 }
 
 [compileJava,compileTestJava]*.options*.encoding = "UTF-8"
