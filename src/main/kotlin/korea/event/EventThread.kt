@@ -203,7 +203,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
 
                         // 채팅 내용을 기록에 저장
                         Log.info("$type${e.player.name}: ${e.message}")
-                        Log.write(Log.LogType.Chat, "$type ${e.player.name}: ${e.message}")
+                        Log.write(Log.LogType.Chat, "$type${e.player.name}: ${e.message}")
 
                         if (data != null) {
                             if (PluginData.voting.size == 1 && e.message.equals("y")){
@@ -277,7 +277,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                                 e.player.name,
                                 e.player.con().address,
                                 e.player.uuid(),
-                                if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]?.json.toString() else "\"json:\"\""
+                                if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]!!.json else JsonObject().add("json","")
                             )
                         )
                         Core.app.post {
@@ -295,7 +295,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerIpBan -> {
                     val e = event as PlayerIpBanEvent
                     val uuid = netServer.admins.findByIP(e.ip)
-                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none", if(PluginData[uuid.id] != null) PluginData[uuid.id]?.json.toString() else "\"json:\"\""))
+                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none", if(PluginData[uuid.id] != null) PluginData[uuid.id]!!.json else JsonObject().add("json","")))
                     Core.app.post {
                         if (netServer.admins.bannedIPs.contains(e.ip, false)) {
                             netServer.admins.findByIP(e.ip).banned = false

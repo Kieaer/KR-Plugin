@@ -368,7 +368,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 )
                             }
 
-                            sendMessage[message.toString().dropLast(2)]
+                            sendMessage[message.toString().dropLast(1)]
                         }
                     }
                     Router -> {
@@ -636,9 +636,9 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                         val tileY = arg[1].toFloat()
                                         setPosition(player, tileX * 8, tileY * 8)
                                     } catch (_: NumberFormatException) {
-                                        sendMessage["잘못된 명령어 입니다"]
+                                        sendMessage["${arg[0]} 플레이어를 찾을 수 없습니다"]
+                                        //sendMessage["잘못된 명령어 입니다"]
                                     }
-                                    sendMessage["${arg[0]} 플레이어를 찾을 수 없습니다"]
                                 }
                             }
                         }
@@ -693,7 +693,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 message.append(commands.get(a))
                             }
 
-                            sendMessage[message.toString()]
+                            sendMessage[message.toString().dropLast(1)]
                         }
                     }
                     Command.Discord -> {
