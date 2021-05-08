@@ -11,6 +11,7 @@ import korea.data.Config.AuthType.*
 import korea.data.PlayerCore
 import korea.eof.connect
 import korea.eof.infoMessage
+import korea.eof.kick
 import korea.eof.sendMessage
 import korea.exceptions.ErrorReport
 import mindustry.Vars
@@ -87,8 +88,9 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     val e = event as PlayerConnect
                     for(a in PluginData.banned) {
                         if(a.uuid == e.player.uuid() || a.address == e.player.con().address) {
-                            connect(e.player, "mindustry.ru", 6567)
-                            Log.info("${e.player.name} 유저는 밴을 당했으므로 ru 서버로 이동 시킵니다.")
+                            kick(e.player, "관리자에 의해 차단된 기기 입니다. 문의는 Discord 으로 해 주세요.")
+                            /*connect(e.player, "mindustry.ru", 6567)
+                            Log.info("${e.player.name} 유저는 밴을 당했으므로 ru 서버로 이동 시킵니다.")*/
                             return
                         }
                     }
@@ -221,8 +223,8 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                                     }
                                 }
                                 PluginData.voting.first().voted.put(e.player.uuid(), e.player.con.address)
-                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require || e.player.ip() == "169.254.37.115") {
-                                    sendMessage("[sky]관리자[]의 힘으로 투표가 즉시 통과됩니다.")
+                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require || e.player.isLocal) {
+                                    if(e.player.isLocal) sendMessage("[sky]관리자[]의 힘으로 투표가 즉시 통과됩니다.")
                                     PluginData.voting.first().passed()
                                 }
                             }
@@ -271,7 +273,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerBan -> {
                     val e = event as PlayerBanEvent
                     if(e.player != null) {
-                        connect(e.player, "mindustry.ru", 6567)
+                        //connect(e.player, "mindustry.ru", 6567)
                         PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid(), if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]!!.json else JsonObject().add("json", "")))
                         Core.app.post {
                             val info: PlayerInfo = netServer.admins.getInfo(e.player.uuid())

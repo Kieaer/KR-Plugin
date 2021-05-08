@@ -143,43 +143,41 @@ object Discord {
                 }
             }) { e: Throwable -> ErrorReport(e) }
 
+            Events.on(EventType.PlayerConnect::class.java) {
+                for(a in banned) {
+                    if(a.uuid == it.player.uuid() || netServer.admins.findByIP(a.address).ips.contains(a.address)) {
+                        val message = """
+                        ${netServer.admins.findByIP(it.player.con.address).lastName} 유저가 서버에 접속을 시도 했지만 차단 되었습니다.
+                        """.trimIndent()
+                        catnip.rest().channel().createMessage("706326919972519987", message)
+                    }
+                }
+            }
+
             // 플레이어가 차단되었을 때 작동
             Events.on(EventType.PlayerBanEvent::class.java) {
                 if(it.player != null) {
-                    val name = it.player.name
-                    val discord: Long
-
-                    val sql = DB.database.prepareStatement("SELECT * FROM players WHERE \"uuid\"=?")
-                    sql.setString(1, it.player.uuid())
-                    val rs = sql.executeQuery()
-                    discord = if(rs.next()) {
-                        val json = JsonObject.readJSON(rs.getString("json")).asObject()
-                        if(json.has("discord")) {
-                            json.get("discord").asObject().get("id").asLong()
-                        } else {
-                            0L
-                        }
-                    } else {
-                        0L
-                    }
-
                     val message = """
-                        시간: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"))}
-                        이름: ${name}
-                        아이디: ${
-                        catnip.cache().member(Config.discordServerToken.toLong(), discord).blockingGet().asMention()
-                    }
-                        IP: ${netServer.admins.findByIPs(it.player.con.address)}
+                        시간: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초 SSS"))}
+                        닉네임: ${netServer.admins.findByIP(it.player.con.address).names.toString(", ")}
                         """.trimIndent()
-
                     catnip.rest().channel().createMessage("706326919972519987", message)
                 }
             }
 
-            /*// 플레이어가 IP 차단되었을 때 작동
-				Events.on(EventType.PlayerIpBanEvent::class.java){
-					EventThread(EventThread.EventTypes.PlayerIpBan, it).run()
-				}*/
+            Events.on(EventType.PlayerIpBanEvent::class.java) {
+                val message = """
+                    시간: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초 SSS"))}
+                    닉네임: ${netServer.admins.findByIP(it.ip).names.toString(", ")}
+                    서버장이 직접 이 유저를 차단 처리 했습니다.
+                    """.trimIndent()
+                catnip.rest().channel().createMessage("706326919972519987", message)
+            }
+
+            Events.on(EventType.PlayerIpUnbanEvent::class.java) {
+                val message = "서버 관리자에 의해 ${netServer.admins.findByIP(it.ip).lastName} 플레이어의 차단이 해제 되었습니다."
+                catnip.rest().channel().createMessage("706326919972519987", message)
+            }
 
             catnip.connect()
 
