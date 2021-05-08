@@ -120,6 +120,7 @@ object Permissions {
         nodes.add("register")
         nodes.add("maps")
         nodes.add("motd")
+        nodes.add("a")
         nodes.add("r")
         nodes.add("players")
         nodes.add("status")
