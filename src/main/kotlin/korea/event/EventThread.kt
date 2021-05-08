@@ -121,6 +121,20 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                         sendMessage("${e.player.name} [white]의 이전 닉네임은 ${ip.first().names.first()} []입니다. [gray]디버그 용도로 만들어진 임시 알람입니다.")
                     }*/
 
+                    val total = Groups.player.size()
+                    if(PluginData.worldTime > 240000L)
+                    when {
+                        total > 10 -> {
+                            Vars.state.rules.waveSpacing = 64f
+                        }
+                        total > 8 -> {
+                            Vars.state.rules.waveSpacing = 320f
+                        }
+                        total > 6 -> {
+                            Vars.state.rules.waveSpacing = 640f
+                        }
+                    }
+
                     val uuid = e.player.uuid()
 
                     // 접속 인원 카운트
