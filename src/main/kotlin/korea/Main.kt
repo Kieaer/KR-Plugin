@@ -78,6 +78,7 @@ class Main : Plugin() {
 
                 DB.shutdownServer()
                 Threads.worker.shutdown()
+                Threads.timer.cancel()
                 PluginData.save()
                 Discord.stop()
                 Permissions.save()
