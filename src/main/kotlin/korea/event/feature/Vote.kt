@@ -65,7 +65,7 @@ class Vote(val player: Playerc, val type: VoteType) {
     fun passed() {
         Core.app.removeListener(task)
         try {
-            if(voted.size >= require || player.ip() == "169.254.37.115") {
+            if(voted.size >= require || player.isLocal) {
                 when(type) {
                     Kick -> {
                         sendMessage("강퇴 투표가 통과 되었습니다!")
@@ -95,6 +95,8 @@ class Vote(val player: Playerc, val type: VoteType) {
                         Vars.state.rules.waveSpacing = 1800f
                     }
                     VoteType.Random -> {
+                        sendMessage("이 투표 모드는 게임 내부 문제로 인해 비활성화 되었습니다.")
+                        /*
                         if(PluginData.lastVoted.plusMinutes(10).isBefore(LocalTime.now())) {
                             sendMessage("랜덤 박스 쿨타임이 지나지 않았습니다.")
                         } else {
@@ -156,7 +158,7 @@ class Vote(val player: Playerc, val type: VoteType) {
                                             netServer.sendWorldData(a)
                                         }
                                     }
-                                    /*6 -> {
+                                    6 -> {
                                     sendMessage("[scarlet]행성의 오존층이 뚫려 큰 화염 피해를 받게 됩니다!")
                                     for(x in 0 until Vars.world.width()){
                                         for (y in 0 until Vars.world.height()){
@@ -176,13 +178,14 @@ class Vote(val player: Playerc, val type: VoteType) {
                                             //it.health(1f)
                                         }
                                     }
-                                }*/
-                                    6, 7 -> {
+                                }
+                                    5, 6, 7 -> {
                                         sendMessage(".. 아무 일도 일어나지 않았습니다")
                                     }
                                 }
                             }
                         }
+                        */
                     }
                     None -> {
                     }
