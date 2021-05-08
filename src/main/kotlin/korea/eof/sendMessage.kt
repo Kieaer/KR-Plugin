@@ -10,7 +10,7 @@ class sendMessage {
 
     constructor(player: Playerc, msg: String?) {
         Core.app.post {
-            if (msg == null){
+            if(msg == null) {
                 throw Exception("Message is NULL!")
             } else {
                 player.sendMessage(msg)
@@ -18,9 +18,9 @@ class sendMessage {
         }
     }
 
-    constructor(msg: String?){
-        Core.app.post{
-            if (msg == null){
+    constructor(msg: String?) {
+        Core.app.post {
+            if(msg == null) {
                 throw Exception("Message is NULL!")
             } else {
                 Call.sendMessage(msg)
@@ -28,13 +28,13 @@ class sendMessage {
         }
     }
 
-    constructor(player: Playerc){
+    constructor(player: Playerc) {
         this.player = player
     }
 
-    operator fun get(msg: String?){
+    operator fun get(msg: String?) {
         Core.app.post {
-            if (msg == null){
+            if(msg == null) {
                 throw Exception("Message is NULL!")
             } else {
                 player.sendMessage(msg)

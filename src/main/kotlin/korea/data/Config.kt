@@ -56,16 +56,16 @@ object Config : DataConfig() {
     /** 메일 전송에 사용될 SMTP 서버 포트 */
     var smtpPort = 587
 
-    enum class AuthType{
+    enum class AuthType {
         None, Password, Discord, Kakaotalk;
     }
 
-    enum class NetworkMode{
+    enum class NetworkMode {
         Server, Client;
     }
 
     override fun createFile() {
-        if (!pluginRoot.child("config.hjson").exists()) save()
+        if(!pluginRoot.child("config.hjson").exists()) save()
     }
 
     override fun save() {

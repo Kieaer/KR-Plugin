@@ -3,7 +3,6 @@ package korea.event.feature
 import arc.Core
 import arc.files.Fi
 import arc.struct.Seq
-import arc.util.async.Threads.sleep
 import korea.eof.sendMessage
 import mindustry.Vars
 import mindustry.core.GameState
@@ -19,7 +18,7 @@ object AutoRollback {
 
     fun load(map: Map?) {
         val players = Seq<Player>()
-        for (p in Groups.player) {
+        for(p in Groups.player) {
             players.add(p)
             p.dead()
         }
@@ -27,12 +26,12 @@ object AutoRollback {
             Vars.state.serverPaused = true
         }
 
-        Core.app.post{
+        Core.app.post {
             Call.worldDataBegin()
             Vars.logic.reset()
 
             try {
-                if (map != null) {
+                if(map != null) {
                     Vars.world.loadMap(map)
                 } else {
                     SaveIO.load(savePath)
@@ -41,10 +40,10 @@ object AutoRollback {
                 Vars.state.rules.sector = null
                 Vars.state.set(GameState.State.playing)
 
-                for (p in players) {
-                    if (p.con() == null) continue
+                for(p in players) {
+                    if(p.con() == null) continue
                     p.reset()
-                    if (Vars.state.rules.pvp) {
+                    if(Vars.state.rules.pvp) {
                         p.team(Vars.netServer.assignTeam(p, Seq.SeqIterable(players)))
                     }
                     Vars.netServer.sendWorldData(p)
@@ -52,11 +51,11 @@ object AutoRollback {
                 }
                 Vars.state.serverPaused = false
                 Vars.logic.play()
-            } catch (t: Exception) {
+            } catch(t: Exception) {
                 t.printStackTrace()
                 sendMessage("[scarlet][CRITICAL] ${t.cause.toString()}")
             }
-            if (Vars.state.`is`(GameState.State.playing) && !isVote) sendMessage("[green]빽섭 완료.")
+            if(Vars.state.`is`(GameState.State.playing) && !isVote) sendMessage("[green]빽섭 완료.")
             isVote = false
         }
     }

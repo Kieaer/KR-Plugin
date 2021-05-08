@@ -1,4 +1,3 @@
 package korea.data.auth
 
-class Kakaotalk {
-}
+class Kakaotalk

@@ -1,4 +1,5 @@
 package korea.core
+
 import arc.util.async.Threads.sleep
 import korea.Main
 import korea.Main.Companion.isDispose
@@ -9,7 +10,7 @@ import mindustry.gen.Groups
 import java.io.IOException
 import java.nio.file.*
 
-object PermissionFileRead : Runnable{
+object PermissionFileRead : Runnable {
     private lateinit var watchKey: WatchKey
     private lateinit var path: Path
 
@@ -18,23 +19,23 @@ object PermissionFileRead : Runnable{
 
     override fun run() {
         Thread.currentThread().name = "Essential Permission Watch thread"
-        while (!isDispose) {
+        while(!isDispose) {
             try {
                 watchKey = watchService!!.take()
                 sleep(50)
                 val events = watchKey.pollEvents()
-                for (event in events) {
+                for(event in events) {
                     val kind = event.kind()
                     val paths = (event.context() as Path).fileName.toString()
-                    if (paths == "permission_user.hjson" || paths == "permission.hjson") {
-                        if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                    if(paths == "permission_user.hjson" || paths == "permission.hjson") {
+                        if(kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                             Permissions.load()
                             tried = !tried
                             Log.info("$paths 파일 업데이트됨")
 
-                            for(a in Groups.player){
+                            for(a in Groups.player) {
                                 val data = PluginData[a.uuid()]
-                                if (data != null){
+                                if(data != null) {
                                     val perm = Permissions.userData.get(a.uuid()).asObject()
                                     a.name = perm.getString("name", a.name)
                                     data.permission = perm.getString("group", data.permission)
@@ -55,32 +56,29 @@ object PermissionFileRead : Runnable{
                         System.out.println("hello world");
                     }*/
                 }
-                if (!watchKey.reset()) {
+                if(!watchKey.reset()) {
                     try {
                         watchService!!.close()
                         break
-                    } catch (e: IOException) {
+                    } catch(e: IOException) {
                         ErrorReport(e)
                     }
                 }
-            } catch (e: InterruptedException) {
+            } catch(e: InterruptedException) {
                 Thread.currentThread().interrupt()
-            } catch (ignored: Exception) {
+            } catch(a: Exception) {
+                ErrorReport(a)
             }
         }
+        Log.info("파일 모니터링 종료됨!")
     }
 
     init {
         try {
             watchService = FileSystems.getDefault().newWatchService()
             path = Paths.get(Main.pluginRoot.absolutePath())
-            path.register(
-                watchService,
-                    StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE,
-                    StandardWatchEventKinds.ENTRY_MODIFY,
-                    StandardWatchEventKinds.OVERFLOW)
-        } catch (e: Exception) {
+            path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.OVERFLOW)
+        } catch(e: Exception) {
             ErrorReport(e)
         }
     }

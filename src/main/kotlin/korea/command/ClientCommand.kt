@@ -3,18 +3,12 @@ package korea.command
 import arc.util.CommandHandler
 import korea.data.Config
 import mindustry.gen.Playerc
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-
-
-
-
 
 object ClientCommand {
-    fun register(handler: CommandHandler){
+    fun register(handler: CommandHandler) {
         handler.removeCommand("help")
 
-        if (Config.enableVote){
+        if(Config.enableVote) {
             handler.removeCommand("vote")
             handler.removeCommand("votekick")
         }
@@ -75,7 +69,7 @@ object ClientCommand {
         }
     }
 
-    enum class Command{
+    enum class Command {
         Login {
             override fun toString(): String {
                 return """
@@ -86,7 +80,8 @@ object ClientCommand {
                     기기를 옮겨가며 계정에 데이터를 쌓고 싶을때 유용합니다.
                 """.trimIndent()
             }
-        }, Register {
+        },
+        Register {
             override fun toString(): String {
                 return """
                     명령어: [green]/register <비밀번호>[]
@@ -96,7 +91,8 @@ object ClientCommand {
                     비밀번호는 반드시 최소 6자 이상에 영문, 숫자를 포함해야 하며, 꺽쇄 ([scarlet]<[], [scarlet]>[]) 를 사용할 수 없습니다.
                 """.trimIndent()
             }
-        }, Spawn {
+        },
+        Spawn {
             override fun toString(): String {
                 return """
                     명령어: [green]/spawn <unit/block> <유닛/블록 이름> [개수 (유닛의 경우)][white]
@@ -109,7 +105,8 @@ object ClientCommand {
                     남용에 주의하세요!
                 """.trimIndent()
             }
-        }, Vote {
+        },
+        Vote {
             override fun toString(): String {
                 return """
                     명령어: [green]/vote <kick/map/gameover/skipwave/rollback/random> [플레이어_이름/방향]
@@ -122,14 +119,16 @@ object ClientCommand {
                     [sky]/vote random[] - 랜덤 박스를 열어봅시다. 무슨 효과가 일어날까요?
                 """.trimIndent()
             }
-        }, Rainbow {
+        },
+        Rainbow {
             override fun toString(): String {
                 return """
                     명령어: [green]/rainbow[]
                     자기 자신에게 움직이는 무지개 닉네임을 설정시킵니다. 이 설정은 기본값으로 관리자 이상만 사용할 수 있습니다.
                 """.trimIndent()
             }
-        }, Kill {
+        },
+        Kill {
             override fun toString(): String {
                 return """
                     명령어: [green]/kill[]
@@ -138,7 +137,8 @@ object ClientCommand {
                     이 명령어를 사용하면 자기 자신의 유닛을 파괴 시킬 수 있습니다.
                 """.trimIndent()
             }
-        }, Info {
+        },
+        Info {
             override fun toString(): String {
                 return """
                     명령어: [green]/info[]
@@ -147,7 +147,8 @@ object ClientCommand {
                     현재 서버에서 저장하고 있는 계정 정보를 확인합니다.
                 """.trimIndent()
             }
-        }, Maps {
+        },
+        Maps {
             override fun toString(): String {
                 return """
                     명령어: [green]/maps[]
@@ -157,14 +158,16 @@ object ClientCommand {
                     투표시 맵 이름 일부분만 입력해도 되고, 왼쪽에 숫자만 입력해도 됩니다.
                 """.trimIndent()
             }
-        }, Motd {
+        },
+        Motd {
             override fun toString(): String {
                 return """
                     명령어: [green]/motd[]
                     서버 공지를 확인합니다. 이 메세지는 서버 입장시에도 나타납니다.
                 """.trimIndent()
             }
-        }, Players {
+        },
+        Players {
             override fun toString(): String {
                 return """
                     명령어: [green]/players[]
@@ -174,7 +177,8 @@ object ClientCommand {
                     강퇴 투표를 할때 숫자만 입력해도 되므로, 입력 불가능한 닉네임들을 강퇴할때 유용합니다.
                 """.trimIndent()
             }
-        }, Router {
+        },
+        Router {
             override fun toString(): String {
                 return """
                     명령어: [green]/router[]
@@ -182,7 +186,8 @@ object ClientCommand {
                     이 명령어를 사용할 경우 자기 자신의 닉네임이 움직이는 분배기 블럭으로 변경되며, 그 자리에 분배기 바닥도 생깁니다.
                 """.trimIndent()
             }
-        }, Status {
+        },
+        Status {
             override fun toString(): String {
                 return """
                     명령어: [green]/status[]
@@ -190,7 +195,8 @@ object ClientCommand {
                     CPU 계산 시간의 경우 명령어를 여러번 입력해야 제대로 표시되는 경우가 있습니다.
                 """.trimIndent()
             }
-        }, Team {
+        },
+        Team {
             override fun toString(): String {
                 return """
                     명령어: [green]/team <팀 이름> [플레이어 이름][]
@@ -201,14 +207,16 @@ object ClientCommand {
                     기본 팀 이름은 sharded 입니다.
                 """.trimIndent()
             }
-        },Ban {
+        },
+        Ban {
             override fun toString(): String {
                 return """
                     명령어: [green]/ban <플레이어 이름> [이유][]
                     밴 명령어 입니다만, 아직 완성되지 않아서 사용 불가능한 명령어 입니다.
                 """.trimIndent()
             }
-        }, Tp {
+        },
+        Tp {
             override fun toString(): String {
                 return """
                     명령어: [green]/tp[]
@@ -219,14 +227,16 @@ object ClientCommand {
                     테러를 찾아내거나 도움을 줄때 유용한 명령어.
                 """.trimIndent()
             }
-        }, Mute {
+        },
+        Mute {
             override fun toString(): String {
                 return """
                     명령어: [green]/mute <플레이어 이름>[]
                     해당 유저의 채팅을 금지 또는 해제 시킵니다.
                 """.trimIndent()
             }
-        }, Help {
+        },
+        Help {
             override fun toString(): String {
                 return """
                     명령어: [green]/help[]
@@ -236,7 +246,8 @@ object ClientCommand {
                     이 명령어를 사용하여 표시되는 명령어들은 해당 계정의 권한에 따라 다르게 표시됩니다.
                 """.trimIndent()
             }
-        }, Discord {
+        },
+        Discord {
             override fun toString(): String {
                 return """
                     명령어: [green]/discord[]

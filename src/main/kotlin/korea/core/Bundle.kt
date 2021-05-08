@@ -11,19 +11,19 @@ class Bundle {
     constructor(locale: Locale) {
         resource = try {
             ResourceBundle.getBundle("bundle.bundle", locale, UTF8Control())
-        } catch (e: Exception) {
+        } catch(e: Exception) {
             ResourceBundle.getBundle("bundle.bundle", Locale.KOREAN, UTF8Control())
         }
     }
 
-    constructor(){
+    constructor() {
         resource = ResourceBundle.getBundle("bundle.bundle", Locale.KOREAN, UTF8Control())
     }
 
     operator fun get(key: String, vararg params: Any?): String {
         return try {
             MessageFormat.format(resource.getString(key), *params)
-        } catch (e: MissingResourceException) {
+        } catch(e: MissingResourceException) {
             key
         }
     }
@@ -31,7 +31,7 @@ class Bundle {
     fun prefix(key: String, vararg params: Any?): String {
         return try {
             MessageFormat.format(Config.prefix + resource.getString(key), *params)
-        } catch (e: MissingResourceException) {
+        } catch(e: MissingResourceException) {
             key
         }
     }

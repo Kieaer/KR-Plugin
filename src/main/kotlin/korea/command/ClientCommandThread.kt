@@ -33,7 +33,6 @@ import mindustry.gen.Playerc
 import mindustry.maps.Map
 import mindustry.net.Administration
 import mindustry.type.UnitType
-import mindustry.world.Block
 import mindustry.world.blocks.environment.Floor
 import org.hjson.JsonObject
 import org.mindrot.jbcrypt.BCrypt
@@ -42,17 +41,14 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.random.Random
 
-
-
-
-class ClientCommandThread(private val type: Command, private val arg: Array<String>, private val player: Playerc){
-    fun run(){
+class ClientCommandThread(private val type: Command, private val arg: Array<String>, private val player: Playerc) {
+    fun run() {
         val uuid = player.uuid()
         val sendMessage = sendMessage(player)
 
         try {
-            if (Permissions.check(player, type.name.toLowerCase())) {
-                when (type) {
+            if(Permissions.check(player, type.name.toLowerCase())) {
+                when(type) {
                     Login -> {
                         val hashed = BCrypt.hashpw(arg[1], BCrypt.gensalt(11))
 
@@ -75,11 +71,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                     }
                     Register -> {
                         if(arg.size != 1) {
-                            sendMessage["아직도 /register <아아디> <비밀번호> <비밀번호 재입력> 을 쓰시나요?\n" +
-                                    "이제는 그냥 /register <비밀번호> 를 입력하시면 됩니다.\n\n" +
-                                    "비밀번호 정할때 구글이나 네이버에서 회원가입할때 비밀번호를 a123b 이라고 할때, 그 누구도 [scarlet]<[]a123b[scarlet]>[] 이라고 치진 않잖아요?\n" +
-                                    "진짜로 비밀번호 칠때 [scarlet]<[]a123b[scarlet]>[] 처럼 친다면, 이후에도 비밀번호를 [scarlet]<[]a123b[scarlet]>[] 으로 하게 될껍니다.\n" +
-                                    "남들은 그냥 손쉽게 치는데 자기 혼자만 [scarlet]<[] 하고 [scarlet]>[] 쓰니 불편하겠죠?"]
+                            sendMessage["아직도 /register <아아디> <비밀번호> <비밀번호 재입력> 을 쓰시나요?\n" + "이제는 그냥 /register <비밀번호> 를 입력하시면 됩니다.\n\n" + "비밀번호 정할때 구글이나 네이버에서 회원가입할때 비밀번호를 a123b 이라고 할때, 그 누구도 [scarlet]<[]a123b[scarlet]>[] 이라고 치진 않잖아요?\n" + "진짜로 비밀번호 칠때 [scarlet]<[]a123b[scarlet]>[] 처럼 친다면, 이후에도 비밀번호를 [scarlet]<[]a123b[scarlet]>[] 으로 하게 될껍니다.\n" + "남들은 그냥 손쉽게 치는데 자기 혼자만 [scarlet]<[] 하고 [scarlet]>[] 쓰니 불편하겠죠?"]
                             return
                         }
 
@@ -89,20 +81,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         val hashed = BCrypt.hashpw(arg[0], BCrypt.gensalt(11))
                         if(RegularExpression.check(pw)) {
                             val data = netServer.admins.findByName(uuid).first() // TODO country 만들기
-                            val request = PlayerCore.register(
-                                name = player.name(),
-                                uuid = uuid,
-                                kickCount = data.timesKicked,
-                                joinCount = data.timesJoined,
-                                joinDate = System.currentTimeMillis(),
-                                lastDate = System.currentTimeMillis(),
-                                country = "none",
-                                rank = 0L,
-                                permission = Permissions.defaultGroup,
-                                json = JsonObject(),
-                                id = player.name(),
-                                pw = hashed
-                                                             )
+                            val request = PlayerCore.register(name = player.name(), uuid = uuid, kickCount = data.timesKicked, joinCount = data.timesJoined, joinDate = System.currentTimeMillis(), lastDate = System.currentTimeMillis(), country = "none", rank = 0L, permission = Permissions.defaultGroup, json = JsonObject(), id = player.name(), pw = hashed)
                             if(request) {
                                 sendMessage["계정 등록 성공"]
                                 if(PlayerCore.load(player)) {
@@ -114,22 +93,21 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 sendMessage["[scarlet]이미 이 기기에 등록된 계정이 존재하거나, 서버 오류에 의해 계정 등록에 실패했습니다."]
                             }
                         } else {
-                            sendMessage["[scarlet]비밀번호는 최소한 6자리 이상과 영문/숫자를 포함해야 합니다!\n" +
-                                    "[scarlet]제발 [green]<[] 하고 [green]>[] 를 넣지 마세요."]
+                            sendMessage["[scarlet]비밀번호는 최소한 6자리 이상과 영문/숫자를 포함해야 합니다!\n" + "[scarlet]제발 [green]<[] 하고 [green]>[] 를 넣지 마세요."]
                         }
                     }
                     Spawn -> {
                         val type = arg[0]
                         val name = arg[1]
-                        val parameter = if (arg.size == 3) arg[2].toIntOrNull() else 1
+                        val parameter = if(arg.size == 3) arg[2].toIntOrNull() else 1
 
                         when {
                             type.equals("unit", true) -> {
                                 val unit = Vars.content.units().find { unitType: UnitType -> unitType.name == name }
-                                if (unit != null) {
-                                    if (parameter != null) {
-                                        if (name != "block") {
-                                            for (a in 1..parameter) {
+                                if(unit != null) {
+                                    if(parameter != null) {
+                                        if(name != "block") {
+                                            for(a in 1..parameter) {
                                                 val baseUnit = unit.create(player.team())
                                                 baseUnit.set(player.x, player.y)
                                                 baseUnit.add()
@@ -149,14 +127,8 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 }
                             }
                             type.equals("block", true) -> {
-                                constructFinish(
-                                    tile = player.tileOn(),
-                                    block = Vars.content.blocks().find { it.name == name },
-                                    builder = player.unit(),
-                                    rotation = parameter?.toByte() ?: 0,
-                                    team = player.team(),
-                                    config = null
-                                )
+                                constructFinish(tile = player.tileOn(), block = Vars.content.blocks().find { it.name == name }, builder = player.unit(), rotation = parameter?.toByte()
+                                        ?: 0, team = player.team(), config = null)
                             }
                             else -> { // TODO 명령어 예외 만들기
                                 return
@@ -164,18 +136,18 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         }
                     }
                     Vote -> {
-                        if (arg.isEmpty()) {
+                        if(arg.isEmpty()) {
                             sendMessage["사용법: [green]/vote <kick/map/gameover/skipwave/rollback/random> [name/amount]"]
                             sendMessage["자세한 사용 방법은 [green]/help vote[] 를 입력 해 주세요."]
-                        } else if (PluginData.voting.size == 1){
+                        } else if(PluginData.voting.size == 1) {
                             val vote = PluginData.voting[0]
                             sendMessage["${vote.player.name()} 이 시작한 ${vote.type} 의 투표가 이미 진행 중입니다"]
-                        } else if (PluginData.voting.size == 0 && arg.isNotEmpty()){
+                        } else if(PluginData.voting.size == 0 && arg.isNotEmpty()) {
                             try {
                                 when(EqualsIgnoreCase(VoteType.values(), arg[0], None)) {
                                     Kick -> {
                                         if(arg.size == 1) {
-                                            val target = Groups.player.find {e -> e.name.equals(arg[0], true)}
+                                            val target = Groups.player.find { e -> e.name.equals(arg[0], true) }
                                             if(!target.isNull) {
                                                 sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")
                                                 if(target.admin()) {
@@ -195,7 +167,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                     VoteType.Map -> {
                                         val world = when {
                                             arg[0].toIntOrNull() != null -> Vars.maps.all().get(arg[0].toInt())
-                                            else -> Vars.maps.all().find {e -> e.name().equals(arg[0], true)}
+                                            else -> Vars.maps.all().find { e -> e.name().equals(arg[0], true) }
                                         }
 
                                         if(world != null) {
@@ -225,7 +197,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                                 PluginData.voting.add(vote)
                                                 PluginData.voting.first().start()
                                             }
-                                        } catch(e:NumberFormatException) {
+                                        } catch(e: NumberFormatException) {
                                             sendMessage(player, "넘길 웨이브 숫자를 입력하셔야 합니다!")
                                         }
                                     }
@@ -247,15 +219,15 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                     }
                                     None -> sendMessage["${arg[0]} 모드를 찾을 수 없습니다"]
                                 }
-                            } catch (e: Throwable){
+                            } catch(e: Throwable) {
                                 sendMessage["${arg[0]} 모드를 찾을 수 없습니다"]
                             }
                         }
                     }
                     Rainbow -> {
                         val data = PluginData[uuid]
-                        if (data != null) {
-                            if (!data.json.has("rainbow")) {
+                        if(data != null) {
+                            if(!data.json.has("rainbow")) {
                                 data.json.add("rainbow", true)
                                 RainbowName.targets.add(player)
                                 sendMessage["무지개 닉네임이 설정 되었습니다"]
@@ -266,11 +238,11 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         }
                     }
                     Kill -> {
-                        if (arg.isEmpty()) {
+                        if(arg.isEmpty()) {
                             player.unit().kill()
                         } else {
                             val target = Groups.player.find { d -> d.name == arg[0] }
-                            if (target != null) {
+                            if(target != null) {
                                 target.unit().kill()
                             } else {
                                 sendMessage["목표를 찾을 수 없습니다"]
@@ -281,22 +253,22 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         var data: PlayerData? = null
                         var target: Playerc = player
 
-                        if (arg.isEmpty()) {
+                        if(arg.isEmpty()) {
                             val buffer = PluginData[uuid]
-                            if (buffer != null) {
+                            if(buffer != null) {
                                 data = buffer
                             }
-                        } else if (player.admin()){
+                        } else if(player.admin()) {
                             target = Groups.player.find { d -> d.name().equals(arg[0], true) }
-                            if (target != null) {
+                            if(target != null) {
                                 val buffer = PluginData[target.uuid()]
-                                if (buffer != null) {
+                                if(buffer != null) {
                                     data = buffer
                                 }
                             }
                         }
 
-                        if (data != null) {
+                        if(data != null) {
                             val message = """
                                 [green]이름[white]: ${NetClient.colorizeName(target.id(), target.name())}
                                 [green]블럭 설치개수[white]: ${data.placeCount}
@@ -314,30 +286,28 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                     }
                     Maps -> {
                         val message = StringBuilder()
-                        val page = if (arg.isNotEmpty()) arg[0].toInt() else 0
+                        val page = if(arg.isNotEmpty()) arg[0].toInt() else 0
 
                         val buffer = Mathf.ceil(Vars.maps.all().size.toFloat() / 6)
-                        val pages = if (buffer > 1.0) buffer - 1 else 0
+                        val pages = if(buffer > 1.0) buffer - 1 else 0
 
-                        if (pages < page) {
+                        if(pages < page) {
                             sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
                         } else {
                             message.append("[green]==[white] 서버 맵 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
 
                             val maps = Seq<Map>()
-                            for (map in Vars.maps.all()) maps.add(map)
-                            for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Vars.maps.all().size)) {
-                                message.append(
-                                    "[gray]$a[white] ${
-                                        maps.get(a).name()
-                                    } v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n"
-                                )
+                            for(map in Vars.maps.all()) maps.add(map)
+                            for(a in 6 * page until (6 * (page + 1)).coerceAtMost(Vars.maps.all().size)) {
+                                message.append("[gray]$a[white] ${
+                                    maps.get(a).name()
+                                } v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n")
                             }
                             sendMessage[message.toString().dropLast(1)]
                         }
                     }
                     Motd -> {
-                        if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
+                        if(!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
                             sendMessage[Administration.Config.motd.string()]
                         } else {
                             sendMessage[pluginRoot.child("motd/motd.txt").readString("UTF-8")]
@@ -345,12 +315,12 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                     }
                     Players -> {
                         val message = StringBuilder()
-                        val page = if (arg.isNotEmpty()) arg[0].toInt() else 0
+                        val page = if(arg.isNotEmpty()) arg[0].toInt() else 0
 
                         val buffer = Mathf.ceil(Groups.player.size().toFloat() / 6)
-                        val pages = if (buffer > 1.0) buffer - 1 else 0
+                        val pages = if(buffer > 1.0) buffer - 1 else 0
 
-                        if (pages < page) {
+                        if(pages < page) {
                             sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
                         } else {
                             message.append("[green]==[white] 현재 서버 플레이어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
@@ -360,21 +330,18 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 players.add(e)
                             }
 
-                            for (a in 6 * page until (6 * (page + 1)).coerceAtMost(Groups.player.size())) {
-                                message.append(
-                                    "[gray]${players.get(a).id()}[white] ${
-                                        players.get(a).name()
-                                    }\n"
-                                )
+                            for(a in 6 * page until (6 * (page + 1)).coerceAtMost(Groups.player.size())) {
+                                message.append("[gray]${players.get(a).id()}[white] ${
+                                    players.get(a).name()
+                                }\n")
                             }
 
                             sendMessage[message.toString().dropLast(1)]
                         }
                     }
                     Router -> {
-                        PluginData.threads.submit{
-                            val zero = arrayOf(
-                                """
+                        PluginData.threads.submit {
+                            val zero = arrayOf("""
                             [stat][#404040][]
                             [stat][#404040][]
                             [stat][#404040]
@@ -383,8 +350,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [stat][#404040][]
                             [stat][#404040][]
                             [stat][#404040][][#404040]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [stat][#404040][]
                             [stat][#404040]
                             [stat][#404040][]
@@ -393,8 +359,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [stat][#404040][]
                             [stat][#404040]
                             [stat][#404040][][#404040][]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [stat][#404040][][#404040]
                             [stat][#404040][]
                             [#404040][stat]
@@ -403,8 +368,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [stat][#404040]
                             [stat][#404040][]
                             [#404040][stat][][stat]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [stat][#404040][][#404040][]
                             [#404040][stat]
                             [stat][#404040][]
@@ -413,8 +377,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [stat][#404040][]
                             [#404040][stat]
                             [stat][#404040][]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [#404040][stat][][stat]
                             [stat][#404040][]
                             [stat][#404040][]
@@ -423,10 +386,8 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [#404040][stat]
                             [stat][#404040][]
                             [stat][#404040][]
-                            """.trimIndent()
-                                              )
-                            val loop = arrayOf(
-                                """
+                            """.trimIndent())
+                            val loop = arrayOf("""
                             [#6B6B6B][stat][#6B6B6B]
                             [stat][#404040][]
                             [stat][#404040]
@@ -435,8 +396,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [stat][#404040][]
                             [stat][#404040][]
                             [#6B6B6B][stat][#404040][][#6B6B6B]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [#6B6B6B][stat][#6B6B6B]
                             [#6B6B6B][stat][#404040][][#6B6B6B]
                             [stat][#404040][]
@@ -445,8 +405,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [stat][#404040][]
                             [#6B6B6B][stat][#404040][][#6B6B6B]
                             [#6B6B6B][stat][#6B6B6B]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [#6B6B6B][#585858][stat][][#6B6B6B]
                             [#6B6B6B][#828282][stat][#404040][][][#6B6B6B]
                             [#585858][stat][#404040][][#585858]
@@ -455,8 +414,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [#585858][stat][#404040][][#585858]
                             [#6B6B6B][stat][#404040][][#828282][#6B6B6B]
                             [#6B6B6B][#585858][stat][][#6B6B6B]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [#6B6B6B][#585858][#6B6B6B]
                             [#6B6B6B][#828282][stat][][#6B6B6B]
                             [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
@@ -465,8 +423,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [#585858][#6B6B6B][stat][#404040][][#828282][#585858]
                             [#6B6B6B][stat][][#828282][#6B6B6B]
                             [#6B6B6B][#585858][#6B6B6B]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [#6B6B6B][#585858][#6B6B6B]
                             [#6B6B6B][#828282][#6B6B6B]
                             [#585858][#6B6B6B][stat][][#828282][#585858]
@@ -475,8 +432,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [#585858][#6B6B6B][stat][][#828282][#585858]
                             [#6B6B6B][#828282][#6B6B6B]
                             [#6B6B6B][#585858][#6B6B6B]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [#6B6B6B][#585858][#6B6B6B]
                             [#6B6B6B][#828282][#6B6B6B]
                             [#585858][#6B6B6B][#828282][#585858]
@@ -485,8 +441,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [#585858][#6B6B6B][#828282][#585858]
                             [#6B6B6B][#828282][#6B6B6B]
                             [#6B6B6B][#585858][#6B6B6B]
-                            """.trimIndent(),
-                                """
+                            """.trimIndent(), """
                             [#6B6B6B][#585858][#6B6B6B]
                             [#6B6B6B][#828282][#6B6B6B]
                             [#585858][#6B6B6B][#828282][#585858]
@@ -495,19 +450,9 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             [#585858][#6B6B6B][#828282][#585858]
                             [#6B6B6B][#828282][#6B6B6B]
                             [#6B6B6B][#585858][#6B6B6B]
-                            """.trimIndent()
-                                              )
+                            """.trimIndent())
 
-                            val tiles = intArrayOf(
-                                0, 0, 1, 1, 1, 1, 0, 0,
-                                0, 2, 0, 0, 0, 0, 0, 0,
-                                1, 2, 0, 0, 0, 0, 0, 1,
-                                1, 2, 0, 2, 2, 0, 0, 1,
-                                1, 2, 0, 2, 2, 0, 0, 1,
-                                1, 2, 0, 0, 0, 0, 0, 1,
-                                0, 2, 2, 2, 2, 2, 2, 0,
-                                0, 0, 1, 1, 1, 1, 0, 0
-                                                  )
+                            val tiles = intArrayOf(0, 0, 1, 1, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 1, 1, 2, 0, 2, 2, 0, 0, 1, 1, 2, 0, 2, 2, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 1, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1, 1, 1, 1, 0, 0)
 
                             val pos = Seq<IntArray>()
                             for(y in 0 until 8) {
@@ -576,10 +521,10 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                     }
                     Team -> {
                         val team = mindustry.game.Team.all.find { e -> e.name == arg[0] }
-                        if (team != null) {
-                            if (arg.size == 2) {
+                        if(team != null) {
+                            if(arg.size == 2) {
                                 val target = Groups.player.find { e -> e.name == arg[1] }
-                                if (target != null) {
+                                if(target != null) {
                                     target.team(team)
                                 } else {
                                     sendMessage["${arg[1]} 플레이어를 찾을 수 없습니다"]
@@ -596,15 +541,15 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                     }
                     Tp -> {
                         val target: Playerc?
-                        when (arg.size) {
+                        when(arg.size) {
                             1 -> {
-                                target = if (arg[0].toIntOrNull() != null) {
+                                target = if(arg[0].toIntOrNull() != null) {
                                     Groups.player.find { e -> e.id == arg[0].toInt() }
                                 } else {
                                     Groups.player.find { e -> e.name().contains(arg[0]) }
                                 }
 
-                                if (target != null) {
+                                if(target != null) {
                                     setPosition(player, target.x, target.y)
                                     sendMessage["${target.name()} 에게로 이동했습니다."]
                                 } else {
@@ -612,19 +557,19 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 }
                             }
                             2 -> {
-                                target = if (arg[0].toIntOrNull() != null) {
+                                target = if(arg[0].toIntOrNull() != null) {
                                     Groups.player.find { e -> e.id == arg[0].toInt() }
                                 } else {
                                     Groups.player.find { e -> e.name().contains(arg[0]) }
                                 }
 
-                                if (target != null) {
-                                    val other = if (arg[1].toIntOrNull() != null) {
+                                if(target != null) {
+                                    val other = if(arg[1].toIntOrNull() != null) {
                                         Groups.player.find { e -> e.id == arg[1].toInt() }
                                     } else {
                                         Groups.player.find { e -> e.name().contains(arg[1]) }
                                     }
-                                    if (other != null) {
+                                    if(other != null) {
                                         setPosition(target, other.x, other.y)
                                         sendMessage["${target.name()} 님을 ${other.name()} 에게로 이동했습니다."]
                                     } else {
@@ -635,7 +580,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                         val tileX = arg[0].toFloat()
                                         val tileY = arg[1].toFloat()
                                         setPosition(player, tileX * 8, tileY * 8)
-                                    } catch (_: NumberFormatException) {
+                                    } catch(_: NumberFormatException) {
                                         sendMessage["${arg[0]} 플레이어를 찾을 수 없습니다"]
                                         //sendMessage["잘못된 명령어 입니다"]
                                     }
@@ -644,15 +589,15 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         }
                     }
                     Mute -> {
-                        val target = if (arg[0].toIntOrNull() != null) {
+                        val target = if(arg[0].toIntOrNull() != null) {
                             Groups.player.find { e -> e.id == arg[0].toInt() }
                         } else {
                             Groups.player.find { e -> e.name().contains(arg[0]) }
                         }
 
-                        if (target != null) {
+                        if(target != null) {
                             val data = PluginData[target.uuid()]
-                            if (data!!.isMute) {
+                            if(data!!.isMute) {
                                 data.isMute = false
                                 target.sendMessage("축하드립니다. 묵언 상태가 해제되었습니다!")
                             } else {
@@ -662,34 +607,34 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         }
                     }
                     Help -> {
-                        if (arg.isNotEmpty() && arg[0].toIntOrNull() == null ) {
+                        if(arg.isNotEmpty() && arg[0].toIntOrNull() == null) {
                             try {
                                 sendMessage[Command.valueOf(arg[0].capitalize()).toString()]
-                            } catch (e: Exception){
+                            } catch(e: Exception) {
                                 sendMessage["${arg[0]} 명령어를 찾을 수 없습니다!"]
                             }
                         } else {
                             val message = StringBuilder()
-                            val page = if (arg.isNotEmpty()) arg[0].toInt() else 0
+                            val page = if(arg.isNotEmpty()) arg[0].toInt() else 0
 
                             val commands = Seq<String>()
-                            for (a in 0 until netServer.clientCommands.commandList.size) {
+                            for(a in 0 until netServer.clientCommands.commandList.size) {
                                 val command = netServer.clientCommands.commandList[a]
-                                if (Permissions.check(player, command.text)) {
+                                if(Permissions.check(player, command.text)) {
                                     commands.add("[orange] /${command.text} [white]${command.paramText} [lightgray]- ${command.description}\n")
                                 }
                             }
 
                             val buffer = Mathf.ceil(commands.size.toFloat() / 6)
-                            val pages = if (buffer > 1.0) buffer - 1 else 0
+                            val pages = if(buffer > 1.0) buffer - 1 else 0
 
-                            if (pages < page) {
+                            if(pages < page) {
                                 sendMessage["[scarlet]페이지 쪽수는 최대 [orange]$pages[] 까지 있습니다"]
                             } else {
                                 message.append("[green]==[white] 사용 가능한 명령어 목록. [sky]페이지 [orange]$page[]/[orange]$pages\n")
                             }
 
-                            for (a in 6 * page until (6 * (page + 1)).coerceAtMost(commands.size)) {
+                            for(a in 6 * page until (6 * (page + 1)).coerceAtMost(commands.size)) {
                                 message.append(commands.get(a))
                             }
 
@@ -700,7 +645,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         val data = PluginData[uuid]
                         if(data != null) {
                             if(!data.json.has("discord")) {
-                                if(Discord.pin.has(player.uuid())){
+                                if(Discord.pin.has(player.uuid())) {
                                     sendMessage["PIN 번호: ${Discord.pin.get(player.uuid()).asLong()}"]
                                 } else {
                                     val pin = abs(Random.nextLong(Int.MAX_VALUE + 1L, Long.MAX_VALUE))
@@ -715,7 +660,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                     }
                 }
             }
-        } catch (e: Exception){
+        } catch(e: Exception) {
             ErrorReport(e)
         }
     }

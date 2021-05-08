@@ -1,17 +1,14 @@
 package korea
+
 import arc.struct.Seq
 import korea.Main.Companion.pluginRoot
 import korea.core.Log
 import korea.event.feature.Vote
-import korea.event.feature.VoteType
 import korea.form.Config
-import mindustry.gen.Nulls
-import mindustry.gen.Playerc
 import org.hjson.JsonArray
 import org.hjson.JsonObject
 import java.security.SecureRandom
 import java.time.LocalTime
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.reflect.full.declaredMemberProperties
 
@@ -61,16 +58,16 @@ object PluginData : Config() {
     }
 
     override fun load() {
-        if (pluginRoot.child("data/PluginData.obj").exists()) {
+        if(pluginRoot.child("data/PluginData.obj").exists()) {
             val json = JsonObject.readJSON(pluginRoot.child("data/PluginData.obj").readString())
-            if (json != null) {
+            if(json != null) {
                 totalConnected = json.asObject().getInt("totalConnected", totalConnected)
                 totalUptime = json.asObject().getLong("totalUptime", totalUptime)
 
                 val arr = json.asObject().get("banned").asArray()
-                for (a in arr){
+                for(a in arr) {
                     val obj = a.asObject()
-                    banned.add(Banned(obj.get("name").asString(), obj.get("address").asString(), obj.get("uuid").asString(), obj.get("json").asString()))
+                    banned.add(Banned(obj.get("name").asString(), obj.get("address").asString(), obj.get("uuid").asString(), obj.get("json").asObject()))
                 }
 
                 Log.system("플러그인 데이터 로드됨!")
@@ -80,7 +77,7 @@ object PluginData : Config() {
 
     override fun createFile() {
         // 파일 생성
-        if (!pluginRoot.child("motd").exists()) {
+        if(!pluginRoot.child("motd").exists()) {
             pluginRoot.child("motd").mkdirs()
 
             val message = """
@@ -90,10 +87,10 @@ object PluginData : Config() {
             pluginRoot.child("motd/motd.txt").writeString(message)
         }
 
-        if (!pluginRoot.child("data").exists()){
+        if(!pluginRoot.child("data").exists()) {
             pluginRoot.child("data").mkdirs()
         }
     }
 
-    class Banned(val name: String, val address: String, val uuid: String, val json: String)
+    class Banned(val name: String, val address: String, val uuid: String, val json: JsonObject)
 }

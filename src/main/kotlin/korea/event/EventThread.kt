@@ -2,7 +2,6 @@ package korea.event
 
 import arc.Core
 import korea.Main.Companion.pluginRoot
-import korea.PlayerData
 import korea.PluginData
 import korea.command.Permissions
 import korea.command.ServerCommand
@@ -18,9 +17,7 @@ import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.content.Blocks
 import mindustry.game.EventType.*
-import mindustry.game.Gamemode
 import mindustry.game.Team
-import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.net.Administration
 import mindustry.net.Administration.PlayerInfo
@@ -29,14 +26,11 @@ import org.hjson.JsonObject
 class EventThread(private val type: EventTypes, private val event: Any) {
     fun run() {
         try {
-            when (type) {
+            when(type) {
                 EventTypes.Config -> {
                     val e = event as ConfigEvent
-                    if (e.player != null && e.tile != null && e.tile.block != null) {
-                        Log.write(
-                            Log.LogType.Activity,
-                            "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함"
-                        )
+                    if(e.player != null && e.tile != null && e.tile.block != null) {
+                        Log.write(Log.LogType.Activity, "${e.player.name} 가 ${e.tile.tileX()},${e.tile.tileY()} 에 있는 ${e.tile.block.name} 의 설정을 변경함")
                     }
                 }
                 EventTypes.Tap -> {
@@ -45,36 +39,33 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.Withdraw -> {
                     val e = event as WithdrawEvent
-                    Log.write(
-                        Log.LogType.Activity,
-                        "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})에 있는 ${e.tile.block.name} 에 ${e.item.name} 을 ${e.amount} 개 넣었음"
-                    )
+                    Log.write(Log.LogType.Activity, "${e.player.name} 가 타일(${e.tile.x},${e.tile.y})에 있는 ${e.tile.block.name} 에 ${e.item.name} 을 ${e.amount} 개 넣었음")
                 }
                 EventTypes.Gameover -> {
                     val e = event as GameOverEvent
-                    if (Vars.state.rules.pvp) {
+                    if(Vars.state.rules.pvp) {
                         var index = 5
-                        for (a in 0..4) {
-                            if (Vars.state.teams[Team.all[index]].cores.isEmpty) {
+                        for(a in 0..4) {
+                            if(Vars.state.teams[Team.all[index]].cores.isEmpty) {
                                 index--
                             }
                         }
-                        if (index == 1) {
-                            for (player in Groups.player) {
+                        if(index == 1) {
+                            for(player in Groups.player) {
                                 val target = PluginData[player.uuid()]
-                                if (target!!.isLogged) {
-                                    if (player.team().name == e.winner.name) {
+                                if(target!!.isLogged) {
+                                    if(player.team().name == e.winner.name) {
                                         target.pvpWinner++
-                                    } else if (player.team().name != e.winner.name) {
+                                    } else if(player.team().name != e.winner.name) {
                                         target.pvpLoser++
                                     }
                                 }
                             }
                         }
-                    } else if (Vars.state.rules.attackMode) {
-                        for (p in Groups.player) {
+                    } else if(Vars.state.rules.attackMode) {
+                        for(p in Groups.player) {
                             val target = PluginData[p.uuid()]
-                            if (target != null) {
+                            if(target != null) {
                                 target.attackWinner++
                             }
                         }
@@ -94,8 +85,8 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.PlayerConnect -> {
                     val e = event as PlayerConnect
-                    for (a in PluginData.banned){
-                        if (a.uuid == e.player.uuid() || a.address == e.player.con().address){
+                    for(a in PluginData.banned) {
+                        if(a.uuid == e.player.uuid() || a.address == e.player.con().address) {
                             connect(e.player, "mindustry.ru", 6567)
                             Log.info("${e.player.name} 유저는 밴을 당했으므로 ru 서버로 이동 시킵니다.")
                             return
@@ -139,14 +130,14 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     e.player.admin = false
 
                     // motd 표시
-                    if (!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
+                    if(!Administration.Config.motd.string().equals("off", ignoreCase = true)) {
                         infoMessage(e.player, Administration.Config.motd.string())
                     } else {
                         infoMessage(e.player, pluginRoot.child("motd/motd.txt").readString("UTF-8"))
                     }
 
                     // 자동 로그인
-                    if (PlayerCore.check(uuid)) {
+                    if(PlayerCore.check(uuid)) {
                         if(PlayerCore.load(e.player)) {
                             sendMessage(e.player, "자동 로그인이 되었습니다!")
                         } else {
@@ -154,7 +145,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                         }
                     } else {
                         val message: String
-                        when (Config.authType) {
+                        when(Config.authType) {
                             None -> {
                                 message = ""
                             }
@@ -185,7 +176,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     val uuid = e.player.uuid()
 
                     val data = PluginData[uuid]
-                    if (data != null) {
+                    if(data != null) {
                         data.isLogged = false
                         PlayerCore.save(uuid)
                         PluginData.remove(uuid)
@@ -196,45 +187,40 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     val uuid = e.player.uuid()
 
                     val data = PluginData[uuid]
-                    val type = if (data == null) "[비 로그인] " else if (data.isMute) "[묵언] " else ""
+                    val type = if(data == null) "[비 로그인] " else if(data.isMute) "[묵언] " else ""
 
-                    if (!e.message.startsWith("/")) {
-                        if (data == null) sendMessage("[#${e.player.color.toString().toUpperCase()}]${e.player.name} [orange]> [white] ${e.message}")
+                    if(!e.message.startsWith("/")) {
+                        if(data == null) sendMessage("[#${
+                            e.player.color.toString().toUpperCase()
+                        }]${e.player.name} [orange]> [white] ${e.message}")
 
                         // 채팅 내용을 기록에 저장
                         Log.info("$type${e.player.name}: ${e.message}")
                         Log.write(Log.LogType.Chat, "$type${e.player.name}: ${e.message}")
 
-                        if (data != null) {
-                            if (PluginData.voting.size == 1 && e.message.equals("y")){
-                                for (a in PluginData.voting.first().voted){
-                                    if(a.key.equals(e.player.uuid()) || a.value.equals(e.player.con.address)){
+                        if(data != null) {
+                            if(PluginData.voting.size == 1 && e.message.equals("y")) {
+                                for(a in PluginData.voting.first().voted) {
+                                    if(a.key.equals(e.player.uuid()) || a.value.equals(e.player.con.address)) {
                                         sendMessage(e.player, "이미 투표 했습니다!")
                                         return
                                     }
                                 }
                                 PluginData.voting.first().voted.put(e.player.uuid(), e.player.con.address)
-                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require || e.player.ip() == "169.254.37.115"){
+                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require || e.player.ip() == "169.254.37.115") {
                                     sendMessage("[sky]관리자[]의 힘으로 투표가 즉시 통과됩니다.")
                                     PluginData.voting.first().passed()
                                 }
                             }
-                            if (data.isMute) {
+                            if(data.isMute) {
                                 sendMessage(e.player, "[scarlet]당신은 누군가에 의해 묵언 처리가 되었습니다.")
                             } else {
-                                if (Permissions.userData.has(data.uuid)) {
-                                    sendMessage(
-                                        (if(data.json.has("discord") && Config.authType != Discord) "[#738ADB][] " else "") + Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "")
-                                            .replace(
-                                                "%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}"
-                                            ).replace("%2", e.message)
-                                    )
+                                if(Permissions.userData.has(data.uuid)) {
+                                    sendMessage((if(data.json.has("discord") && Config.authType != Discord) "[#738ADB][] " else "") + Permissions.userData.get(data.uuid).asObject().getString("chatFormat", "").replace("%1", "[#${e.player.color.toString().toUpperCase()}]${e.player.name}").replace("%2", e.message))
                                 } else {
-                                    sendMessage(
-                                        "[#${
-                                            e.player.color.toString().toUpperCase()
-                                        }]${e.player.name} [orange]> [white] ${e.message}"
-                                    )
+                                    sendMessage("[#${
+                                        e.player.color.toString().toUpperCase()
+                                    }]${e.player.name} [orange]> [white] ${e.message}")
                                 }
                             }
                         }
@@ -249,18 +235,18 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                         val player = e.unit.player
                         val data = PluginData[player.uuid()]
 
-                        if (player != null && data != null) {
-                            if (e.breaking && player.unit() != null && player.unit().buildPlan() != null && e.tile.block() !== Blocks.air) data.breakCount++
+                        if(player != null && data != null) {
+                            if(e.breaking && player.unit() != null && player.unit().buildPlan() != null && e.tile.block() !== Blocks.air) data.breakCount++
                         }
                     }
                 }
                 EventTypes.BuildSelect -> {
                     val e = event as BuildSelectEvent
-                    if (e.breaking && e.builder != null && e.builder.buildPlan() != null && e.builder.isPlayer) {
+                    if(e.breaking && e.builder != null && e.builder.buildPlan() != null && e.builder.isPlayer) {
                         val player = e.builder.player
 
                         val data = PluginData[player.uuid()]
-                        if (data != null) {
+                        if(data != null) {
                             data.breakCount++
                         }
                     }
@@ -272,16 +258,9 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     val e = event as PlayerBanEvent
                     if(e.player != null) {
                         connect(e.player, "mindustry.ru", 6567)
-                        PluginData.banned.add(
-                            PluginData.Banned(
-                                e.player.name,
-                                e.player.con().address,
-                                e.player.uuid(),
-                                if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]!!.json else JsonObject().add("json","")
-                            )
-                        )
+                        PluginData.banned.add(PluginData.Banned(e.player.name, e.player.con().address, e.player.uuid(), if(PluginData[e.player.uuid()] != null) PluginData[e.player.uuid()]!!.json else JsonObject().add("json", "")))
                         Core.app.post {
-                            val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
+                            val info: PlayerInfo = netServer.admins.getInfo(e.player.uuid())
                             if(info.banned) {
                                 info.banned = false
                                 netServer.admins.bannedIPs.removeAll(info.ips, false)
@@ -295,9 +274,9 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.PlayerIpBan -> {
                     val e = event as PlayerIpBanEvent
                     val uuid = netServer.admins.findByIP(e.ip)
-                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none", if(PluginData[uuid.id] != null) PluginData[uuid.id]!!.json else JsonObject().add("json","")))
+                    PluginData.banned.add(PluginData.Banned(if(uuid != null) uuid.lastName else "none", e.ip, if(uuid != null) uuid.id else "none", if(PluginData[uuid.id] != null) PluginData[uuid.id]!!.json else JsonObject().add("json", "")))
                     Core.app.post {
-                        if (netServer.admins.bannedIPs.contains(e.ip, false)) {
+                        if(netServer.admins.bannedIPs.contains(e.ip, false)) {
                             netServer.admins.findByIP(e.ip).banned = false
                             netServer.admins.bannedIPs.remove(e.ip, false)
                         }
@@ -305,12 +284,12 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.PlayerUnban -> {
                     val e = event as PlayerUnbanEvent
-                    if (e.player != null) {
-                        if (ServerCommand.isUnBan) {
+                    if(e.player != null) {
+                        if(ServerCommand.isUnBan) {
                             PluginData.banned.remove { e.player.uuid() == it.uuid }
                         }
                         Core.app.post {
-                            val info:PlayerInfo = netServer.admins.getInfo(e.player.uuid())
+                            val info: PlayerInfo = netServer.admins.getInfo(e.player.uuid())
                             if(info.banned) {
                                 info.banned = false
                                 netServer.admins.bannedIPs.removeAll(info.ips, false)
@@ -320,11 +299,11 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.PlayerIpUnban -> {
                     val e = event as PlayerIpUnbanEvent
-                    if(ServerCommand.isUnBan){
+                    if(ServerCommand.isUnBan) {
                         PluginData.banned.remove { e.ip == it.address }
                     }
                     Core.app.post {
-                        if (netServer.admins.bannedIPs.contains(e.ip, false)) {
+                        if(netServer.admins.bannedIPs.contains(e.ip, false)) {
                             netServer.admins.findByIP(e.ip).banned = false
                             netServer.admins.bannedIPs.remove(e.ip, false)
                         }
@@ -334,12 +313,12 @@ class EventThread(private val type: EventTypes, private val event: Any) {
 
                 }
             }
-        } catch (e: Exception) {
+        } catch(e: Exception) {
             ErrorReport(e)
         }
     }
 
-    enum class EventTypes{
+    enum class EventTypes {
         Config, Tap, Withdraw, Gameover, WorldLoad, PlayerConnect, Deposit, PlayerJoin, PlayerLeave, PlayerChat, BlockBuildEnd, BuildSelect, UnitDestroy, PlayerBan, PlayerIpBan, PlayerUnban, PlayerIpUnban, ServerLoaded;
     }
 }

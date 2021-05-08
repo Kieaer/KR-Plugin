@@ -1,4 +1,5 @@
 package korea
+
 import korea.command.Permissions
 import org.hjson.JsonObject
 import java.util.*
@@ -79,7 +80,7 @@ class PlayerData {
     /** json 데이터 */
     var json: JsonObject = JsonObject()
 
-    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Int, exp: Int, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long, json: JsonObject, id: String, pw: String){
+    constructor(name: String, uuid: String, admin: Boolean, placeCount: Long, breakCount: Long, kickCount: Long, joinCount: Long, level: Int, exp: Int, joinDate: Long, lastDate: Long, playTime: Long, attackWinner: Long, pvpWinner: Long, pvpLoser: Long, rainbowName: Boolean, isMute: Boolean, isLogged: Boolean, afkTime: Long, country: String, rank: Long, json: JsonObject, id: String, pw: String) {
         this.name = name
         this.uuid = uuid
         this.admin = admin

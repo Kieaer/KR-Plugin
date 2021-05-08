@@ -18,12 +18,11 @@ import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.pow
 
-
 class DriverLoader : Driver {
     private var tried = false
     private lateinit var driver: Driver
 
-    companion object{
+    companion object {
         lateinit var h2: URLClassLoader
     }
 
@@ -40,8 +39,8 @@ class DriverLoader : Driver {
             val driver = Class.forName("org.h2.Driver", true, cla).getDeclaredConstructor().newInstance() as Driver
             DriverManager.registerDriver(DriverLoader(driver))
             h2 = cla
-        } catch (e: Exception) {
-            if (!tried) {
+        } catch(e: Exception) {
+            if(!tried) {
                 tried = true
                 download()
             } else {
@@ -56,7 +55,7 @@ class DriverLoader : Driver {
             pluginRoot.child("Driver/h2.jar").writeString("")
             download(pluginRoot.child("Driver/h2.jar").file(), URL("https://repo1.maven.org/maven2/com/h2database/h2/1.4.200/h2-1.4.200.jar"))
             init()
-        } catch (e: Exception) {
+        } catch(e: Exception) {
             ErrorReport(e)
         }
     }
@@ -93,7 +92,7 @@ class DriverLoader : Driver {
         return driver.parentLogger
     }
 
-    fun download(path: File, url: URL){
+    fun download(path: File, url: URL) {
         try {
             val outputStream = BufferedOutputStream(FileOutputStream(path))
             val urlConnection: URLConnection = url.openConnection()
@@ -103,24 +102,20 @@ class DriverLoader : Driver {
             var byteRead: Int
             var byteWritten = 0
             val startTime = System.currentTimeMillis()
-            while (`is`.read(buf).also { byteRead = it } != -1) {
+            while(`is`.read(buf).also { byteRead = it } != -1) {
                 outputStream.write(buf, 0, byteRead)
                 byteWritten += byteRead
                 printProgress(startTime, size, byteWritten)
             }
             `is`.close()
             outputStream.close()
-        } catch (e: Exception) {
+        } catch(e: Exception) {
         }
     }
 
     private fun printProgress(startTime: Long, total: Int, remain: Int) {
-        val eta = if (remain == 0) 0 else (total - remain) * (System.currentTimeMillis() - startTime) / remain
-        val etaHms = if (total == 0) "N/A" else String.format(
-            "%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(eta),
-            TimeUnit.MILLISECONDS.toMinutes(eta) % TimeUnit.HOURS.toMinutes(1),
-            TimeUnit.MILLISECONDS.toSeconds(eta) % TimeUnit.MINUTES.toSeconds(1)
-        )
+        val eta = if(remain == 0) 0 else (total - remain) * (System.currentTimeMillis() - startTime) / remain
+        val etaHms = if(total == 0) "N/A" else String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(eta), TimeUnit.MILLISECONDS.toMinutes(eta) % TimeUnit.HOURS.toMinutes(1), TimeUnit.MILLISECONDS.toSeconds(eta) % TimeUnit.MINUTES.toSeconds(1))
         require(remain <= total)
         val maxBareSize = 20
         val remainProcent = 20 * remain / total
@@ -129,17 +124,12 @@ class DriverLoader : Driver {
         val bare = String(CharArray(maxBareSize)).replace('\u0000', defaultChar) + "]"
         val bareDone = StringBuilder()
         bareDone.append("[")
-        for (i in 0 until remainProcent) {
+        for(i in 0 until remainProcent) {
             bareDone.append(icon)
         }
         val bareRemain = bare.substring(remainProcent)
-        print(
-            "\r" + humanReadableByteCount(remain, true) + "/" + humanReadableByteCount(
-                total,
-                true
-            ) + "\t" + bareDone.toString() + bareRemain + " " + (remainProcent * 5).toString() + "%, ETA: " + etaHms
-        )
-        if (remain == total) {
+        print("\r" + humanReadableByteCount(remain, true) + "/" + humanReadableByteCount(total, true) + "\t" + bareDone.toString() + bareRemain + " " + (remainProcent * 5).toString() + "%, ETA: " + etaHms)
+        if(remain == total) {
             print("\n")
         }
     }
@@ -147,14 +137,14 @@ class DriverLoader : Driver {
     @Strictfp
     fun humanReadableByteCount(bytes: Int, si: Boolean): String {
         var ba = bytes
-        val unit = if (si) 1000 else 1024
+        val unit = if(si) 1000 else 1024
         val absBytes = abs(ba).toLong()
-        if (absBytes < unit) return "$ba B"
+        if(absBytes < unit) return "$ba B"
         var exp = (ln(absBytes.toDouble()) / ln(unit.toDouble())).toInt()
         val th = (unit.toDouble().pow(exp.toDouble()) * (unit - 0.05)).toLong()
-        if (exp < 6 && absBytes >= th - (if (th and 0xfff == 0xd00L) 52 else 0)) exp++
-        val pre = (if (si) "kMGTPE" else "KMGTPE")[exp - 1].toString() + if (si) "" else "i"
-        if (exp > 4) {
+        if(exp < 6 && absBytes >= th - (if(th and 0xfff == 0xd00L) 52 else 0)) exp++
+        val pre = (if(si) "kMGTPE" else "KMGTPE")[exp - 1].toString() + if(si) "" else "i"
+        if(exp > 4) {
             ba /= unit
             exp -= 1
         }

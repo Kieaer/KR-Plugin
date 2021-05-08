@@ -13,7 +13,7 @@ object Exp {
 
     private fun calculateFullTargetXp(level: Int): Double {
         var requiredXP = 0.0
-        for (i in 0..level) {
+        for(i in 0..level) {
             requiredXP += calcXpForLevel(i)
         }
         return requiredXP
@@ -24,7 +24,7 @@ object Exp {
         var maxXp = calcXpForLevel(0)
         do {
             maxXp += calcXpForLevel(++level)
-        } while (maxXp < xp)
+        } while(maxXp < xp)
         return level
     }
 

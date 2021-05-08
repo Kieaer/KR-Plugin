@@ -19,20 +19,20 @@ object Permissions {
 
     fun check(player: Playerc, command: String): Boolean {
         val p = PluginData[player.uuid()]
-        if (p != null) {
+        if(p != null) {
             val data = userData[player.uuid()]
-            if (data != null) {
+            if(data != null) {
                 val obj = data.asObject()
                 val size = permissionData[obj["group"].asString()].asObject()["nodes"].asArray().size()
-                for (a in 0 until size) {
+                for(a in 0 until size) {
                     val node = permissionData[obj["group"].asString()].asObject()["nodes"].asArray()[a].asString()
-                    if (node == command || node == "ALL") return true
+                    if(node == command || node == "ALL") return true
                 }
             } else {
                 return false
             }
         }
-        return when (command){
+        return when(command) {
             "login", "register", "help" -> true
             else -> false
         }
@@ -51,13 +51,12 @@ object Permissions {
     }
 
     fun load() {
-        if (pluginRoot.child("permission.hjson").exists()) {
+        if(pluginRoot.child("permission.hjson").exists()) {
             try {
                 permissionData = JsonValue.readHjson(pluginRoot.child("permission.hjson").reader()).asObject()
-            } catch (e: ParseException){
+            } catch(e: ParseException) {
                 Log.err("permission.json 파일에서 구문 오류로 인해 기본값으로 로드됩니다.")
-                Log.err("오류가 발생한 위치: ${e.line}줄에서 ${e.column}번째 글자.\n" +
-                        "오류는 ${e.message}.")
+                Log.err("오류가 발생한 위치: ${e.line}줄에서 ${e.column}번째 글자.\n" + "오류는 ${e.message}.")
                 isError = true
                 createDefault(false)
             }
@@ -66,24 +65,23 @@ object Permissions {
             Log.system("permission.json 파일 생성됨!")
         }
 
-        if (pluginRoot.child("permission_user.hjson").exists()) {
+        if(pluginRoot.child("permission_user.hjson").exists()) {
             try {
                 userData = JsonValue.readHjson(pluginRoot.child("permission_user.hjson").reader()).asObject()
                 userData.filter { it.value.asObject().get("name").asString().isEmpty() }.forEach { userData.remove(it.name) }
-            } catch (e: ParseException){
+            } catch(e: ParseException) {
                 Log.err("permission_user.json 파일에서 구문 오류로 인해 플레이어 데이터를 사용하지 않습니다!")
-                Log.err("오류가 발생한 위치: ${e.line}줄에서 ${e.column}번째 글자.\n" +
-                        "오류는 ${e.message}.")
+                Log.err("오류가 발생한 위치: ${e.line}줄에서 ${e.column}번째 글자.\n" + "오류는 ${e.message}.")
                 isError = true
             }
         }
     }
 
-    fun save(){
+    fun save() {
         if(!isError) pluginRoot.child("permission_user.hjson").writeString(userData.toString(Stringify.FORMATTED))
     }
 
-    private fun createDefault(isSave: Boolean){
+    private fun createDefault(isSave: Boolean) {
         val json = JsonObject()
         var data = JsonObject()
         var nodes = JsonArray()

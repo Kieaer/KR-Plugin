@@ -16,18 +16,18 @@ object DB {
     private lateinit var consoleServer: Any
     private lateinit var clazz: Class<*>
 
-    init{
-        if (Config.networkMode == Config.NetworkMode.Server) {
+    init {
+        if(Config.networkMode == Config.NetworkMode.Server) {
             try {
                 clazz = Class.forName("org.h2.tools.Server", true, h2)
                 val obj = clazz.getDeclaredConstructor().newInstance()
 
                 val arr = arrayOf("-tcpPort", "${if(!Config.debug) PluginData.dataPort else 8979}", "-tcpAllowOthers", "-tcpDaemon", "-ifNotExists", "-baseDir", pluginRoot.child("data").absolutePath())
-                for (m in clazz.methods) {
-                    if (m.name == "createTcpServer") {
+                for(m in clazz.methods) {
+                    if(m.name == "createTcpServer") {
                         val any = m.invoke(obj, arr)
-                        for (o in clazz.methods) {
-                            if (o.name == "start") {
+                        for(o in clazz.methods) {
+                            if(o.name == "start") {
                                 databaseServer = o.invoke(any)
                                 break
                             }
@@ -37,13 +37,13 @@ object DB {
                 }
 
                 // 디버그를 위해 웹 서버 열기
-                if(Config.debug){
+                if(Config.debug) {
                     val ar = arrayOf("-webAllowOthers", "-webDaemon", "-baseDir", "jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}/player")
-                    for (m in clazz.methods) {
-                        if (m.name == "createWebServer") {
+                    for(m in clazz.methods) {
+                        if(m.name == "createWebServer") {
                             val any = m.invoke(obj, ar)
-                            for (o in clazz.methods) {
-                                if (o.name == "start") {
+                            for(o in clazz.methods) {
+                                if(o.name == "start") {
                                     consoleServer = o.invoke(any)
                                     break
                                 }
@@ -53,7 +53,7 @@ object DB {
                     }
                     Log.system("DB 주소: jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}")
                 }
-            } catch (e: Exception) {
+            } catch(e: Exception) {
                 ErrorReport(e)
             }
             database = DriverManager.getConnection("jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}/player", "", "")
@@ -62,28 +62,28 @@ object DB {
         }
     }
 
-    private fun connect(){
-        database = if (Config.networkMode == Config.NetworkMode.Server) {
+    private fun connect() {
+        database = if(Config.networkMode == Config.NetworkMode.Server) {
             DriverManager.getConnection("jdbc:h2:tcp://localhost:${if(!Config.debug) PluginData.dataPort else 8979}/player", "", "")
         } else {
             DriverManager.getConnection("jdbc:h2:file:./config/mods/KR-Plugin/data/player", "", "")
         }
     }
 
-    private fun disconnect(){
+    private fun disconnect() {
         database.close()
     }
 
-    fun reconnect(){
+    fun reconnect() {
         disconnect()
         connect()
     }
 
-    fun shutdownServer(){
+    fun shutdownServer() {
         disconnect()
         if(DB::databaseServer.isInitialized) {
-            for (m in clazz.methods) {
-                if (m.name == "stop") {
+            for(m in clazz.methods) {
+                if(m.name == "stop") {
                     m.invoke(databaseServer)
                     Log.system("DB 서버 종료됨!")
                     if(DB::consoleServer.isInitialized) {
@@ -97,7 +97,7 @@ object DB {
         }
     }
 
-    fun createTable() : Boolean{
+    fun createTable(): Boolean {
         val sql = """
             CREATE TABLE IF NOT EXISTS players(
             ${router()}
@@ -106,12 +106,12 @@ object DB {
         return database.prepareStatement(sql).execute()
     }
 
-    private fun router() : String{
+    private fun router(): String {
         val sql = StringBuilder()
 
         val fields = PlayerData::class.declaredMemberProperties
-        for (a in fields){
-            when (a.returnType.toString()){
+        for(a in fields) {
+            when(a.returnType.toString()) {
                 "kotlin.Long", "kotlin.Int" -> sql.append("\"${a.name}\" BIGINT NULL,")
                 "kotlin.String" -> sql.append("\"${a.name}\" VARCHAR(255) NULL,")
                 "kotlin.Boolean" -> sql.append("\"${a.name}\" BOOLEAN NULL,")

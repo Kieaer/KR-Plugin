@@ -1,11 +1,11 @@
 package korea.core
 
-import korea.PluginData.version
 import arc.Core
 import arc.Net
 import arc.Net.HttpStatus
 import arc.util.Strings
 import arc.util.serialization.Jval
+import korea.PluginData.version
 import org.hjson.JsonValue
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -23,10 +23,10 @@ class PluginUpdater {
         }
 
         Core.net.httpGet("https://api.github.com/repos/Kieaer/KR-Plugin/releases/latest", { res: Net.HttpResponse ->
-            if (res.status == HttpStatus.OK) {
+            if(res.status == HttpStatus.OK) {
                 val json = Jval.read(res.resultAsString)
                 val current = Strings.parseInt(json.getString("tag_name", "0"))
-                if (current > version) {
+                if(current > version) {
                     val asset = json["assets"].asArray().find { v: Jval ->
                         v.getString("name", "").startsWith("KR-Plugin")
                     }
@@ -38,6 +38,6 @@ class PluginUpdater {
             } else {
                 Log.warn("플러그인 업데이트 확인 실패! 오류 코드 ${res.status.code}")
             }
-        }){}
+        }) {}
     }
 }

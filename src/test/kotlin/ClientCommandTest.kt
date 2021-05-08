@@ -1,5 +1,3 @@
-
-
 import arc.ApplicationCore
 import arc.Core
 import arc.Net
@@ -35,9 +33,8 @@ import java.util.zip.ZipFile
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 
-
 class ClientCommandTest {
-    companion object{
+    companion object {
         private lateinit var main: Main
         private val serverCommand = CommandHandler("")
         private val clientCommand = CommandHandler("/")
@@ -55,12 +52,12 @@ class ClientCommandTest {
             path.child("version.properties").writeString("modifier=release\ntype=official\nnumber=6\nbuild=custom build")
             Core.net = Net()
 
-            if (!path.child("maps").exists()) {
+            if(!path.child("maps").exists()) {
                 path.child("maps").mkdirs()
 
-                ZipFile(Paths.get("src","test","resources","maps.zip").toFile().absolutePath).use { zip ->
+                ZipFile(Paths.get("src", "test", "resources", "maps.zip").toFile().absolutePath).use { zip ->
                     zip.entries().asSequence().forEach { entry ->
-                        if (entry.isDirectory) {
+                        if(entry.isDirectory) {
                             File(path.child("maps").absolutePath(), entry.name).mkdirs()
                         } else {
                             zip.getInputStream(entry).use { input ->
@@ -97,14 +94,14 @@ class ClientCommandTest {
                     }
                 }
                 HeadlessApplication(core, 60f) { throwable: Throwable? -> exceptionThrown[0] = throwable }
-                while (!begins[0]) {
-                    if (exceptionThrown[0] != null) {
+                while(!begins[0]) {
+                    if(exceptionThrown[0] != null) {
                         exceptionThrown[0]!!.printStackTrace()
                         Assert.fail()
                     }
                     sleep(10)
                 }
-            } catch (e: Exception) {
+            } catch(e: Exception) {
                 e.printStackTrace()
             }
 
@@ -132,7 +129,7 @@ class ClientCommandTest {
         private fun getSaltString(): String {
             val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
             val salt = StringBuilder()
-            while (salt.length < 25){
+            while(salt.length < 25) {
                 val index = (r.nextFloat() * chars.length).toInt()
                 salt.append(chars[index])
             }
@@ -168,12 +165,12 @@ class ClientCommandTest {
     }
 
     @Test
-    fun login(){
+    fun login() {
         clientCommand.handleMessage("/login test @as123P", player)
     }
 
     @Test
-    fun register(){
+    fun register() {
         clientCommand.handleMessage("/register test @as123P @as123P", player)
 
         // DB가 등록되기까지 대기
@@ -183,77 +180,77 @@ class ClientCommandTest {
     }
 
     @Test
-    fun spawn(){
+    fun spawn() {
         clientCommand.handleMessage("/spawn", player)
     }
 
     @Test
-    fun vote(){
+    fun vote() {
         clientCommand.handleMessage("/vote", player)
     }
 
     @Test
-    fun rainbow(){
+    fun rainbow() {
         clientCommand.handleMessage("/rainbow", player)
     }
 
     @Test
-    fun kill(){
+    fun kill() {
         clientCommand.handleMessage("/kill", player)
     }
 
     @Test
-    fun info(){
+    fun info() {
         clientCommand.handleMessage("/info", player)
     }
 
     @Test
-    fun maps(){
+    fun maps() {
         clientCommand.handleMessage("/maps", player)
     }
 
     @Test
-    fun motd(){
+    fun motd() {
         clientCommand.handleMessage("/motd", player)
     }
 
     @Test
-    fun players(){
+    fun players() {
         clientCommand.handleMessage("/players", player)
     }
 
     @Test
-    fun router(){
+    fun router() {
         clientCommand.handleMessage("/router", player)
     }
 
     @Test
-    fun status(){
+    fun status() {
         clientCommand.handleMessage("/status", player)
     }
 
     @Test
-    fun team(){
+    fun team() {
         clientCommand.handleMessage("/team", player)
     }
 
     @Test
-    fun tp(){
+    fun tp() {
         clientCommand.handleMessage("/tp", player)
     }
 
     @Test
-    fun mute(){
+    fun mute() {
         clientCommand.handleMessage("/mute", player)
     }
 
     @Test
-    fun help(){
+    fun help() {
         clientCommand.handleMessage("/help", player)
     }
 
     @Test
-    fun discord(){
+    fun discord() {
 
     }
 }

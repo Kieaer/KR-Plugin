@@ -1,17 +1,17 @@
 package korea.event.feature
 
-enum class VoteType{
-    Kick{
+enum class VoteType {
+    Kick {
         override fun toString(): String {
             return "강퇴"
         }
     },
-    Map{
+    Map {
         override fun toString(): String {
             return "맵"
         }
     },
-    Gameover{
+    Gameover {
         override fun toString(): String {
             return "항복"
         }
@@ -27,16 +27,16 @@ enum class VoteType{
         }
     },
     Fast {
-        override fun toString():String {
+        override fun toString(): String {
             return "웨이브 고속진행"
         }
     },
-    Random{
+    Random {
         override fun toString(): String {
             return "랜덤박스"
         }
     },
-    None{
+    None {
         override fun toString(): String {
             return "없음"
         }

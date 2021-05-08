@@ -1,9 +1,9 @@
 package korea.event.feature
 
-import korea.Main.Companion.isDispose
-import korea.PluginData
 import arc.struct.Seq
 import arc.util.async.Threads.sleep
+import korea.Main.Companion.isDispose
+import korea.PluginData
 import mindustry.gen.Playerc
 
 object RainbowName : Runnable {
@@ -11,12 +11,12 @@ object RainbowName : Runnable {
     var targets = Seq<Playerc>()
 
     override fun run() {
-        while (!isDispose) {
+        while(!isDispose) {
             // TODO 재접시 무지개 닉 설정
-            for (player in targets) {
+            for(player in targets) {
                 val p = PluginData[player.uuid()]
-                if (p != null) {
-                    if (p.json.has("rainbow")) {
+                if(p != null) {
+                    if(p.json.has("rainbow")) {
                         val name = p.name.replace("\\[(.*?)]".toRegex(), "")
                         set(name, player)
                     } else {
@@ -44,17 +44,17 @@ object RainbowName : Runnable {
         colors[9] = "[#8000ff]"
         colors[10] = "[#ff00ff]"
         val newName = arrayOfNulls<String>(name.length)
-        for (i in name.indices) {
+        for(i in name.indices) {
             val c = name[i]
             var colorIndex = (i + colorOffset) % colors.size
-            if (colorIndex < 0) {
+            if(colorIndex < 0) {
                 colorIndex += colors.size
             }
             val newtext = colors[colorIndex] + c
             newName[i] = newtext
         }
         colorOffset--
-        for (s in newName) {
+        for(s in newName) {
             stringBuilder.append(s)
         }
         player.name(stringBuilder.toString())

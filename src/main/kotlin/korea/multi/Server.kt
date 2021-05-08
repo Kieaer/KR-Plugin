@@ -13,34 +13,34 @@ import java.net.Socket
 import java.nio.charset.StandardCharsets
 
 class Server {
-    companion object{
+    companion object {
         lateinit var serverSocket: ServerSocket
     }
 
-    fun start(){
-        Events.on(EventType.TileChangeEvent::class.java){
+    fun start() {
+        Events.on(EventType.TileChangeEvent::class.java) {
 
         }
     }
 
-    class server: Thread(){
+    class server : Thread() {
         val list = Seq<serverService>()
 
         override fun run() {
             try {
                 serverSocket = ServerSocket(9999)
                 Log.info("서버 활성화됨")
-                while (!serverSocket.isClosed) {
+                while(!serverSocket.isClosed) {
                     val socket = serverSocket.accept()
                     try {
                         val service = serverService(socket)
                         service.start()
                         list.add(service)
-                    } catch (e: Exception) {
+                    } catch(e: Exception) {
                         e.printStackTrace()
                     }
                 }
-            } catch (e: IOException) {
+            } catch(e: IOException) {
                 e.printStackTrace()
             }
         }
@@ -61,7 +61,5 @@ class Server {
         }
     }
 
-    class client: Thread(){
-
-    }
+    class client : Thread()
 }

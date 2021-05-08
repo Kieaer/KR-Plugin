@@ -3,11 +3,8 @@ package korea.event.feature
 import arc.ApplicationListener
 import arc.Core
 import arc.Events
-import arc.graphics.Color
 import arc.struct.ObjectMap
 import arc.util.Align
-import arc.util.Time
-import arc.util.Time.nanosPerMilli
 import arc.util.async.Threads.sleep
 import korea.PluginData
 import korea.data.Config
@@ -20,14 +17,11 @@ import korea.exceptions.ErrorReport
 import mindustry.Vars
 import mindustry.Vars.content
 import mindustry.Vars.netServer
-import mindustry.content.Bullets
-import mindustry.content.Fx
-import mindustry.content.Weathers
-import mindustry.entities.Effect
-import mindustry.entities.bullet.BulletType
 import mindustry.game.EventType
 import mindustry.game.Team
-import mindustry.gen.*
+import mindustry.gen.Call
+import mindustry.gen.Groups
+import mindustry.gen.Playerc
 import mindustry.net.Packets
 import java.time.LocalTime
 import kotlin.random.Random
@@ -40,20 +34,16 @@ class Vote(val player: Playerc, val type: VoteType) {
 
         override fun update() {
             if(tick == 60) {
-                infoPopup(
-                    "투표 시작한 유저: ${player.name()}[white]\n" +
-                            "$type 투표 종료까지 ${time}초\n" +
-                            "${voted.size} 명 투표. 필요 투표 인원: ${require - voted.size}", 1f, Align.left, 0, 0, 0, 0
-                         )
+                infoPopup("투표 시작한 유저: ${player.name()}[white]\n" + "$type 투표 종료까지 ${time}초\n" + "${voted.size} 명 투표. 필요 투표 인원: ${require - voted.size}", 1f, Align.left, 0, 0, 0, 0)
                 tick = 0
                 time--
             } else {
                 tick++
             }
 
-            if(alertTime == 0 || alertTime == 600 || alertTime == 1200 || alertTime == 1800 || alertTime == 2400 || alertTime == 3000){
-                sendMessage("투표 종료까지 ${60 - (alertTime/60)}초 남았습니다.")
-            } else if(alertTime == 3600){
+            if(alertTime == 0 || alertTime == 600 || alertTime == 1200 || alertTime == 1800 || alertTime == 2400 || alertTime == 3000) {
+                sendMessage("투표 종료까지 ${60 - (alertTime / 60)}초 남았습니다.")
+            } else if(alertTime == 3600) {
                 passed()
             }
             alertTime++
@@ -62,7 +52,7 @@ class Vote(val player: Playerc, val type: VoteType) {
     }
 
     val voted = ObjectMap<String, String>()
-    val require: Int = if (Config.debug) 1 else 3 + if (Groups.player.size() > 5) 1 else 0
+    val require: Int = if(Config.debug) 1 else 3 + if(Groups.player.size() > 5) 1 else 0
 
     var target: Playerc? = null
     var world: mindustry.maps.Map? = null
@@ -105,7 +95,7 @@ class Vote(val player: Playerc, val type: VoteType) {
                         Vars.state.rules.waveSpacing = 1800f
                     }
                     VoteType.Random -> {
-                        if(PluginData.lastVoted.plusMinutes(10).isBefore(LocalTime.now())){
+                        if(PluginData.lastVoted.plusMinutes(10).isBefore(LocalTime.now())) {
                             sendMessage("랜덤 박스 쿨타임이 지나지 않았습니다.")
                         } else {
                             PluginData.lastVoted = LocalTime.now()
@@ -131,22 +121,19 @@ class Vote(val player: Playerc, val type: VoteType) {
                                         sendMessage("[scarlet]모든 건물의 체력이 50% 삭제됩니다!")
                                         Groups.build.each {
                                             if(it.team == player.team()) {
-                                                Core.app.post {Call.tileDamage(it, it.health() / 0.5f)}
+                                                Core.app.post { Call.tileDamage(it, it.health() / 0.5f) }
                                                 //it.health(it.health() / 0.5f)
                                             }
                                         }
                                         for(a in Groups.player) {
-                                            Call.worldDataBegin(a.con);
-                                            netServer.sendWorldData(a);
+                                            Call.worldDataBegin(a.con)
+                                            netServer.sendWorldData(a)
                                         }
                                     }
                                     4 -> {
                                         sendMessage("[green]오! 코어에 자원이 채워집니다! 물론 랜덤으로요.")
                                         for(item in content.items()) {
-                                            Vars.state.teams.cores(player.team()).first().items.add(
-                                                item,
-                                                Random(516).nextInt(500)
-                                                                                                   )
+                                            Vars.state.teams.cores(player.team()).first().items.add(item, Random(516).nextInt(500))
                                         }
                                     }
                                     5 -> {
@@ -155,7 +142,7 @@ class Vote(val player: Playerc, val type: VoteType) {
                                         sendMessage("[scarlet]아군의 건물 및 유닛이 큰 피해를 입었습니다!")
                                         Groups.build.each {
                                             if(it.team == player.team()) {
-                                                Core.app.post {Call.tileDamage(it, 1f)}
+                                                Core.app.post { Call.tileDamage(it, 1f) }
                                                 //it.health(1f)
                                             }
                                         }
@@ -165,8 +152,8 @@ class Vote(val player: Playerc, val type: VoteType) {
                                             }
                                         }
                                         for(a in Groups.player) {
-                                            Call.worldDataBegin(a.con);
-                                            netServer.sendWorldData(a);
+                                            Call.worldDataBegin(a.con)
+                                            netServer.sendWorldData(a)
                                         }
                                     }
                                     /*6 -> {
@@ -203,7 +190,7 @@ class Vote(val player: Playerc, val type: VoteType) {
             } else {
                 sendMessage("투표 실패!")
             }
-        } catch(e:Exception) {
+        } catch(e: Exception) {
             ErrorReport(e)
         }
 
