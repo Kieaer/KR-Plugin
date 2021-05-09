@@ -129,16 +129,20 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     }*/
 
                     val total = Groups.player.size()
-                    if(PluginData.worldTime > 1200000L)
-                    when {
-                        total > 10 -> {
-                            Vars.state.rules.waveSpacing = 1920f
-                        }
-                        total > 8 -> {
-                            Vars.state.rules.waveSpacing = 2560f
-                        }
-                        total > 6 -> {
-                            Vars.state.rules.waveSpacing = 3200f
+                    if(PluginData.worldTime > 1200000L) {
+                        when {
+                            total > 20 -> {
+                                Vars.state.rules.waveSpacing = 1920f
+                                sendMessage("현재 서버 인원이 20명 이상 도달했으므로 웨이브 간격이 최대한 짧게 조정됩니다.")
+                            }
+                            total > 16 -> {
+                                Vars.state.rules.waveSpacing = 2560f
+                                sendMessage("현재 서버 인원이 16명 이상 도달했으므로 웨이브 간격이 더 짧게 조정됩니다.")
+                            }
+                            total > 12 -> {
+                                Vars.state.rules.waveSpacing = 3200f
+                                sendMessage("현재 서버 인원이 12명 이상 도달했으므로 웨이브 50초로 조정됩니다.")
+                            }
                         }
                     }
 
