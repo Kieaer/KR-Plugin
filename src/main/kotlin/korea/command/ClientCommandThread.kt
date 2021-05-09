@@ -157,7 +157,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                             val target = Groups.player.find { e -> e.name.equals(arg[1], true) }
                                             if(target != null) {
                                                 sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")
-                                                if(target.admin()) {
+                                                if(target.admin() || playerData.find{e -> e.uuid == target.uuid()}.permission == "owner"){
                                                     sendMessage("하지만 ${target.name()} 유저는 서버 관리자입니다.\n이걸 노리고 투표를 시작한 ${player.name()} 유저는 제정신이 아닌 것 같군요.\n잠시 나갔다 오세요.")
                                                     kick(player, "관리자를 대상으로 투표하는 행위는 금지되어 있습니다. 3분간 강퇴 처리.")
                                                 } else {
@@ -251,7 +251,11 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                         } else {
                             val target = Groups.player.find { d -> d.name == arg[0] }
                             if(target != null) {
-                                target.unit().kill()
+                                if (playerData.find{e -> e.uuid == target.uuid()}.permission == "owner"){
+                                    sendMessage["권한이 없습니다."]
+                                } else {
+                                    target.unit().kill()
+                                }
                             } else {
                                 sendMessage["목표를 찾을 수 없습니다"]
                             }
@@ -289,7 +293,11 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 [green]PvP 승리[white]: ${data.pvpWinner}
                                 [green]PvP 패배[white]: ${data.pvpLoser}
                                 """.trimIndent()
-                            infoMessage(player, message)
+                            if (data.permission == "owner"){
+                                sendMessage["권한이 없습니다."]
+                            } else {
+                                infoMessage(player, message)
+                            }
                         }
                     }
                     Maps -> {
@@ -469,6 +477,11 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 }
                             }
 
+                            if (playerData.find{e -> e.uuid == player.uuid()}.permission != "owner"){
+                                sendMessage["권한이 없습니다."]
+                                return@submit
+                            }
+
                             for(a in 0 until pos.size) {
                                 val tar = Vars.world.tile(player.tileX() + pos[a][0], player.tileY() + pos[a][1])
                                 tar.setFloor((if(tiles[a] == 0) Blocks.stone else if(tiles[a] == 1) Blocks.basalt else Blocks.salt) as Floor?)
@@ -533,7 +546,11 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             if(arg.size == 2) {
                                 val target = Groups.player.find { e -> e.name == arg[1] }
                                 if(target != null) {
-                                    target.team(team)
+                                    if (playerData.find{e -> e.uuid == target.uuid()}.permission == "owner"){
+                                        sendMessage["권한이 없습니다."]
+                                    } else {
+                                        target.team(team)
+                                    }
                                 } else {
                                     sendMessage["${arg[1]} 플레이어를 찾을 수 없습니다"]
                                 }
@@ -578,8 +595,12 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                         Groups.player.find { e -> e.name().contains(arg[1]) }
                                     }
                                     if(other != null) {
-                                        setPosition(target, other.x, other.y)
-                                        sendMessage["${target.name()} 님을 ${other.name()} 에게로 이동했습니다."]
+                                        if (playerData.find{e -> e.uuid == other.uuid()}.permission == "owner"){
+                                            sendMessage["권한이 없습니다."]
+                                        } else {
+                                            setPosition(target, other.x, other.y)
+                                            sendMessage["${target.name()} 님을 ${other.name()} 에게로 이동했습니다."]
+                                        }
                                     } else {
                                         sendMessage["${arg[1]} 플레이어를 찾을 수 없습니다"]
                                     }
@@ -605,12 +626,16 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
 
                         if(target != null) {
                             val data = PluginData[target.uuid()]
-                            if(data!!.isMute) {
-                                data.isMute = false
-                                target.sendMessage("축하드립니다. 묵언 상태가 해제되었습니다!")
+                            if (playerData.find{e -> e.uuid == target.uuid()}.permission == "owner"){
+                                sendMessage["권한이 없습니다."]
                             } else {
-                                data.isMute = true
-                                target.sendMessage("누군가에 의해 묵언 상태가 되었습니다.")
+                                if(data!!.isMute) {
+                                    data.isMute = false
+                                    target.sendMessage("축하드립니다. 묵언 상태가 해제되었습니다!")
+                                } else {
+                                    data.isMute = true
+                                    target.sendMessage("누군가에 의해 묵언 상태가 되었습니다.")
+                                }
                             }
                         }
                     }
