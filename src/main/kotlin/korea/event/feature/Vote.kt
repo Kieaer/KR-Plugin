@@ -44,7 +44,7 @@ class Vote(val player: Playerc, val type: VoteType) {
             if(alertTime == 0 || alertTime == 600 || alertTime == 1200 || alertTime == 1800 || alertTime == 2400 || alertTime == 3000) {
                 sendMessage("투표 종료까지 ${60 - (alertTime / 60)}초 남았습니다.")
             } else if(alertTime == 3600) {
-                passed()
+                passed(false)
             }
             alertTime++
 
@@ -62,10 +62,10 @@ class Vote(val player: Playerc, val type: VoteType) {
         Core.app.addListener(task)
     }
 
-    fun passed() {
+    fun passed(fail: Boolean) {
         Core.app.removeListener(task)
         try {
-            if(voted.size >= require || player.isLocal) {
+            if(voted.size >= require && !fail) {
                 when(type) {
                     Kick -> {
                         sendMessage("강퇴 투표가 통과 되었습니다!")

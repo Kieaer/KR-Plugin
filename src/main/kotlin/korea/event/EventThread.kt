@@ -228,9 +228,14 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                                     }
                                 }
                                 PluginData.voting.first().voted.put(e.player.uuid(), e.player.con.address)
-                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require || e.player.isLocal) {
-                                    if(e.player.isLocal) sendMessage("[sky]관리자[]의 힘으로 투표가 즉시 통과됩니다.")
-                                    PluginData.voting.first().passed()
+                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require) PluginData.voting.first().passed(false)
+                            } else if(PluginData.voting.size == 1 && data.permission == "owner"){
+                                if(e.message.equals("y")){
+                                    sendMessage("[sky]서버 운영자[]가 투표를 바로 [green]통과[] 시켰습니다.")
+                                    PluginData.voting.first().passed(false)
+                                } else {
+                                    sendMessage("[sky]서버 운영자[]가 이 투표를 [scarlet]무효화[] 시켰습니다.")
+                                    PluginData.voting.first().passed(true)
                                 }
                             }
                             if(data.isMute) {
