@@ -127,8 +127,15 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 }
                             }
                             type.equals("block", true) -> {
-                                constructFinish(tile = player.tileOn(), block = Vars.content.blocks().find { it.name == name }, builder = player.unit(), rotation = parameter?.toByte()
-                                        ?: 0, team = player.team(), config = null)
+                                if(Vars.content.blocks().find { it.name.equals(name, true)} != null){
+                                    constructFinish(tile = player.tileOn(), block = Vars.content.blocks().find { it.name.equals(name, true) }, builder = player.unit(), rotation = parameter?.toByte() ?: 0, team = player.team(), config = null)
+                                } else {
+                                    val names = StringBuilder()
+                                    Vars.content.blocks().each {
+                                        names.append("${it.name}, ")
+                                    }
+                                    sendMessage["사용 가능한 블록 이름: ${names.dropLast(2)}"]
+                                }
                             }
                             else -> { // TODO 명령어 예외 만들기
                                 return
