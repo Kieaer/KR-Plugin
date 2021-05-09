@@ -1,6 +1,7 @@
 package korea.event
 
 import arc.Core
+import arc.Events
 import korea.Main.Companion.pluginRoot
 import korea.PluginData
 import korea.command.Permissions
@@ -9,7 +10,6 @@ import korea.core.Log
 import korea.data.Config
 import korea.data.Config.AuthType.*
 import korea.data.PlayerCore
-import korea.eof.connect
 import korea.eof.infoMessage
 import korea.eof.kick
 import korea.eof.sendMessage
@@ -75,6 +75,11 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.WorldLoad -> {
                     PluginData.worldTime = 0L
 
+                    for(a in Groups.player) {
+                        Events.fire(PlayerLeave(a))
+                        Events.fire(PlayerJoin(a))
+                    }
+
                     /*Groups.player.forEach {p -> p.reset()}
                     Vars.logic.reset()
 
@@ -124,16 +129,16 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     }*/
 
                     val total = Groups.player.size()
-                    if(PluginData.worldTime > 600000L)
+                    if(PluginData.worldTime > 1200000L)
                     when {
                         total > 10 -> {
-                            Vars.state.rules.waveSpacing = 64f
+                            Vars.state.rules.waveSpacing = 640f
                         }
                         total > 8 -> {
-                            Vars.state.rules.waveSpacing = 320f
+                            Vars.state.rules.waveSpacing = 1280f
                         }
                         total > 6 -> {
-                            Vars.state.rules.waveSpacing = 640f
+                            Vars.state.rules.waveSpacing = 1920f
                         }
                     }
 
