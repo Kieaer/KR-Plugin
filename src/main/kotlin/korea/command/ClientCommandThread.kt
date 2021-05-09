@@ -147,8 +147,8 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 when(EqualsIgnoreCase(VoteType.values(), arg[0], None)) {
                                     Kick -> {
                                         if(arg.size == 1) {
-                                            val target = Groups.player.find { e -> e.name.equals(arg[0], true) }
-                                            if(!target.isNull) {
+                                            val target = Groups.player.find { e -> e.name.equals(arg[1], true) }
+                                            if(target != null) {
                                                 sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")
                                                 if(target.admin()) {
                                                     sendMessage("하지만 ${target.name()} 유저는 서버 관리자입니다.\n이걸 노리고 투표를 시작한 ${player.name()} 유저는 제정신이 아닌 것 같군요.\n잠시 나갔다 오세요.")
@@ -160,14 +160,14 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                                     PluginData.voting.first().start()
                                                 }
                                             } else {
-                                                sendMessage(player, "${arg[0]} 유저를 찾을 수 없습니다!")
+                                                sendMessage(player, "${arg[1]} 유저를 찾을 수 없습니다!")
                                             }
                                         }
                                     }
                                     VoteType.Map -> {
                                         val world = when {
-                                            arg[0].toIntOrNull() != null -> Vars.maps.all().get(arg[0].toInt())
-                                            else -> Vars.maps.all().find { e -> e.name().equals(arg[0], true) }
+                                            arg[1].toIntOrNull() != null -> Vars.maps.all().get(arg[1].toInt())
+                                            else -> Vars.maps.all().find { e -> e.name().equals(arg[1], true) }
                                         }
 
                                         if(world != null) {
@@ -177,7 +177,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                             PluginData.voting.first().start()
                                             sendMessage("${player.name()} 에 의해 ${world.name()} 맵으로 가기 위한 투표가 시작 되었습니다.")
                                         } else {
-                                            sendMessage(player, "${arg[0]} 맵을 찾을 수 없습니다!")
+                                            sendMessage(player, "${arg[1]} 맵을 찾을 수 없습니다!")
                                         }
                                     }
                                     Gameover -> {
@@ -187,7 +187,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                     }
                                     Skipwave -> {
                                         try {
-                                            val amount = arg[0].toInt()
+                                            val amount = arg[1].toInt()
                                             if(amount < 10) {
                                                 sendMessage(player, "10 wave 이상 한꺼번에 넘길 수 없습니다!")
                                             } else {
@@ -475,7 +475,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                 }
                             }
 
-                            while(!player.isNull) {
+                            while(player.isNull) {
                                 for(d in loop) {
                                     player.name(d)
                                     sleep(500)
