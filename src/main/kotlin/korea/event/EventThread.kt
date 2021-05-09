@@ -132,13 +132,13 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     if(PluginData.worldTime > 1200000L)
                     when {
                         total > 10 -> {
-                            Vars.state.rules.waveSpacing = 640f
+                            Vars.state.rules.waveSpacing = 1920f
                         }
                         total > 8 -> {
-                            Vars.state.rules.waveSpacing = 1280f
+                            Vars.state.rules.waveSpacing = 2560f
                         }
                         total > 6 -> {
-                            Vars.state.rules.waveSpacing = 1920f
+                            Vars.state.rules.waveSpacing = 3200f
                         }
                     }
 
