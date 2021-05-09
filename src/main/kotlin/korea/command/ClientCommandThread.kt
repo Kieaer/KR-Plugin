@@ -317,7 +317,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             for(a in 6 * page until (6 * (page + 1)).coerceAtMost(Vars.maps.all().size)) {
                                 message.append("[gray]$a[white] ${
                                     maps.get(a).name()
-                                } v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height}\n")
+                                } v${maps.get(a).version} [gray]${maps.get(a).width}x${maps.get(a).height} [green]by ${maps.get(a).author()}\n")
                             }
                             sendMessage[message.toString().dropLast(1)]
                         }
