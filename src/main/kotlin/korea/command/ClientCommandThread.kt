@@ -691,6 +691,26 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             }
                         }
                     }
+                    Killall -> {
+                        if (!Vars.state.rules.pvp) {
+                            var team = 0
+                            var enemy = 0
+                            Groups.unit.each {
+                                if(it.team == mindustry.game.Team.sharded){
+                                    team++
+                                } else {
+                                    enemy++
+                                }
+                                it.kill()
+                            }
+                            sendMessage["""
+                                파괴된 아군 유닛 수: [green]$team
+                                파괴된 적 유닛 수: [red]$enemy
+                            """.trimIndent()]
+                        } else {
+                            sendMessage["이 명령어는 PvP 에서 사용할 수 없습니다."]
+                        }
+                    }
                 }
             }
         } catch(e: Exception) {

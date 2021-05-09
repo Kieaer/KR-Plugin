@@ -67,6 +67,9 @@ object ClientCommand {
         handler.register("discord", "Discord 인증을 통해 더 많은 기능을 사용할 수 있습니다.") { arg: Array<String>, player: Playerc ->
             ClientCommandThread(Command.Discord, arg, player).run()
         }
+        handler.register("killall", "적과 아군을 구별하지 않고 모든 유닛을 폭파 시킵니다.") { arg: Array<String>, player: Playerc ->
+            ClientCommandThread(Command.Killall, arg, player).run()
+        }
     }
 
     enum class Command {
@@ -256,6 +259,14 @@ object ClientCommand {
                     
                     Discord 내에서의 명령어는 !auth <PIN 번호> 입니다.
                     [yellow]사용 예시: !auth 12867409823637148
+                """.trimIndent()
+            }
+        },
+        Killall {
+            override fun toString(): String {
+                return """
+                    명령어: [green]/killall[]
+                    이 명령어를 사용하면 적과 아군을 구별하지 않고 모든 유닛을 폭파 시킵니다.
                 """.trimIndent()
             }
         }
