@@ -124,7 +124,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     }*/
 
                     val total = Groups.player.size()
-                    if(PluginData.worldTime > 240000L)
+                    if(PluginData.worldTime > 600000L)
                     when {
                         total > 10 -> {
                             Vars.state.rules.waveSpacing = 64f

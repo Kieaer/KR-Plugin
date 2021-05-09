@@ -207,9 +207,10 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                         PluginData.voting.first().start()
                                     }
                                     Fast -> {
-                                        sendMessage("${player.name()} 에 의해 웨이브 고속 진행 모드 투표가 시작 되었습니다!")
+                                        sendMessage(player, "현재 인원수 비례 난이도 조절 기능이 활성화 되어 있어, 웨이브 고속 진행 모드가 비활성화 되어 있습니다.")
+                                        /*sendMessage("${player.name()} 에 의해 웨이브 고속 진행 모드 투표가 시작 되었습니다!")
                                         PluginData.voting.add(Vote(player, Fast))
-                                        PluginData.voting.first().start()
+                                        PluginData.voting.first().start()*/
                                     }
                                     VoteType.Random -> {
                                         sendMessage(player, "도박 중독 신고는 국번없이 [green]1336[] 입니다.")
