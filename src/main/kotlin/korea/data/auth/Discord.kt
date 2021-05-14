@@ -145,10 +145,8 @@ object Discord {
 
             Events.on(EventType.PlayerConnect::class.java) {
                 for(a in banned) {
-                    if(a.uuid == it.player.uuid() || netServer.admins.findByIP(a.address).ips.contains(a.address)) {
-                        val message = """
-                        ${netServer.admins.findByIP(it.player.con.address).lastName} 유저가 서버에 접속을 시도 했지만 차단 되었습니다.
-                        """.trimIndent()
+                    if(a.uuid == it.player.uuid()) {
+                        val message = "${netServer.admins.findByIP(it.player.con.address).lastName} 유저가 서버에 접속을 시도 했지만 차단 되었습니다."
                         catnip.rest().channel().createMessage("706326919972519987", message)
                     }
                 }
