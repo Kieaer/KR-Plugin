@@ -14,6 +14,7 @@ import korea.eof.infoMessage
 import korea.eof.kick
 import korea.eof.sendMessage
 import korea.exceptions.ErrorReport
+import korea.external.IpAddressMatcher
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.content.Blocks
@@ -94,28 +95,22 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     for(a in PluginData.banned) {
                         if(a.uuid == e.player.uuid() || a.address == e.player.con().address) {
                             kick(e.player, "관리자에 의해 차단된 기기 입니다. 문의는 Discord 으로 해 주세요.")
-                            /*connect(e.player, "mindustry.ru", 6567)
-                            Log.info("${e.player.name} 유저는 밴을 당했으므로 ru 서버로 이동 시킵니다.")*/
                             return
                         }
                     }
 
-                    /*if (netServer.admins.findByName(e.player.name).size != 1) {
-                        Call.kick(e.player.con, "사용할 수 없는 계정입니다")
-                    } else {
-                        val ip = e.player.con.address
+                    val ip = e.player.con.address
 
-                        val br = pluginRoot.child("data/ipv4.txt").reader(1024)
-                        br.use {
-                            var line: String
-                            while (br.readLine().also { line = it } != null) {
-                                val match = IpAddressMatcher(line)
-                                if (match.matches(ip)) {
-                                    Call.kick(e.player.con, "VPN 사용 ㄴㄴ")
-                                }
+                    val br = pluginRoot.child("data/ipv4.txt").reader(1024)
+                    br.use {
+                        var line: String
+                        while (br.readLine().also { line = it } != null) {
+                            val match = IpAddressMatcher(line)
+                            if (match.matches(ip)) {
+                                kick(e.player, "VPN Blocked")
                             }
                         }
-                    }*/
+                    }
                 }
                 EventTypes.Deposit -> {
 
