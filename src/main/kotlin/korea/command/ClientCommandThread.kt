@@ -195,8 +195,8 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                     Skipwave -> {
                                         try {
                                             val amount = arg[1].toInt()
-                                            if(amount < 10) {
-                                                sendMessage(player, "10 wave 이상 한꺼번에 넘길 수 없습니다!")
+                                            if(amount > 20) {
+                                                sendMessage(player, "20 wave 이상 한꺼번에 넘길 수 없습니다!")
                                             } else {
                                                 sendMessage("${player.name()} 에 의해 $amount 웨이브 건너뛰기 투표가 시작 되었습니다!")
                                                 val vote = Vote(player, Skipwave)
