@@ -1,10 +1,12 @@
 package korea
 
+import arc.struct.ObjectMap
 import arc.struct.Seq
 import korea.Main.Companion.pluginRoot
 import korea.core.Log
 import korea.event.feature.Vote
 import korea.form.Config
+import mindustry.gen.Playerc
 import org.hjson.JsonArray
 import org.hjson.JsonObject
 import java.security.SecureRandom
@@ -28,6 +30,7 @@ object PluginData : Config() {
     var lastVoted: LocalTime = LocalTime.now()
 
     val threads = Executors.newCachedThreadPool()
+    val keepTp = ObjectMap<Playerc, Playerc>()
 
     operator fun get(uuid: String): PlayerData? {
         return playerData.find { d -> uuid == d.uuid }

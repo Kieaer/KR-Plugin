@@ -58,6 +58,9 @@ object ClientCommand {
         handler.register("tp", "<플레이어_이름/tileX> [목표_플레이어_이름/tileY]", "특정 플레이어에게로 이동하거나, 타일 위치로 이동할 수 있습니다.") { arg: Array<String>, player: Playerc ->
             ClientCommandThread(Command.Tp, arg, player).run()
         }
+        handler.register("tpp", "<플레이어_이름>", "특정 플레이어에를 지속적으로 따라다닙니다.") {arg: Array<String>, player: Playerc ->
+            ClientCommandThread(Command.Tpp, arg, player).run()
+        }
         handler.register("mute", "<플레이어_이름>", "플레이어의 채팅을 금지 시킵니다.") { arg: Array<String>, player: Playerc ->
             ClientCommandThread(Command.Mute, arg, player).run()
         }
@@ -228,6 +231,14 @@ object ClientCommand {
                     [sky]/tp <x> <y>[] - 블럭 좌표 <x>, <y> 위치로 이동합니다.
                     
                     테러를 찾아내거나 도움을 줄때 유용한 명령어.
+                """.trimIndent()
+            }
+        },
+        Tpp {
+            override fun toString(): String {
+                return """
+                    명령어: [green]/tpp[]
+                    [sky]/tpp <플레이어 이름>[] - 해당 플레이어를 지속적으로 따라 다니며, 이름 입력 없이 명령어를 한번 더 입력하면 취소됩니다.
                 """.trimIndent()
             }
         },

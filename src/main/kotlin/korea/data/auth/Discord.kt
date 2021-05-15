@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter
 
 object Discord {
     val pin: JsonObject = JsonObject()
-    private lateinit var catnip: Catnip
+    lateinit var catnip: Catnip
 
     init {
         if(Config.discordBotToken.isNotEmpty()) {
@@ -144,11 +144,9 @@ object Discord {
             }) { e: Throwable -> ErrorReport(e) }
 
             Events.on(EventType.PlayerConnect::class.java) {
-                for(a in banned) {
-                    if(a.uuid == it.player.uuid()) {
-                        val message = "${netServer.admins.findByIP(it.player.con.address).lastName} 유저가 서버에 접속을 시도 했지만 차단 되었습니다."
-                        catnip.rest().channel().createMessage("706326919972519987", message)
-                    }
+                if(netServer.admins.isIDBanned(it.player.uuid())){
+                    val message = "${netServer.admins.findByIP(it.player.con.address).lastName} 유저가 서버에 접속을 시도 했지만 차단 되었습니다."
+                    catnip.rest().channel().createMessage("706326919972519987", message)
                 }
             }
 
@@ -167,7 +165,6 @@ object Discord {
                 val message = """
                     시간: ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분 ss초 SSS"))}
                     닉네임: ${netServer.admins.findByIP(it.ip).names.toString(", ")}
-                    서버장이 직접 이 유저를 차단 처리 했습니다.
                     """.trimIndent()
                 catnip.rest().channel().createMessage("706326919972519987", message)
             }

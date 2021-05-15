@@ -617,6 +617,26 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             }
                         }
                     }
+                    Tpp -> {
+                        val target: Playerc?
+                        when(arg.size) {
+                            1 -> {
+                                target = if(arg[0].toIntOrNull() != null) {
+                                    Groups.player.find { e -> e.id == arg[0].toInt() }
+                                } else {
+                                    Groups.player.find { e -> e.name().contains(arg[0]) }
+                                }
+
+                                if(target != null) {
+                                    PluginData.keepTp.put(player, target)
+                                    setPosition(player, target.x, target.y)
+                                    sendMessage["${target.name()} 에게로 이동했습니다."]
+                                } else {
+                                    sendMessage["${arg[0]} 플레이어를 찾을 수 없습니다"]
+                                }
+                            }
+                        }
+                    }
                     Mute -> {
                         val target = if(arg[0].toIntOrNull() != null) {
                             Groups.player.find { e -> e.id == arg[0].toInt() }

@@ -3,6 +3,7 @@ package korea.command
 import arc.util.Log
 import korea.PluginData
 import korea.command.ServerCommand.Command.*
+import korea.data.auth.Discord
 import mindustry.Vars
 import mindustry.Vars.netServer
 import mindustry.gen.Call
@@ -45,6 +46,7 @@ class ServerCommandThread(private val type: ServerCommand.Command, private val a
                     if(netServer.admins.isIDBanned(player.uuid())) {
                         Call.sendMessage("[scarlet]" + player.name + "[white] 가 서버장에 의해 즉결 처분되었습니다.")
                         player.con.kick(KickReason.banned)
+                        Discord.catnip.rest().channel().createMessage("706326919972519987", "이 유저는 서버장이 직접 처리했습니다.")
                     }
                 }
             }

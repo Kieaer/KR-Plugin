@@ -18,8 +18,10 @@ import korea.data.Config
 import korea.data.DB
 import korea.data.auth.Discord
 import korea.eof.sendMessage
+import korea.eof.setPosition
 import korea.event.Event
 import mindustry.Vars
+import mindustry.gen.Call
 import mindustry.mod.Plugin
 
 class Main : Plugin() {
@@ -72,6 +74,13 @@ class Main : Plugin() {
             override fun update() {
                 computeTime = System.nanoTime()
                 tick++
+                for(a in PluginData.keepTp){
+                    if(!a.key.isNull) {
+                        Call.setPosition(a.key.con(), a.value.x, a.value.y)
+                    } else {
+                        PluginData.keepTp.remove(a.key)
+                    }
+                }
             }
 
             override fun dispose() {
