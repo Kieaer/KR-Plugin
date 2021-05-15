@@ -20,7 +20,7 @@ object ServerCommand {
         handler.register("blacklist", "<add/remove> [name]") {
             ServerCommandThread(Command.Blacklist, it).run()
         }
-        handler.register("say", "<p/c/i> <message...>", "서버에 메세지를 보냅니다") {
+        handler.register("say", "<p/c/i/t> <message...>", "Send message to players.") {
             ServerCommandThread(Command.Say, it).run()
         }
     }

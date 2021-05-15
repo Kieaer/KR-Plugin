@@ -71,7 +71,7 @@ class ServerCommandThread(private val type: ServerCommand.Command, private val a
                                 ====== [scarlet][ 서버 메세지 ][white] ======
                                 ${arg[1]}
                             """.trimIndent()
-                            Call.infoPopup(message, 4800f, Align.center, 0, 0, 0, 0)
+                            Call.infoPopup(message, 5f, Align.center, 0, 0, 0, 0)
                         }
                     }
                     "c" -> {
@@ -84,6 +84,12 @@ class ServerCommandThread(private val type: ServerCommand.Command, private val a
                                 ${arg[1]}
                             """.trimIndent()
                             Call.infoMessage(message)
+                        }
+                    }
+                    "t" -> {
+                        Core.app.post{
+                            val message = "[scarlet][[서버]:[] " + arg[1]
+                            Call.infoToast(message, 1f)
                         }
                     }
                     else -> {
