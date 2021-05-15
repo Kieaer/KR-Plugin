@@ -1,6 +1,7 @@
 package korea.command
 
 import arc.util.CommandHandler
+import mindustry.Vars.state
 
 object ServerCommand {
     val isUnBan = false
@@ -8,6 +9,7 @@ object ServerCommand {
     fun register(handler: CommandHandler) {
         handler.removeCommand("ban")
         handler.removeCommand("unban")
+        handler.removeCommand("say")
 
         handler.register("ban", "<type-id/name/ip> <username/IP/ID...>", "Completely unban a person by IP or ID.") { arg: Array<String> ->
             ServerCommandThread(Command.Ban, arg).run()
@@ -18,9 +20,12 @@ object ServerCommand {
         handler.register("blacklist", "<add/remove> [name]") {
             ServerCommandThread(Command.Blacklist, it).run()
         }
+        handler.register("say", "<p/c/i> <message...>", "서버에 메세지를 보냅니다") {
+            ServerCommandThread(Command.Say, it).run()
+        }
     }
 
     enum class Command {
-        Ban, Unban, Blacklist
+        Ban, Unban, Blacklist, Say
     }
 }

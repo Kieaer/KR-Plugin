@@ -1,11 +1,15 @@
 package korea.command
 
+import arc.Core
+import arc.util.Align
 import arc.util.Log
 import korea.PluginData
 import korea.command.ServerCommand.Command.*
 import korea.data.auth.Discord
+import korea.eof.sendMessage
 import mindustry.Vars
 import mindustry.Vars.netServer
+import mindustry.core.GameState
 import mindustry.gen.Call
 import mindustry.gen.Groups
 import mindustry.gen.Player
@@ -53,6 +57,40 @@ class ServerCommandThread(private val type: ServerCommand.Command, private val a
             Blacklist -> {
                 PluginData.blacklist.add(arg[0])
                 Log.info("${arg[0]} 을 블랙리스트에 추가함")
+            }
+            Say -> {
+                if(!Vars.state.`is`(GameState.State.playing)){
+                    Log.err("서버가 시작되지 않았습니다. 서버를 먼저 켜 주세요.")
+                    return
+                }
+
+                when(arg[0]){
+                    "p" -> {
+                        Core.app.post{
+                            val message = """
+                                ====== [scarlet][ 서버 메세지 ][white] ======
+                                ${arg[1]}
+                            """.trimIndent()
+                            Call.infoPopup(message, 4800f, Align.center, 0, 0, 0, 0)
+                        }
+                    }
+                    "c" -> {
+                        sendMessage("[scarlet][[서버]:[] " + arg[1])
+                    }
+                    "i" -> {
+                        Core.app.post{
+                            val message = """
+                                ====== [scarlet][ 서버 메세지 ][white] ======
+                                ${arg[1]}
+                            """.trimIndent()
+                            Call.infoMessage(message)
+                        }
+                    }
+                    else -> {
+                        Log.info("사용법: p 는 팝업, c 는 채팅, i 는 정보창.")
+                    }
+                }
+                Log.info("서버: ${arg[1]}")
             }
         }
     }
