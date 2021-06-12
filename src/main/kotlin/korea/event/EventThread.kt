@@ -117,6 +117,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.PlayerJoin -> {
                     val e = event as PlayerJoin
+                    PluginData.players.add(e.player)
 
                     /*val ip = netServer.admins.findByIPs(e.player.con.address)
                     if(ip.size > 2){
@@ -193,6 +194,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 }
                 EventTypes.PlayerLeave -> {
                     val e = event as PlayerLeave
+                    PluginData.players.remove(e.player)
                     val uuid = e.player.uuid()
 
                     val data = PluginData[uuid]

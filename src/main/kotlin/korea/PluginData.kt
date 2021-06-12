@@ -25,6 +25,7 @@ object PluginData : Config() {
     var banned = Seq<Banned>()
     var computeTime: Long = 0L
     var blacklist = Seq<String>()
+    var players = Seq<Playerc>()
 
     var voting = Seq<Vote>()
     var lastVoted: LocalTime = LocalTime.now()
