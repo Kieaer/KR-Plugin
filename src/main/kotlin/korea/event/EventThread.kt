@@ -76,10 +76,10 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                 EventTypes.WorldLoad -> {
                     PluginData.worldTime = 0L
 
-                    for(a in Groups.player) {
+                    /*for(a in Groups.player) {
                         Events.fire(PlayerLeave(a))
                         Events.fire(PlayerJoin(a))
-                    }
+                    }*/
 
                     /*Groups.player.forEach {p -> p.reset()}
                     Vars.logic.reset()
@@ -99,7 +99,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                         }
                     }
 
-                    val ip = e.player.con.address
+                    /*val ip = e.player.con.address
 
                     val br = pluginRoot.child("data/ipv4.txt").reader(1024)
                     br.use {
@@ -110,7 +110,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                                 kick(e.player, "VPN Blocked")
                             }
                         }
-                    }
+                    }*/
                 }
                 EventTypes.Deposit -> {
 
@@ -126,15 +126,15 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                     val total = Groups.player.size()
                     if(PluginData.worldTime > 1200000L) {
                         when {
-                            total > 20 -> {
-                                Vars.state.rules.waveSpacing = 1920f
+                            total == 20 -> {
+                                Vars.state.rules.waveSpacing = 1560f
                                 sendMessage("현재 서버 인원이 20명 이상 도달했으므로 웨이브 간격이 최대한 짧게 조정됩니다.")
                             }
-                            total > 16 -> {
+                            total == 16 -> {
                                 Vars.state.rules.waveSpacing = 2560f
                                 sendMessage("현재 서버 인원이 16명 이상 도달했으므로 웨이브 간격이 더 짧게 조정됩니다.")
                             }
-                            total > 12 -> {
+                            total == 12 -> {
                                 Vars.state.rules.waveSpacing = 3200f
                                 sendMessage("현재 서버 인원이 12명 이상 도달했으므로 웨이브 50초로 조정됩니다.")
                             }
@@ -219,24 +219,25 @@ class EventThread(private val type: EventTypes, private val event: Any) {
                         Log.write(Log.LogType.Chat, "$type${e.player.name}: ${e.message}")
 
                         if(data != null) {
-                            if(PluginData.voting.size == 1 && e.message.equals("y")) {
-                                for(a in PluginData.voting.first().voted) {
-                                    if(a.key.equals(e.player.uuid()) || a.value.equals(e.player.con.address)) {
-                                        sendMessage(e.player, "이미 투표 했습니다!")
-                                        return
+                            if(PluginData.voting.size == 1)
+                                if(data.permission == "owner") {
+                                    if(e.message.equals("y")) {
+                                        sendMessage("[sky]서버 운영자[]가 투표를 바로 [green]통과[] 시켰습니다.")
+                                        PluginData.voting.first().passed(false)
+                                    } else if(e.message.equals("n")) {
+                                        sendMessage("[sky]서버 운영자[]가 이 투표를 [scarlet]무효화[] 시켰습니다.")
+                                        PluginData.voting.first().passed(true)
                                     }
+                                } else if(e.message.equals("y")){
+                                    for(a in PluginData.voting.first().voted) {
+                                        if(a.key.equals(e.player.uuid()) || a.value.equals(e.player.con.address)) {
+                                            sendMessage(e.player, "이미 투표 했습니다!")
+                                            return
+                                        }
+                                    }
+                                    PluginData.voting.first().voted.put(e.player.uuid(), e.player.con.address)
+                                    if(PluginData.voting.first().voted.size >= PluginData.voting.first().require) PluginData.voting.first().passed(false)
                                 }
-                                PluginData.voting.first().voted.put(e.player.uuid(), e.player.con.address)
-                                if(PluginData.voting.first().voted.size >= PluginData.voting.first().require) PluginData.voting.first().passed(false)
-                            } else if(PluginData.voting.size == 1 && data.permission == "owner"){
-                                if(e.message.equals("y")){
-                                    sendMessage("[sky]서버 운영자[]가 투표를 바로 [green]통과[] 시켰습니다.")
-                                    PluginData.voting.first().passed(false)
-                                } else {
-                                    sendMessage("[sky]서버 운영자[]가 이 투표를 [scarlet]무효화[] 시켰습니다.")
-                                    PluginData.voting.first().passed(true)
-                                }
-                            }
                             if(data.isMute) {
                                 sendMessage(e.player, "[scarlet]당신은 누군가에 의해 묵언 처리가 되었습니다.")
                             } else {

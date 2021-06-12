@@ -77,9 +77,9 @@ class Vote(val player: Playerc, val type: VoteType) {
                         AutoRollback.load(world)
                     }
                     Gameover -> {
-                        sendMessage("항복 투표가 통과 되었습니다! 10초후 진행.")
-                        Vars.state.serverPaused = true
-                        sleep(10000)
+                        sendMessage("항복 투표가 통과 되었습니다!.")
+                        /*Vars.state.serverPaused = true
+                        sleep(10000)*/
                         Events.fire(EventType.GameOverEvent(Team.crux))
                     }
                     Skipwave -> {
