@@ -157,7 +157,8 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                             val target = Groups.player.find { e -> e.name.equals(arg[1], true) }
                                             if(target != null) {
                                                 sendMessage("${player.name()} 에 의해 ${target.name()} 에 대한 강퇴 투표가 시작 되었습니다.")
-                                                if(target.admin() || playerData.find{e -> e.uuid == target.uuid()}.permission.equals("owner", true)){
+                                                val t = playerData.find{e -> e.uuid == target.uuid()}.permission
+                                                if(target.admin() || t.equals("owner", true) || t.equals("admin", true)){
                                                     sendMessage("하지만 ${target.name()} 유저는 서버 관리자입니다.\n이걸 노리고 투표를 시작한 ${player.name()} 유저는 제정신이 아닌 것 같군요.\n잠시 나갔다 오세요.")
                                                     kick(player, "관리자를 대상으로 투표하는 행위는 금지되어 있습니다. 3분간 강퇴 처리.")
                                                 } else {
@@ -595,7 +596,8 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                                         Groups.player.find { e -> e.name.contains(arg[1]) }
                                     }
                                     if(other != null) {
-                                        if (playerData.find{e -> e.uuid == other.uuid()}.permission.equals("owner", true)){
+                                        val t = playerData.find{e -> e.uuid == other.uuid()}.permission
+                                        if (t.equals("owner", true) || t.equals("admin", true)){
                                             sendMessage["권한이 없습니다."]
                                         } else {
                                             setPosition(target, other.x, other.y)

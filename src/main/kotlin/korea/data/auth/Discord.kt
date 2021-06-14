@@ -18,14 +18,17 @@ import mindustry.game.EventType
 import org.hjson.JsonObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.system.exitProcess
 
 object Discord {
     val pin: JsonObject = JsonObject()
     lateinit var catnip: Catnip
 
     init {
-        if(Config.discordBotToken.isNotEmpty()) {
+        if(Config.discordBotToken.isNotEmpty() && Config.discordChannelToken.isNotEmpty()) {
             catnip = Catnip.catnip(Config.discordBotToken)
+        } else {
+            exitProcess(0)
         }
     }
 

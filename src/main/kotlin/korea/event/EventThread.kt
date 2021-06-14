@@ -222,7 +222,7 @@ class EventThread(private val type: EventTypes, private val event: Any) {
 
                         if(data != null) {
                             if(PluginData.voting.size == 1)
-                                if(data.permission == "owner") {
+                                if(data.permission.equals("owner", true)) {
                                     if(e.message.equals("y")) {
                                         sendMessage("[sky]서버 운영자[]가 투표를 바로 [green]통과[] 시켰습니다.")
                                         PluginData.voting.first().passed(false)

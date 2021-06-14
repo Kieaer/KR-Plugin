@@ -89,7 +89,7 @@ class ServerCommandThread(private val type: ServerCommand.Command, private val a
                     "t" -> {
                         Core.app.post{
                             val message = "[scarlet][[서버]:[] " + arg[1]
-                            Call.infoToast(message, 1f)
+                            Call.infoToast(message, 16f)
                         }
                     }
                     else -> {
