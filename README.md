@@ -1,3 +1,7 @@
+# Deprecated
+All functions in this plugin will be merged into Essentials plugin.<br>
+This plugin only supports up to Mindustry 6.0 and no longer supported.
+
 # KR-Plugin
 Essentials. However, it's optimized for my server.<br>
 But source code is free!<br>
