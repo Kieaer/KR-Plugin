@@ -34,6 +34,8 @@ class PluginUpdater {
                     DriverLoader().download(Core.settings.dataDirectory.child("mods/Essentials.jar").file(), URL(url))
                     Log.system("플러그인 업데이트됨! 기존: $version 최신: $current. 서버 종료됨")
                     exitProcess(0)
+                } else {
+                    Log.system("최신 버전을 사용하고 있습니다!")
                 }
             } else {
                 Log.warn("플러그인 업데이트 확인 실패! 오류 코드 ${res.status.code}")

@@ -348,7 +348,7 @@ class ClientCommandThread(private val type: Command, private val arg: Array<Stri
                             }
 
                             for(a in 6 * page until (6 * (page + 1)).coerceAtMost(PluginData.players.size)) {
-                                message.append("[gray]${PluginData.players.get(a)}[white] ${
+                                message.append("[gray]$a[white] ${
                                     PluginData.players.get(a).name()
                                 }\n")
                             }
